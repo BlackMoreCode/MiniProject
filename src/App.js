@@ -1,11 +1,14 @@
-import logo from "./logo.svg";
-import "./App.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Calendar from "./pages/Calendar";
 
 function App() {
   return (
-    <>
-      <h1>test</h1>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Calendar />} />
+      </Routes>
+    </Router>
   );
 }
 
