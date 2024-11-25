@@ -53,84 +53,105 @@ const Button = styled.button`
   &:hover {
     background-color: #666;
   }
+
+  &:disabled {
+    background-color: #777;
+    cursor: not-allowed;
+  }
 `;
 
-const Modal = ({ date, closeModal, savedEvent, onSave, onDelete }) => {
+const ErrorText = styled.div`
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+`;
+
+const Modal = ({ data, onSave, onDelete, closeModal }) => {
+  const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
   const [notes, setNotes] = useState("");
   const [alarm, setAlarm] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (savedEvent) {
-      setTime(savedEvent.time || { start: "", end: "" });
-      setNotes(savedEvent.notes || "");
-      setAlarm(savedEvent.alarm || "");
+    if (data.event) {
+      setTitle(data.event.title || "");
+      setTime(data.event.time || { start: "", end: "" });
+      setNotes(data.event.notes || "");
+      setAlarm(data.event.alarm || "");
     }
-  }, [savedEvent]);
+  }, [data]);
+
+  const validateFields = () => {
+    if (!title.trim()) {
+      setError("Title is required.");
+      return false;
+    }
+    setError("");
+    return true;
+  };
 
   const handleSave = () => {
-    const event = { date, time, notes, alarm };
+    if (!validateFields()) return;
+
+    const event = {
+      id: data.event?.id || new Date().getTime(), // Use existing ID or create a new one
+      date: data.date,
+      title,
+      time,
+      notes,
+      alarm,
+    };
     onSave(event);
-    closeModal();
   };
 
   const handleDelete = () => {
-    onDelete(date);
-    closeModal();
+    if (data.event) {
+      onDelete(data.event);
+    }
   };
 
   return (
     <>
       <Backdrop onClick={closeModal} />
       <ModalWrapper>
-        <h2>Event on {date.toLocaleDateString()}</h2>
-        {savedEvent ? (
-          <>
-            <p>
-              <strong>Start Time:</strong> {savedEvent.time?.start}
-            </p>
-            <p>
-              <strong>End Time:</strong> {savedEvent.time?.end}
-            </p>
-            <p>
-              <strong>Notes:</strong> {savedEvent.notes}
-            </p>
-            <p>
-              <strong>Alarm:</strong> {savedEvent.alarm}
-            </p>
-            <Button onClick={handleDelete}>Delete Event</Button>
-          </>
-        ) : (
-          <>
-            <label>Start Time:</label>
-            <Input
-              type="time"
-              value={time.start}
-              onChange={(e) => setTime({ ...time, start: e.target.value })}
-            />
-            <label>End Time:</label>
-            <Input
-              type="time"
-              value={time.end}
-              onChange={(e) => setTime({ ...time, end: e.target.value })}
-            />
-            <label>Notes:</label>
-            <TextArea
-              rows="4"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add notes about the event..."
-            />
-            <label>Alarm:</label>
-            <Input
-              type="text"
-              placeholder="e.g., 15 mins before"
-              value={alarm}
-              onChange={(e) => setAlarm(e.target.value)}
-            />
-            <Button onClick={handleSave}>Save</Button>
-          </>
-        )}
+        <h2>{data.event ? "Edit Event" : "Add Event"}</h2>
+        <label>Title:</label>
+        <Input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Event Title"
+        />
+        {error && <ErrorText>{error}</ErrorText>}
+        <label>Start Time:</label>
+        <Input
+          type="time"
+          value={time.start}
+          onChange={(e) => setTime({ ...time, start: e.target.value })}
+        />
+        <label>End Time:</label>
+        <Input
+          type="time"
+          value={time.end}
+          onChange={(e) => setTime({ ...time, end: e.target.value })}
+        />
+        <label>Notes:</label>
+        <TextArea
+          rows="4"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add notes about the event..."
+        />
+        <label>Alarm:</label>
+        <Input
+          type="text"
+          placeholder="e.g., 15 mins before"
+          value={alarm}
+          onChange={(e) => setAlarm(e.target.value)}
+        />
+        <Button onClick={handleSave}>Save</Button>
+        {data.event && <Button onClick={handleDelete}>Delete</Button>}
         <Button onClick={closeModal}>Cancel</Button>
       </ModalWrapper>
     </>
