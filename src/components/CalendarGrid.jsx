@@ -10,20 +10,49 @@ const GridContainer = styled.div`
 `;
 
 const DayCell = styled.div`
+  position: relative;
   padding: 20px;
-  background: #222;
+  background: ${(props) => (props.isSelected ? "#555" : "#222")};
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
+  border: ${(props) => (props.isSelected ? "2px solid white" : "none")};
 
   &:hover {
     background: #444;
   }
 `;
 
+// 요일에 따라서 다른 색으로 표시. 토요일 푸른색, 일요일 빨간색, 기타 요일 하얀색. 오늘 당일이라면 검은색.
 const DayNumber = styled.span`
+  display: inline-block;
   color: ${(props) =>
-    props.isSunday ? "red" : props.isSaturday ? "blue" : "white"};
+    props.isToday
+      ? "black"
+      : props.isSunday
+      ? "red"
+      : props.isSaturday
+      ? "blue"
+      : "white"};
+  // props 보낸 뒤 삼항연산자로 오늘이라면 배경 하얀색으로 전환
+  background: ${(props) => (props.isToday ? "white" : "none")};
+  padding: ${(props) => (props.isToday ? "5px" : "0")};
+  border-radius: ${(props) => (props.isToday ? "20%" : "0")};
+`;
+
+const EventCount = styled.div`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const WeekdaysHeader = styled.div`
@@ -36,18 +65,19 @@ const WeekdaysHeader = styled.div`
   font-weight: bold;
 `;
 
-const CalendarGrid = ({ date, onDateClick }) => {
+const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
   const year = date.getFullYear();
   const month = date.getMonth();
+  const today = new Date();
 
-  // Get the first day of the month (0 = Sunday, 1 = Monday, etc.)
+  // 월의 시작일을 찾기. 0 은 일요일, 1은 월요일.. etc.
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Create an array of days to render
+  // 요일 배열을 만들어서 렌더링.
   const days = [];
   for (let i = 0; i < firstDay; i++) {
-    days.push(null); // Empty cells for days before the 1st
+    days.push(null); // 1일 이전의 요일들에는 빈 셀을 넣어주자.
   }
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
@@ -61,21 +91,40 @@ const CalendarGrid = ({ date, onDateClick }) => {
         ))}
       </WeekdaysHeader>
       <GridContainer>
-        {days.map((day, index) => (
-          <DayCell
-            key={index}
-            onClick={() => day && onDateClick(new Date(year, month, day))}
-          >
-            {day && (
-              <DayNumber
-                isSunday={index % 7 === 0} // Sunday
-                isSaturday={index % 7 === 6} // Saturday
-              >
-                {day}
-              </DayNumber>
-            )}
-          </DayCell>
-        ))}
+        {days.map((day, index) => {
+          const cellDate = day ? new Date(year, month, day) : null;
+          const isToday =
+            cellDate && cellDate.toDateString() === today.toDateString();
+          const isSelected =
+            cellDate &&
+            selectedDate &&
+            cellDate.toDateString() === selectedDate.toDateString();
+          const eventCount =
+            cellDate && events[cellDate.toDateString()]
+              ? events[cellDate.toDateString()].length
+              : 0;
+
+          return (
+            <DayCell
+              key={index}
+              isSelected={isSelected}
+              onClick={() => day && onDateClick(cellDate)}
+            >
+              {day && (
+                <>
+                  <DayNumber
+                    isToday={isToday}
+                    isSunday={index % 7 === 0}
+                    isSaturday={index % 7 === 6}
+                  >
+                    {day}
+                  </DayNumber>
+                  {eventCount > 0 && <EventCount>{eventCount}</EventCount>}
+                </>
+              )}
+            </DayCell>
+          );
+        })}
       </GridContainer>
     </>
   );

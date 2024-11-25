@@ -146,7 +146,12 @@ const Calendar = () => {
         </h2>
         <Button onClick={handleNextMonth}>Next</Button>
       </Navigation>
-      <CalendarGrid date={currentDate} onDateClick={handleDateClick} />
+      <CalendarGrid
+        date={currentDate}
+        onDateClick={handleDateClick}
+        selectedDate={selectedDate}
+        events={events}
+      />
       {selectedDate && (
         <EventListWrapper>
           <h3>Events on {selectedDate.toDateString()}</h3>
