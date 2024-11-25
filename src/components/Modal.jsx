@@ -60,6 +60,18 @@ const Button = styled.button`
   }
 `;
 
+const ToggleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+`;
+
+const ToggleLabel = styled.label`
+  margin-left: 10px;
+  color: white;
+  font-size: 16px;
+`;
+
 const ErrorText = styled.div`
   color: red;
   font-size: 14px;
@@ -69,6 +81,7 @@ const ErrorText = styled.div`
 const Modal = ({ data, onSave, onDelete, closeModal }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
+  const [isAllDay, setIsAllDay] = useState(false); // New state for all-day toggle
   const [notes, setNotes] = useState("");
   const [alarm, setAlarm] = useState("");
   const [error, setError] = useState("");
@@ -77,6 +90,7 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
+      setIsAllDay(data.event.isAllDay || false); // Load all-day state
       setNotes(data.event.notes || "");
       setAlarm(data.event.alarm || "");
     }
@@ -95,10 +109,11 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
     if (!validateFields()) return;
 
     const event = {
-      id: data.event?.id || new Date().getTime(), // Use existing ID or create a new one
+      id: data.event?.id || new Date().getTime(),
       date: data.date,
       title,
-      time,
+      time: isAllDay ? null : time, // Set time to null for all-day events
+      isAllDay, // Include all-day flag
       notes,
       alarm,
     };
@@ -124,18 +139,30 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
           placeholder="Event Title"
         />
         {error && <ErrorText>{error}</ErrorText>}
-        <label>Start Time:</label>
-        <Input
-          type="time"
-          value={time.start}
-          onChange={(e) => setTime({ ...time, start: e.target.value })}
-        />
-        <label>End Time:</label>
-        <Input
-          type="time"
-          value={time.end}
-          onChange={(e) => setTime({ ...time, end: e.target.value })}
-        />
+        <ToggleWrapper>
+          <input
+            type="checkbox"
+            checked={isAllDay}
+            onChange={() => setIsAllDay((prev) => !prev)}
+          />
+          <ToggleLabel>All Day</ToggleLabel>
+        </ToggleWrapper>
+        {!isAllDay && (
+          <>
+            <label>Start Time:</label>
+            <Input
+              type="time"
+              value={time.start}
+              onChange={(e) => setTime({ ...time, start: e.target.value })}
+            />
+            <label>End Time:</label>
+            <Input
+              type="time"
+              value={time.end}
+              onChange={(e) => setTime({ ...time, end: e.target.value })}
+            />
+          </>
+        )}
         <label>Notes:</label>
         <TextArea
           rows="4"

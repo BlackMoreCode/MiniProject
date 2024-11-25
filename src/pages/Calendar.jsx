@@ -100,13 +100,26 @@ const Calendar = () => {
 
   const handleSaveEvent = (event) => {
     const dateKey = event.date.toDateString();
-    setEvents((prev) => ({
-      ...prev,
-      [dateKey]: prev[dateKey]
-        ? prev[dateKey].map((e) => (e.id === event.id ? event : e)) // 아이디가 동일하다면 내용만 변경
-        : [event], // 새로운 아이디 = 새로운 이벤트 추가
-    }));
-    setModalData(null);
+    setEvents((prev) => {
+      // 해당 날짜에 이벤트가 존재한다면
+      if (prev[dateKey]) {
+        // ID 체크해서 이벤트가 이미 있나 확인
+        const existingEventIndex = prev[dateKey].findIndex(
+          (e) => e.id === event.id
+        );
+        if (existingEventIndex !== -1) {
+          // 이미 존재하는 것이라면 업데이트
+          const updatedEvents = [...prev[dateKey]];
+          updatedEvents[existingEventIndex] = event;
+          return { ...prev, [dateKey]: updatedEvents };
+        }
+        // 아닐 시 새로운 이벤트 추가
+        return { ...prev, [dateKey]: [...prev[dateKey], event] };
+      }
+      //해당 날짜에 이벤트가 없다면 리스트 추가
+      return { ...prev, [dateKey]: [event] };
+    });
+    setModalData(null); // 모달 닫기.
   };
 
   const handleDeleteEvent = (eventToDelete) => {
@@ -140,7 +153,11 @@ const Calendar = () => {
           {selectedDateEvents.map((event, index) => (
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
-                {event.time.start} - {event.title}
+                {/* 온 종일, 혹은 시간 정했을 시 시작 시간 -- 끝나는 시간, 그 뒤에 이벤트 이름 */}
+                {event.isAllDay
+                  ? "All Day"
+                  : `${event.time.start} - ${event.time.end}`}{" "}
+                | {event.title}
               </span>
             </EventItem>
           ))}
