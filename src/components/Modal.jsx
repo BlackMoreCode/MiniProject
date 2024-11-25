@@ -81,7 +81,7 @@ const ErrorText = styled.div`
 const Modal = ({ data, onSave, onDelete, closeModal }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
-  const [isAllDay, setIsAllDay] = useState(false); // New state for all-day toggle
+  const [isAllDay, setIsAllDay] = useState(false); // all-day 토글을 위한 새로운 state
   const [notes, setNotes] = useState("");
   const [alarm, setAlarm] = useState("");
   const [error, setError] = useState("");
@@ -90,7 +90,7 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
-      setIsAllDay(data.event.isAllDay || false); // Load all-day state
+      setIsAllDay(data.event.isAllDay || false); // all-day state 불러오기
       setNotes(data.event.notes || "");
       setAlarm(data.event.alarm || "");
     }
@@ -98,7 +98,7 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
 
   const validateFields = () => {
     if (!title.trim()) {
-      setError("Title is required.");
+      setError("이벤트 제목이 필요합니다.");
       return false;
     }
     setError("");
@@ -112,8 +112,8 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
       id: data.event?.id || new Date().getTime(),
       date: data.date,
       title,
-      time: isAllDay ? null : time, // Set time to null for all-day events
-      isAllDay, // Include all-day flag
+      time: isAllDay ? null : time, // All-day 이벤트로 클릭시 시간 설정은 NULL 처리.
+      isAllDay, // all-day 플래그 포함
       notes,
       alarm,
     };
