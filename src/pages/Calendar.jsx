@@ -119,6 +119,7 @@ const Calendar = () => {
       //해당 날짜에 이벤트가 없다면 리스트 추가
       return { ...prev, [dateKey]: [event] };
     });
+
     setModalData(null); // 모달 닫기.
   };
 
@@ -126,8 +127,9 @@ const Calendar = () => {
     const dateKey = eventToDelete.date.toDateString();
     setEvents((prev) => ({
       ...prev,
-      [dateKey]: prev[dateKey].filter((event) => event !== eventToDelete),
+      [dateKey]: prev[dateKey].filter((event) => event.id !== eventToDelete.id),
     }));
+
     setModalData(null);
   };
 
@@ -158,11 +160,10 @@ const Calendar = () => {
           {selectedDateEvents.map((event, index) => (
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
-                {/* 온 종일, 혹은 시간 정했을 시 시작 시간 -- 끝나는 시간, 그 뒤에 이벤트 이름 */}
                 {event.isAllDay
                   ? "All Day"
                   : `${event.time.start} - ${event.time.end}`}{" "}
-                | {event.title}
+                | {event.title} (Importance: {event.importance})
               </span>
             </EventItem>
           ))}

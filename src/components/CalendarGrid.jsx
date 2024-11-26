@@ -23,7 +23,6 @@ const DayCell = styled.div`
   }
 `;
 
-// 요일에 따라서 다른 색으로 표시. 토요일 푸른색, 일요일 빨간색, 기타 요일 하얀색. 오늘 당일이라면 검은색.
 const DayNumber = styled.span`
   display: inline-block;
   color: ${(props) =>
@@ -34,7 +33,6 @@ const DayNumber = styled.span`
       : props.isSaturday
       ? "blue"
       : "white"};
-  // props 보낸 뒤 삼항연산자로 오늘이라면 배경 하얀색으로 전환
   background: ${(props) => (props.isToday ? "white" : "none")};
   padding: ${(props) => (props.isToday ? "5px" : "0")};
   border-radius: ${(props) => (props.isToday ? "20%" : "0")};
@@ -53,6 +51,14 @@ const EventCount = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const StarIndicator = styled.div`
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  color: gold;
+  font-size: 16px;
 `;
 
 const WeekdaysHeader = styled.div`
@@ -77,7 +83,7 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
   // 요일 배열을 만들어서 렌더링.
   const days = [];
   for (let i = 0; i < firstDay; i++) {
-    days.push(null); // 1일 이전의 요일들에는 빈 셀을 넣어주자.
+    days.push(null); //  1일 이전의 요일들에는 빈 셀을 넣어주자.
   }
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
@@ -99,10 +105,18 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
             cellDate &&
             selectedDate &&
             cellDate.toDateString() === selectedDate.toDateString();
+
           const eventCount =
             cellDate && events[cellDate.toDateString()]
               ? events[cellDate.toDateString()].length
               : 0;
+
+          // 해당 요일에 중요도가 5 (importance === 5) 인지 체크해주자
+          const hasImportantEvent =
+            cellDate &&
+            events[cellDate.toDateString()]?.some(
+              (event) => event.importance === 5
+            );
 
           return (
             <DayCell
@@ -120,6 +134,7 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
                     {day}
                   </DayNumber>
                   {eventCount > 0 && <EventCount>{eventCount}</EventCount>}
+                  {hasImportantEvent && <StarIndicator>★</StarIndicator>}
                 </>
               )}
             </DayCell>
