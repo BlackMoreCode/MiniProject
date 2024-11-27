@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 const ModalWrapper = styled.div`
   position: fixed;
+  display: grid;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -26,7 +27,7 @@ const Backdrop = styled.div`
 `;
 
 const Input = styled.input`
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 10px 0;
   border: none;
@@ -34,7 +35,7 @@ const Input = styled.input`
 `;
 
 const TextArea = styled.textarea`
-  width: 100%;
+  width: 95%;
   padding: 10px;
   margin: 10px 0;
   border: none;
@@ -163,7 +164,7 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
           <ToggleLabel>All Day</ToggleLabel>
         </ToggleWrapper>
         {/* 중요도 선택 부분 */}
-        <label>Importance:</label>
+        <label>중요도:</label>
         <select
           value={importance}
           onChange={(e) => setImportance(Number(e.target.value))}
