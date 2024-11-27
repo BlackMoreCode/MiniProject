@@ -36,14 +36,14 @@ const Button = styled.button`
 `;
 
 const AlarmModal = ({ event, onClose }) => {
-  const [audio] = useState(new Audio("/zawarudoEffect.mp3"));
+  const [audio] = useState(new Audio(event.sound));
 
   useEffect(() => {
     console.log("알람 모달: 소리 재생"); //디버그용 콘솔
     audio.play().catch((error) => console.error("알람음 재생 에러 : ", error)); //알람음 재생하고 에러 생길시 콘솔 찍기
 
     return () => {
-      console.log("Alarm Modal: Stopping sound...");
+      console.log("알람 모달 시간 멈추기");
       audio.pause();
       audio.currentTime = 0;
     };
