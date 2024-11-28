@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import CalendarGrid from "../components/CalendarGrid";
 import Modal from "../components/Modal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CalendarWrapper = styled.div`
   text-align: center;
@@ -91,7 +93,11 @@ const Calendar = () => {
   };
 
   const handleAddEvent = () => {
-    setModalData({ date: selectedDate, event: null });
+    if (selectedDate) {
+      setModalData({ date: selectedDate, event: null });
+    } else {
+      toast.warn("요일을 먼저 골라주세요!");
+    }
   };
 
   const handleEditEvent = (event) => {
@@ -119,6 +125,10 @@ const Calendar = () => {
       //해당 날짜에 이벤트가 없다면 리스트 추가
       return { ...prev, [dateKey]: [event] };
     });
+    // Save alarms
+    if (event.alarmTimes) {
+      scheduleAlarms(event);
+    }
 
     setModalData(null); // 모달 닫기.
   };
@@ -131,6 +141,22 @@ const Calendar = () => {
     }));
 
     setModalData(null);
+  };
+
+  // 알람 스케쥴
+  const scheduleAlarms = (event) => {
+    const now = Date.now();
+    event.alarmTimes.forEach((alarmTime) => {
+      const alarmTimestamp =
+        new Date(event.date).getTime() + parseInt(alarmTime) * 60000;
+
+      if (alarmTimestamp > now) {
+        const delay = alarmTimestamp - now;
+        setTimeout(() => {
+          toast(`Reminder for "${event.title}"!`);
+        }, delay);
+      }
+    });
   };
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -170,6 +196,7 @@ const Calendar = () => {
         </EventListWrapper>
       )}
       <AddButton onClick={handleAddEvent}>+</AddButton>
+      {console.log}
       {modalData && (
         <Modal
           data={modalData}
@@ -178,6 +205,7 @@ const Calendar = () => {
           closeModal={() => setModalData(null)}
         />
       )}
+      <ToastContainer />
     </CalendarWrapper>
   );
 };
