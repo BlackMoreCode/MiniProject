@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import CalendarGrid from "../components/CalendarGrid";
 import Modal from "../components/Modal";
@@ -32,6 +32,12 @@ const Button = styled.button`
   &:hover {
     background-color: #444;
   }
+`;
+
+const CheckIndicator = styled.span`
+  color: green;
+  font-size: 18px;
+  margin-left: 10px;
 `;
 
 const EventListWrapper = styled.div`
@@ -80,6 +86,19 @@ const Calendar = () => {
   const [events, setEvents] = useState({});
   const [modalData, setModalData] = useState(null);
 
+  // 임시코드: localStorage로부 컴포넌트가 마운트될 때 events를 로드
+  useEffect(() => {
+    const savedEvents = localStorage.getItem("events");
+    if (savedEvents) {
+      setEvents(JSON.parse(savedEvents));
+    }
+  }, []);
+
+  // events 상태가 변경될 때 마다 localStorage에 이벤트 저장.
+  useEffect(() => {
+    localStorage.setItem("events", JSON.stringify(events));
+  }, [events]);
+
   const handlePrevMonth = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1));
   };
@@ -101,6 +120,18 @@ const Calendar = () => {
   };
 
   const handleEditEvent = (event) => {
+    const dateKey = new Date(event.date).toDateString();
+    setEvents((prev) => {
+      const updatedEvents = {
+        ...prev,
+        [dateKey]: prev[dateKey].map((e) =>
+          e.id === event.id ? { ...e, checked: true } : e
+        ),
+      };
+      localStorage.setItem("events", JSON.stringify(updatedEvents));
+      return updatedEvents;
+    });
+
     setModalData({ date: selectedDate, event });
   };
 
@@ -119,11 +150,14 @@ const Calendar = () => {
           updatedEvents[existingEventIndex] = event;
           return { ...prev, [dateKey]: updatedEvents };
         }
-        // 아닐 시 새로운 이벤트 추가
-        return { ...prev, [dateKey]: [...prev[dateKey], event] };
+        // 아닐 시 새로운 이벤트 추가  --> 추가로 이벤트가 확인되었는지 체크하는 로직 추가
+        return {
+          ...prev,
+          [dateKey]: [...prev[dateKey], { ...event, checked: false }],
+        };
       }
-      //해당 날짜에 이벤트가 없다면 리스트 추가
-      return { ...prev, [dateKey]: [event] };
+      //해당 날짜에 이벤트가 없다면 리스트 추가 --> 추가로 이벤트가 확인되었는지 체크하는 로직 추가
+      return { ...prev, [dateKey]: [{ ...event, checked: false }] };
     });
     // Save alarms
     if (event.alarmTimes) {
@@ -134,13 +168,23 @@ const Calendar = () => {
   };
 
   const handleDeleteEvent = (eventToDelete) => {
-    const dateKey = eventToDelete.date.toDateString();
-    setEvents((prev) => ({
-      ...prev,
-      [dateKey]: prev[dateKey].filter((event) => event.id !== eventToDelete.id),
-    }));
-
-    setModalData(null);
+    const dateKey = new Date(eventToDelete.date).toDateString(); // 저장된 date 문자열을 Date 객체 (Date String)로 변환
+    setEvents((prev) => {
+      const updatedEvents = {
+        ...prev,
+        [dateKey]: prev[dateKey].filter(
+          (event) => event.id !== eventToDelete.id
+        ),
+      };
+      // 더 이상 해당 요일에 이벤트가 없을 시 date 키 삭제
+      if (updatedEvents[dateKey].length === 0) {
+        delete updatedEvents[dateKey];
+      }
+      // 업데이트된 이벤트들을 localStorage로 저장
+      localStorage.setItem("events", JSON.stringify(updatedEvents));
+      return updatedEvents;
+    });
+    setModalData(null); //  모달 닫기
   };
 
   // 알람 스케쥴
@@ -153,23 +197,56 @@ const Calendar = () => {
         : parseInt(event.time.start.split(":")[0]) * 3600000 +
           parseInt(event.time.start.split(":")[1]) * 60000);
 
-    // Pre-warning alarms
-    event.alarmTimes.forEach((alarmTime) => {
-      const alarmTimestamp = eventStartTimestamp - parseInt(alarmTime) * 60000;
-      if (alarmTimestamp > now) {
-        const delay = alarmTimestamp - now;
+    const playSound = (soundPath) => {
+      const audio = new Audio(soundPath);
+      audio.play().catch((error) => {
+        toast.error("Error playing alarm sound.");
+        console.error(error);
+      });
+    };
+
+    if (event.isAllDay) {
+      event.alarmTimes.forEach((alarmTime) => {
+        const alarmTimestamp =
+          new Date(event.date).getTime() - alarmTime * 86400000;
+        if (alarmTimestamp > now) {
+          const delay = alarmTimestamp - now;
+          setTimeout(() => {
+            toast(
+              `All-Day Event Reminder: "${event.title}" - ${
+                alarmTime === 0
+                  ? "Today!"
+                  : `${alarmTime} day${alarmTime > 1 ? "s" : ""} before`
+              }`
+            );
+            playSound("/zawarudoEffect.mp3");
+          }, delay);
+        }
+      });
+    } else {
+      // 특정 시간대를 알람으로 정했고, 몇분 전~ 알람을 선택했을 시 메인 알람 전에 사전 알람을 제공.
+      event.alarmTimes.forEach((alarmTime) => {
+        const alarmTimestamp =
+          eventStartTimestamp - parseInt(alarmTime) * 60000;
+        if (alarmTimestamp > now) {
+          const delay = alarmTimestamp - now;
+          setTimeout(() => {
+            toast(
+              `리마인더:  "${event.title}" 이 시작하기 ${alarmTime} 분 전입니다!`
+            );
+            playSound("/zawarudoEffect.mp3");
+          }, delay);
+        }
+      });
+
+      // 메인 일정 알람.
+      if (eventStartTimestamp > now) {
+        const delay = eventStartTimestamp - now;
         setTimeout(() => {
-          toast(`Reminder for "${event.title}" - ${alarmTime} minutes before!`);
+          toast(`리마인더: "${event.title}" 가 시작합니다!`);
+          playSound("/zawarudoEnhanced.wav");
         }, delay);
       }
-    });
-
-    // Event start time alarm
-    if (eventStartTimestamp > now) {
-      const delay = eventStartTimestamp - now;
-      setTimeout(() => {
-        toast(`Reminder for "${event.title}" - Event is starting now!`);
-      }, delay);
     }
   };
 
@@ -182,11 +259,11 @@ const Calendar = () => {
   return (
     <CalendarWrapper>
       <Navigation>
-        <Button onClick={handlePrevMonth}>Previous</Button>
+        <Button onClick={handlePrevMonth}>이전 달</Button>
         <h2>
-          {monthName} {year}
+          {year} {monthName}
         </h2>
-        <Button onClick={handleNextMonth}>Next</Button>
+        <Button onClick={handleNextMonth}>다음 달</Button>
       </Navigation>
       <CalendarGrid
         date={currentDate}
@@ -196,15 +273,16 @@ const Calendar = () => {
       />
       {selectedDate && (
         <EventListWrapper>
-          <h3>Events on {selectedDate.toDateString()}</h3>
+          <h3>{selectedDate.toDateString()} 이벤트 목록</h3>
           {selectedDateEvents.map((event, index) => (
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
                 {event.isAllDay
                   ? "All Day"
                   : `${event.time.start} - ${event.time.end}`}{" "}
-                | {event.title} (Importance: {event.importance})
+                | {event.title} {event.importance && "⭐"}
               </span>
+              {event.checked && <CheckIndicator>✔</CheckIndicator>}
             </EventItem>
           ))}
         </EventListWrapper>

@@ -106,15 +106,17 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
             selectedDate &&
             cellDate.toDateString() === selectedDate.toDateString();
 
-          const eventCount =
+          const eventsForDay =
             cellDate && events[cellDate.toDateString()]
-              ? events[cellDate.toDateString()].length
-              : 0;
+              ? events[cellDate.toDateString()]
+              : [];
 
-          // 중요 이벤트인지 체크
-          const hasImportantEvent =
-            cellDate &&
-            events[cellDate.toDateString()]?.some((event) => event.isImportant);
+          const eventCount = eventsForDay.length;
+
+          // 해당 요일의 이벤트가 중요 이벤트인지 체크
+          const hasImportantEvent = eventsForDay.some(
+            (event) => event.importance
+          );
 
           return (
             <DayCell
