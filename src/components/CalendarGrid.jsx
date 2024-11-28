@@ -83,7 +83,7 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
   // 요일 배열을 만들어서 렌더링.
   const days = [];
   for (let i = 0; i < firstDay; i++) {
-    days.push(null); //  1일 이전의 요일들에는 빈 셀을 넣어주자.
+    days.push(null); // 1일 이전의 요일들에는 빈 셀을 넣어주자.
   }
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
@@ -111,12 +111,10 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
               ? events[cellDate.toDateString()].length
               : 0;
 
-          // 해당 요일에 중요도가 5 (importance === 5) 인지 체크해주자
+          // 중요 이벤트인지 체크
           const hasImportantEvent =
             cellDate &&
-            events[cellDate.toDateString()]?.some(
-              (event) => event.importance === 5
-            );
+            events[cellDate.toDateString()]?.some((event) => event.isImportant);
 
           return (
             <DayCell

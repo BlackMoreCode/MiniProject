@@ -82,19 +82,20 @@ const ErrorText = styled.div`
 const Modal = ({ data, onSave, onDelete, closeModal }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
-  const [isAllDay, setIsAllDay] = useState(false); // all-day 토글을 위한 새로운 state
+  const [isAllDay, setIsAllDay] = useState(false);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const [importance, setImportance] = useState(3); // 중요도는 기본 3으로 시작.
-  // const [alarm, setAlarm] = useState("15"); // 유저가 선택 안할시 기본 알림은 15분 전으로
+  const [isImportant, setIsImportant] = useState(false); // Boolean for importance
+  const [alarms, setAlarms] = useState([]);
 
   useEffect(() => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
-      setIsAllDay(data.event.isAllDay || false); // all-day state 불러오기
+      setIsAllDay(data.event.isAllDay || false);
       setNotes(data.event.notes || "");
-      // setAlarm(data.event.alarm || "");
+      setIsImportant(data.event.isImportant || false); // Load saved importance
+      setAlarms(data.event.alarmTimes || []);
     }
   }, [data]);
 
@@ -127,19 +128,21 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
       id: data.event?.id || new Date().getTime(),
       date: data.date,
       title,
-      time: isAllDay ? null : time, // All-day 이벤트로 클릭시 시간 설정은 NULL 처리.
-      isAllDay, // all-day 플래그 포함
-      importance, //중요도 포함
+      time: isAllDay ? null : time,
+      isAllDay,
+      isImportant, // Save importance as boolean
       notes,
-      // alarm,
+      alarmTimes: alarms,
     };
     onSave(event);
   };
 
-  const handleDelete = () => {
-    if (data.event) {
-      onDelete(data.event);
-    }
+  const toggleAlarm = (value) => {
+    setAlarms((prev) =>
+      prev.includes(value)
+        ? prev.filter((alarm) => alarm !== value)
+        : [...prev, value]
+    );
   };
 
   return (
@@ -163,27 +166,23 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
           />
           <ToggleLabel>All Day</ToggleLabel>
         </ToggleWrapper>
-        {/* 중요도 선택 부분 */}
-        <label>중요도:</label>
-        <select
-          value={importance}
-          onChange={(e) => setImportance(Number(e.target.value))}
-        >
-          {[1, 2, 3, 4, 5].map((level) => (
-            <option key={level} value={level}>
-              {level}
-            </option>
-          ))}
-        </select>
+        <ToggleWrapper>
+          <input
+            type="checkbox"
+            checked={isImportant}
+            onChange={() => setIsImportant((prev) => !prev)}
+          />
+          <ToggleLabel>Mark as Important</ToggleLabel>
+        </ToggleWrapper>
         {!isAllDay && (
           <>
-            <label>시작 시간:</label>
+            <label>Start Time:</label>
             <Input
               type="time"
               value={time.start}
               onChange={(e) => setTime({ ...time, start: e.target.value })}
             />
-            <label>종료 시간:</label>
+            <label>End Time:</label>
             <Input
               type="time"
               value={time.end}
@@ -191,26 +190,31 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
             />
           </>
         )}
-        <label>노트:</label>
+        <label>Notes:</label>
         <TextArea
           rows="4"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="해당 이벤트에 대한 노트를 작성해주세요."
+          placeholder="Add notes for this event..."
         />
-        {/* 알람 선택 */}
-        {/* <label>Alarm Settings:</label>
-        <select value={alarm} onChange={(e) => setAlarm(e.target.value)}>
-          <option value="15">15분 전</option>
-          <option value="30">30분 전</option>
-          <option value="45">45분 전</option>
-          <option value="60">1시간 전</option>
-          <option value="120">2시간 전</option>
-          <option value="180">3시간 전</option>
-        </select> */}
+        <label>Alarm Settings:</label>
+        <div>
+          {[15, 30, 45, 60, 120].map((value) => (
+            <label key={value}>
+              <input
+                type="checkbox"
+                checked={alarms.includes(value)}
+                onChange={() => toggleAlarm(value)}
+              />
+              {value} mins before
+            </label>
+          ))}
+        </div>
 
         <Button onClick={handleSave}>Save</Button>
-        {data.event && <Button onClick={handleDelete}>Delete</Button>}
+        {data.event && (
+          <Button onClick={() => onDelete(data.event)}>Delete</Button>
+        )}
         <Button onClick={closeModal}>Cancel</Button>
       </ModalWrapper>
     </>

@@ -146,17 +146,31 @@ const Calendar = () => {
   // 알람 스케쥴
   const scheduleAlarms = (event) => {
     const now = Date.now();
-    event.alarmTimes.forEach((alarmTime) => {
-      const alarmTimestamp =
-        new Date(event.date).getTime() + parseInt(alarmTime) * 60000;
+    const eventStartTimestamp =
+      new Date(event.date).getTime() +
+      (event.isAllDay
+        ? 0
+        : parseInt(event.time.start.split(":")[0]) * 3600000 +
+          parseInt(event.time.start.split(":")[1]) * 60000);
 
+    // Pre-warning alarms
+    event.alarmTimes.forEach((alarmTime) => {
+      const alarmTimestamp = eventStartTimestamp - parseInt(alarmTime) * 60000;
       if (alarmTimestamp > now) {
         const delay = alarmTimestamp - now;
         setTimeout(() => {
-          toast(`Reminder for "${event.title}"!`);
+          toast(`Reminder for "${event.title}" - ${alarmTime} minutes before!`);
         }, delay);
       }
     });
+
+    // Event start time alarm
+    if (eventStartTimestamp > now) {
+      const delay = eventStartTimestamp - now;
+      setTimeout(() => {
+        toast(`Reminder for "${event.title}" - Event is starting now!`);
+      }, delay);
+    }
   };
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
