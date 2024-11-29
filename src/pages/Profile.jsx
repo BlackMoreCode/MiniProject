@@ -1,7 +1,12 @@
 import { Container, Div, Form } from "../components/ProfileComponent";
+import { useNavigate } from "react-router-dom";
 
 const Profile = (/* 유저 아이디 받기?? */) => {
+  const navigate = useNavigate();
 
+  const onClickBackBtn = () => {
+    navigate("/mypage");
+  }
 
   return(
     <Container>
@@ -23,6 +28,10 @@ const Profile = (/* 유저 아이디 받기?? */) => {
           <input type="email" name="profile-email" className="profile-email" value="이메일" />
           <p>닉네임</p>
           <input type="text" name="profile-nickname" className="profile-nickname" value="닉네임" />
+          <div className="buttonBox">
+            <button>수정</button>
+            <button onClick={onClickBackBtn}>취소</button>
+          </div>
         </Form>
       </Div>
     </Container>
