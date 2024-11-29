@@ -119,3 +119,20 @@ export const AddButton = styled.button`
     background-color: #0056b3;
   }
 `;
+
+export const RemoveButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darkred;
+  }
+`;

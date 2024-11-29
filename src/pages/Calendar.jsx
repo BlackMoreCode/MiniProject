@@ -4,6 +4,7 @@ import CalendarGrid from "../components/CalendarGrid";
 import Modal from "../components/Modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const CalendarWrapper = styled.div`
   text-align: center;
@@ -62,10 +63,30 @@ const EventItem = styled.div`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end; /* 버튼을 ㅜ측으로 */
+  gap: 10px; /* 버튼 사이에 공간 주기*/
+  padding: 10px;
+  background-color: #121212; /* 캘린더와 별개의 백그라운드...인데 필요한가? */
+`;
+
+const AddButtonBack = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
 const AddButton = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -85,6 +106,8 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState({});
   const [modalData, setModalData] = useState(null);
+
+  const navigate = useNavigate();
 
   // 임시코드: localStorage로부 컴포넌트가 마운트될 때 events를 로드
   useEffect(() => {
@@ -287,7 +310,10 @@ const Calendar = () => {
           ))}
         </EventListWrapper>
       )}
-      <AddButton onClick={handleAddEvent}>+</AddButton>
+      <ButtonContainer>
+        <AddButtonBack onClick={() => navigate("/mainpage")}>←</AddButtonBack>
+        <AddButton onClick={handleAddEvent}>+</AddButton>
+      </ButtonContainer>
       {console.log}
       {modalData && (
         <Modal

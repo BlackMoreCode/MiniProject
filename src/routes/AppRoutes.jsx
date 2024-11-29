@@ -13,7 +13,7 @@ function AppRoutes() {
   return (
     <Router>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/mainpage" element={<Home />} />
         <Route path="/calendar" element={<Calendar />} />
 
         <Route path="/diary" element={<Diary />} />

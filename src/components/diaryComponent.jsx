@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   justify-content: center;
-`
+`;
 
 export const Div = styled.div`
   &.phone-container {
@@ -36,7 +36,7 @@ export const Div = styled.div`
     background-color: #ddd;
     border-radius: 100%;
   }
-`
+`;
 
 export const Form = styled.form`
   border: 1px solid black;
@@ -116,4 +116,4 @@ export const Form = styled.form`
       background-color: #eee;
     }
   }
-`
+`;
