@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   justify-content: center;
-`
+`;
 
 export const Div = styled.div`
   &.phone-container {
@@ -95,7 +95,7 @@ export const Div = styled.div`
       margin: 15px 0;
     }
   }
-`
+`;
 
 export const Img1 = styled.img`
   position: absolute;
@@ -103,4 +103,19 @@ export const Img1 = styled.img`
   height: 100%;
   object-fit: cover;
   z-index: -1;
-`
+`;
+
+export const AddButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
