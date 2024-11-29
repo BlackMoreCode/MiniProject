@@ -3,9 +3,14 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Container, Div, Img1 } from "../components/homeComponent";
 import theme1 from "../images/theme1.jpg";
+import { MobileDeviceContainer } from "../components/MobileDeviceContainer";
 
 const Home = () => {
-  // const [members, setMembers] = useState("");
+  const navigate = useNavigate();
+
+  const onClickMyPage = () => {
+    navigate("/mypage");
+  }
 
   return(
     <Container>
@@ -67,7 +72,7 @@ const Home = () => {
         <Div className="phone-footer">
           <button>달력</button>
           <button>+</button>
-          <button>MyPage</button>
+          <button onClick={onClickMyPage}>MyPage</button>
         </Div>
       </Div>
     </Container>

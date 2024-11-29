@@ -40,4 +40,20 @@ export const Div = styled.div`
 
 export const Form = styled.form`
   
+  
+  .buttonBox {
+    display: flex;
+    justify-content: space-between;
+  }
+  .buttonBox button {
+    width: 45%;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: #ddd;
+    &:hover {
+      background-color: #eee;
+    }
+  }
 `
