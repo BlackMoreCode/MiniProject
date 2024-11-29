@@ -2,8 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Div, Img1, AddButton } from "../components/homeComponent";
 import theme1 from "../images/theme1.jpg";
+import { MobileDeviceContainer } from "../components/MobileDeviceContainer";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const onClickMyPage = () => {
+    navigate("/mypage");
+  }
+  
   const [diaries, setDiaries] = useState([]);
   const navigate = useNavigate();
 
@@ -56,7 +63,7 @@ const Home = () => {
         <Div className="phone-footer">
           <button onClick={() => navigate("/calendar")}>달력</button>
           <AddButton onClick={() => navigate("/diary")}>+</AddButton>
-          <button>MyPage</button>
+          <button onClick={onClickMyPage}>MyPage</button>
         </Div>
       </Div>
     </Container>
