@@ -7,9 +7,8 @@ export const Container = styled.div`
 
 export const Div = styled.div`
   &.phone-container {
-    width: 500px;
+    width: 100%;
     height: 100%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     padding: 30px;
@@ -19,6 +18,17 @@ export const Div = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    .backBtn {
+      width: 30px;
+      height: 30px;
+      background-color: transparent;
+      border: 2px solid black;
+      border-radius: 50%;
+      cursor: pointer;
+      img {
+        width: 100%;
+      }
+    }
   }
 
   &.diary-header p {
@@ -39,11 +49,17 @@ export const Div = styled.div`
 `
 
 export const Form = styled.form`
-  
-  
+  padding: 10% 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   .buttonBox {
     display: flex;
     justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
   }
   .buttonBox button {
     width: 45%;
@@ -55,5 +71,21 @@ export const Form = styled.form`
     &:hover {
       background-color: #eee;
     }
+  }
+  p {
+    font-size: 1rem;
+  }
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 0;
+    margin-bottom: 12px;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid #ddd;
+    font-size: 1rem;
+  }
+  input:focus {
+    border-bottom: 2px solid #aaa;
   }
 `

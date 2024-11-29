@@ -7,15 +7,13 @@ export const Container = styled.div`
 
 export const Div = styled.div`
   &.phone-container {
-    width: 500px;
+    width: 100%;
     height: 100%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
   }
 
   &.phone-header {
-    border: 2px solid red;
     position: relative;
     width: 100%;
     height: 300px;
@@ -33,7 +31,6 @@ export const Div = styled.div`
 
   &.phone-header-theme {
     display: flex;
-    border: 1px solid blue;
     height: 100%;
     justify-content: center;
     align-items: center;
@@ -49,6 +46,8 @@ export const Div = styled.div`
   &.diary-container {
     background-color: rgb(225, 235, 255);
     overflow-y: auto;
+    position: relative;
+    height: 100%;
   }
 
   &.diary-box {
@@ -76,12 +75,29 @@ export const Div = styled.div`
 
   &.phone-footer {
     display: flex;
+    width: 100%;
     justify-content: space-around;
     padding: 10px;
+    position: absolute;
+    bottom: 0;
+
+    .mypageBtn {
+      border: none;
+      background-color: transparent;
+      &:hover {
+        svg path {
+          fill: #777;
+        }
+      }
+      svg {
+        width: 40px;
+        height: 40px;
+      }
+    }
   }
 
   &.menuBox {
-    padding: 0 10%;
+    padding: 30px;
     .linkBox button {
       width: 100%;
       height: 50px;
@@ -92,7 +108,17 @@ export const Div = styled.div`
       font-weight: 500;
     }
     .backBtn {
-      margin: 15px 0;
+      width: 30px;
+      height: 30px;
+      background-color: transparent;
+      border: 2px solid black;
+      border-radius: 50%;
+
+      cursor: pointer;
+
+      img {
+        width: 100%;
+      }
     }
   }
 `;

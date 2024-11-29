@@ -7,9 +7,8 @@ export const Container = styled.div`
 
 export const Div = styled.div`
   &.phone-container {
-    width: 500px;
+    width: 100%;
     height: 100%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     padding: 30px;
@@ -19,6 +18,21 @@ export const Div = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    .backBtn {
+      width: 30px;
+      height: 30px;
+      background-color: transparent;
+
+      border: 2px solid black;
+      border-radius: 50%;
+
+      cursor: pointer;
+
+      img {
+        width: 100%;
+      }
+    }
   }
 
   &.diary-header p {
@@ -39,25 +53,21 @@ export const Div = styled.div`
 `
 
 export const Form = styled.form`
-  border: 1px solid black;
-  padding: 0 10%;
-  .diary-title {
-    width: 100%;
-    border: none;
-    border-radius: 5px;
-    background-color: #ddd;
-    padding: 5px;
-    font-size: 1em;
+  padding: 10% 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  input {
     box-sizing: border-box;
-  }
-  .diary-date {
     width: 100%;
+    padding: 12px 0;
+    margin-bottom: 12px;
     border: none;
-    border-radius: 5px;
-    background-color: #ddd;
-    padding: 5px;
-    font-size: 1.1em;
-    box-sizing: border-box;
+    outline: none;
+    border-bottom: 2px solid #ddd;
+    font-size: 1rem;
   }
   .diary-desc {
     width: 100%;
@@ -65,7 +75,7 @@ export const Form = styled.form`
     border: none;
     border-radius: 5px;
     background-color: #ddd;
-    padding: 5px;
+    padding: 12px 0;
     box-sizing: border-box;
     resize: none;
     overflow: auto;
@@ -104,6 +114,9 @@ export const Form = styled.form`
   .buttonBox {
     display: flex;
     justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
   }
   .buttonBox button {
     width: 45%;
