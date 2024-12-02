@@ -1,5 +1,5 @@
 import React from "react";
-import * as Styles from "./DiaryAndModalStyles";
+import * as Styles from "./diaryComponent";
 
 const ConfirmationModal = ({
   isOpen,
