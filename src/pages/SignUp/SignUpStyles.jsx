@@ -84,12 +84,16 @@ export const SignUpMain = styled.main`
     font-weight: bold;
   }
 
-  button:hover,
-  button:active {
+  button:not(:disabled):hover,
+  button:not(:disabled):active {
     background-color: #0a6dce;
   }
 
-  button:active {
+  button:not(:disabled):active {
     transform: scale(0.99);
+  }
+
+  button:disabled {
+    opacity: 0.5;
   }
 `;
