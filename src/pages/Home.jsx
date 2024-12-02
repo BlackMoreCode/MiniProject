@@ -8,7 +8,7 @@ import {
   RemoveButton,
 } from "../components/homeComponent";
 import { toast } from "react-toastify";
-import theme1 from "../images/theme1.jpg";
+import theme1 from "../assets/images/theme1.jpg";
 import { UserContext } from "../contexts/UserContext";
 
 const monthName = new Date().toLocaleString("default", { month: "long" });
