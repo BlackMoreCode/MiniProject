@@ -76,7 +76,7 @@ const TimerWrapper = styled.div`
   flex-direction: column;
 `;
 
-const Modal = ({ data, onSave, onDelete, closeModal }) => {
+const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
   const [isAllDay, setIsAllDay] = useState(false); // all-day toggle state
@@ -227,4 +227,4 @@ const Modal = ({ data, onSave, onDelete, closeModal }) => {
   );
 };
 
-export default Modal;
+export default CalendarModal;
