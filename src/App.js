@@ -1,4 +1,4 @@
-import "./styles/global.css";
+import "./styles/Global.css";
 import { UserProfile } from "./contexts/UserContext";
 import { MobileDeviceContainer } from "./components/MobileDeviceContainer";
 import AppRoutes from "./routes/AppRoutes";
