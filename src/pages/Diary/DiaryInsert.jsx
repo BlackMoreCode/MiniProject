@@ -1,8 +1,8 @@
 import { useContext, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { UserContext } from "../contexts/UserContext";
-import { Container, Div, Form } from "../components/diaryComponent";
-import CoinfirmationModal from "./ConfirmationModal";
+import { UserContext } from "../../contexts/UserContext";
+import { Container, Div, Form } from "../../components/diaryComponent";
+import CoinfirmationModal from "../ConfirmationModal";
 
 const DiaryInsert = () => {
   const location = useLocation();

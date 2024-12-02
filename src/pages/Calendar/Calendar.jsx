@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as Styles from "../Calendar/CalendarStyles";
 
 import CalendarGrid from "../../components/CalendarGrid";
-import Modal from "../../components/Modal";
+import Modal from "./Modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -222,7 +222,7 @@ const Calendar = () => {
         </Styles.EventListWrapper>
       )}
       <Styles.ButtonContainer>
-        <Styles.AddButtonBack onClick={() => navigate("/mainpage")}>
+        <Styles.AddButtonBack onClick={() => navigate("/")}>
           ←
         </Styles.AddButtonBack>
         <Styles.AddButton onClick={handleAddEvent}>+</Styles.AddButton>
