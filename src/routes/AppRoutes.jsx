@@ -8,12 +8,13 @@ import MyPage from "../pages/MyPage";
 import Profile from "../pages/Profile";
 import { NotFound } from "../pages/NotFound/NotFound";
 import { SignUp } from "../pages/SignUp/SignUp";
+import { Login } from "../pages/Login/Login";
 
 function AppRoutes() {
   return (
     <Router>
       <Routes>
-        <Route path="/mainpage" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/calendar" element={<Calendar />} />
 
         <Route path="/diary" element={<Diary />} />
@@ -24,6 +25,7 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
 
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
