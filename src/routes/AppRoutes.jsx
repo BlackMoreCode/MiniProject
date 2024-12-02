@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Calendar from "../pages/Calendar";
+import Calendar from "../pages/Calendar/Calendar";
 import Home from "../pages/Home";
 import Diary from "../pages/Diary";
 import DiaryInsert from "../pages/Diary/DiaryInsert";
