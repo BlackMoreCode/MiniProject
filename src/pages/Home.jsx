@@ -5,11 +5,12 @@ import {
   Div,
   Img1,
   AddButton,
-  RemoveButton,
+  RedirectButton,
 } from "../components/homeComponent";
-import { toast } from "react-toastify";
 import theme1 from "../assets/images/theme1.jpg";
 import { UserContext } from "../contexts/UserContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
 
 const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
@@ -76,9 +77,13 @@ const Home = () => {
         </Div>
         {/* Footer */}
         <Div className="phone-footer">
-          <button onClick={() => navigate("/calendar")}>달력</button>
+          <RedirectButton onClick={() => navigate("/calendar")}>
+            <FontAwesomeIcon icon={faCalendar} />
+          </RedirectButton>
           <AddButton onClick={() => navigate("/diaryInsert")}>+</AddButton>
-          <button>MyPage</button>
+          <RedirectButton>
+            <FontAwesomeIcon icon={faPerson} />
+          </RedirectButton>
         </Div>
       </Div>
     </Container>

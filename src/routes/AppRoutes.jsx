@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Calendar from "../pages/Calendar/Calendar";
 import Home from "../pages/Home";
-import Diary from "../pages/Diary";
 import DiaryInsert from "../pages/Diary/DiaryInsert";
 import MyPage from "../pages/MyPage";
 import Profile from "../pages/Profile";
@@ -17,7 +16,6 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/calendar" element={<Calendar />} />
 
-        <Route path="/diary" element={<Diary />} />
         <Route path="/diaryInsert" element={<DiaryInsert />} />
 
         <Route path="*" element={<NotFound />} />
