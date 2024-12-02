@@ -53,9 +53,7 @@ export const SignUp = () => {
     }, 500);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const isFormValid = () => {
     const isFormMessagesEmpty = Object.values(formMessages).every(
       (message) => message === ""
     );
@@ -63,7 +61,13 @@ export const SignUp = () => {
       (value) => value.trim() !== ""
     );
 
-    if (!isFormMessagesEmpty || !isFormValuesFilled) {
+    return isFormMessagesEmpty && isFormValuesFilled;
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!isFormValid()) {
       alert("입력 양식이 유효하지 않습니다.");
       return;
     }
@@ -150,7 +154,9 @@ export const SignUp = () => {
               <p>{formMessages.nickname}</p>
             </div>
           </div>
-          <button type="submit">등록</button>
+          <button disabled={!isFormValid()} type="submit">
+            등록
+          </button>
         </form>
       </SignUpMain>
     </SignUpContents>

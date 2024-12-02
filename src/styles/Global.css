@@ -28,6 +28,8 @@ body,
 }
 
 .screen {
+  position: relative;
+
   width: 380px;
   height: 678px;
 
