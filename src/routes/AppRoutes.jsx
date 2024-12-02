@@ -7,7 +7,7 @@ import DiaryInsert from "../pages/DiaryInsert";
 import MyPage from "../pages/MyPage";
 import Profile from "../pages/Profile";
 import { NotFound } from "../pages/NotFound/NotFound";
-import { Register } from "../pages/Register/Register";
+import { SignUp } from "../pages/SignUp/SignUp";
 
 function AppRoutes() {
   return (
@@ -20,9 +20,10 @@ function AppRoutes() {
         <Route path="/diaryInsert" element={<DiaryInsert />} />
 
         <Route path="*" element={<NotFound />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </Router>
   );
