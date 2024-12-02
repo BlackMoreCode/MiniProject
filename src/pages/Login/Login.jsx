@@ -13,16 +13,18 @@ import { login, logout } from "../../util/loginUtils";
 import { UserContext } from "../../contexts/UserContext";
 
 export const Login = () => {
+  const context = useContext(UserContext);
+  const { userId, userPassword, setUserId, setUserPassword } = context;
+  const navigate = useNavigate();
+
+  if (userId && userPassword) navigate("/");
+
   const [formValues, setFormValues] = useState({
     id: "",
     password: "",
   });
 
-  const navigate = useNavigate();
   const modalRef = useRef();
-
-  const context = useContext(UserContext);
-  const { setUserId, setUserPassword } = context;
 
   const openModal = (title, description) => {
     modalRef.current?.enable(title, description);
