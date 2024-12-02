@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const RegisterPage = styled.div`
+export const SignUpContents = styled.div`
   position: relative;
 
   display: flex;
@@ -10,6 +10,21 @@ export const RegisterPage = styled.div`
   height: 100%;
 
   padding: 20px;
+`;
+
+export const SignUpHeader = styled.header`
+  width: 100%;
+  height: 30px;
+`;
+
+export const SignUpMain = styled.main`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  margin-top: 40px;
 
   form {
     flex: 1;
@@ -25,13 +40,13 @@ export const RegisterPage = styled.div`
 
   form > div > div {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   form > div > div > p {
     position: absolute;
     right: 0;
-    bottom: -1.2rem;
+    top: 44px;
 
     font-size: 0.8rem;
     color: red;
@@ -77,9 +92,4 @@ export const RegisterPage = styled.div`
   button:active {
     transform: scale(0.99);
   }
-`;
-
-export const Header = styled.div`
-  width: 100%;
-  height: 30px;
 `;
