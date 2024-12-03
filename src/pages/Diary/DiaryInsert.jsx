@@ -255,7 +255,7 @@ const DiaryInsert = () => {
                     <St.TextArea
                       id="description"
                       ref={textarea}
-                      value={description}
+                      value={comment}
                       rows={4} // 최초의 높이는 4줄로 설정
                       placeholder="내용 입력"
                       onChange={(e) =>
@@ -282,7 +282,9 @@ const DiaryInsert = () => {
           </St.Div>
 
           <div className="buttonBox">
-            <St.ConfirmBtn type="submit">저장</St.ConfirmBtn>
+            <St.ConfirmBtn type="submit" onClick={handleSubmit}>
+              저장
+            </St.ConfirmBtn>
             {index !== null && (
               <St.RmvBtnS type="button" onClick={handleDelete}>
                 삭제
