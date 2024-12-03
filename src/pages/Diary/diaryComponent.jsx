@@ -12,7 +12,7 @@ export const Div = styled.div`
     border: 1px solid black;
     display: flex;
     flex-direction: column;
-    padding: 30px;
+    padding: 20px;
   }
 
   &.diary-header {
@@ -36,11 +36,25 @@ export const Div = styled.div`
     background-color: #ddd;
     border-radius: 100%;
   }
+
+  /* .code-section button {
+    width: 35%;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: #ddd;
+    &:hover {
+      background-color: #eee;
+    }
+  } */
 `;
 
 export const Form = styled.form`
   border: 1px solid black;
   padding: 0 10%;
+  display: flex;
+  flex-direction: column;
   .diary-title {
     width: 100%;
     border: none;
@@ -105,17 +119,6 @@ export const Form = styled.form`
     display: flex;
     justify-content: space-between;
   }
-  .buttonBox button {
-    width: 45%;
-    height: 30px;
-    border: none;
-    border-radius: 10px;
-    margin: 10px 0;
-    background-color: #ddd;
-    &:hover {
-      background-color: #eee;
-    }
-  }
 `;
 
 export const InputGeneral = styled.input`
@@ -123,6 +126,20 @@ export const InputGeneral = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
+  width: 100%;
+  margin-bottom: 5px;
+`;
+export const TextArea = styled.textarea`
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  resize: none; /* 수동으로 리사이징 막기 */
+  overflow: hidden; /* 오버플로우 숨겨서 스크롤바 막기 */
+  font-size: 14px; /* Adjust font size for better usability */
+  box-sizing: border-box; /* Include padding and border in width/height*/
 `;
 
 // 태그 관련
@@ -132,6 +149,7 @@ export const TagInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
+  width: 65%;
 `;
 
 export const TagList = styled.div`
@@ -140,19 +158,28 @@ export const TagList = styled.div`
   gap: 5px;
 `;
 
+// 추가된 태그들을 위한 CSS
 export const TagItem = styled.div`
-  background: #007bff;
+  background-color: #007bff;
   color: white;
   padding: 5px 10px;
-  border-radius: 4px;
-  display: flex;
+  border-radius: 20px;
+  display: inline-flex;
   align-items: center;
+  margin: 4px;
+  font-size: 14px;
+  &:hover {
+    background-color: #0262c9;
+    font-weight: bold;
+  }
 
   button {
+    margin-left: 8px;
     background: none;
-    color: white;
     border: none;
-    margin-left: 5px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
   }
 `;
@@ -178,4 +205,91 @@ export const ModalContent = styled.div`
   border-radius: 8px;
   width: 300px;
   text-align: center;
+`;
+
+// 범용 버튼
+
+// 태그를 추가하는 버튼의 CSS --> 범용 추가로 변환?
+export const GeneralAddBtn = styled.button`
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 10px;
+  margin: 8px 0;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #45a049;
+    font-weight: bold;
+  }
+`;
+
+// 범용 긴 삭제 버튼 CSS
+export const GeneralRmvBtn = styled.button`
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 10px;
+  margin: 8px 0;
+  background-color: #af4c4c;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #883a3a;
+    font-weight: bold;
+  }
+`;
+
+// 범용 작은 저장/확인 버튼
+export const ConfirmBtn = styled.div`
+  align-content: center;
+  text-align: center;
+  color: white;
+  width: 45%;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 10px 0;
+  background-color: #4caf50;
+  &:hover {
+    background-color: #45a049;
+    font-weight: bold;
+  }
+`;
+
+// 범용 작은 삭제 버튼
+export const RmvBtnS = styled.div`
+  align-content: center;
+  text-align: center;
+  color: white;
+  width: 45%;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 10px 0;
+  background-color: #af4c4c;
+  &:hover {
+    background-color: #883a3a;
+    font-weight: bold;
+  }
+`;
+
+// 범용 푸른 기타 버튼
+export const EtcBtn = styled.div`
+  align-content: center;
+  text-align: center;
+  color: white;
+  width: 45%;
+  height: 30px;
+  border: none;
+  border-radius: 10px;
+  margin: 10px 0;
+  background-color: #007bff;
+  &:hover {
+    background-color: #0262c9;
+    font-weight: bold;
+  }
 `;
