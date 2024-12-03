@@ -12,7 +12,7 @@ export const Div = styled.div`
     border: 1px solid black;
     display: flex;
     flex-direction: column;
-    padding: 30px;
+    padding: 20px;
   }
 
   &.diary-header {
@@ -36,11 +36,36 @@ export const Div = styled.div`
     background-color: #ddd;
     border-radius: 100%;
   }
+
+  .code-section button {
+    width: 35%;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: #ddd;
+    &:hover {
+      background-color: #eee;
+    }
+  }
+  .tag-section button {
+    width: 30%;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: #ddd;
+    &:hover {
+      background-color: #eee;
+    }
+  }
 `;
 
 export const Form = styled.form`
   border: 1px solid black;
   padding: 0 10%;
+  display: flex;
+  flex-direction: column;
   .diary-title {
     width: 100%;
     border: none;
@@ -106,6 +131,7 @@ export const Form = styled.form`
     justify-content: space-between;
   }
   .buttonBox button {
+    align-items: center;
     width: 45%;
     height: 30px;
     border: none;
@@ -123,6 +149,20 @@ export const InputGeneral = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
+  width: 100%;
+  margin-bottom: 5px;
+`;
+export const TextArea = styled.textarea`
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  resize: none; /* 수동으로 리사이징 막기 */
+  overflow: hidden; /* 오버플로우 숨겨서 스크롤바 막기 */
+  font-size: 14px; /* Adjust font size for better usability */
+  box-sizing: border-box; /* Include padding and border in width/height*/
 `;
 
 // 태그 관련
@@ -132,6 +172,7 @@ export const TagInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
+  width: 65%;
 `;
 
 export const TagList = styled.div`
@@ -147,14 +188,6 @@ export const TagItem = styled.div`
   border-radius: 4px;
   display: flex;
   align-items: center;
-
-  button {
-    background: none;
-    color: white;
-    border: none;
-    margin-left: 5px;
-    cursor: pointer;
-  }
 `;
 
 //Modal 관련
