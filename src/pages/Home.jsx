@@ -15,18 +15,28 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { AiOutlineClose } from "react-icons/ai";
 import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortDownAlt } from "react-icons/bs";
+import AxiosApi from "../api/AxiosApi";
 
 const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
 
 const Home = () => {
-  const { diaries } = useContext(UserContext);
+  const { userId } = useContext(UserContext);
+  const [diaries, setDiaries] = useState([]);
   const navigate = useNavigate();
 
-  // 디버깅용. HOME에 일기가 업데이트 되었나...
   useEffect(() => {
-    console.log("Updated diaries in Home:", diaries); // Log updated diaries
-  }, [diaries]);
+    const getDiaries = async (userId) => {
+      try {
+        const diaryRsp = await AxiosApi.diaries(userId);
+        setDiaries(diaryRsp.data);
+      } catch (e) {
+        console.error("다이어리 불러오기 실패..", e);
+        alert("다이어리 불러오기 실패..", e);
+      }
+    };
+    getDiaries(userId);
+  }, [userId]);
 
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchCloseVisible, setSearchCloseVisible] = useState(false);

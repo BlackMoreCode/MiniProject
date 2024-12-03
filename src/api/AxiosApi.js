@@ -60,6 +60,11 @@ export const AxiosApi = {
       return null;
     }
   },
+
+  // 회원 다이어리 리스트
+  diaries: async (userId) => {
+    return await axios.get(BACKEND_DOMAIN + `/home/${userId}`);
+  }
 };
 
 export default AxiosApi;
