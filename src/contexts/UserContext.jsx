@@ -4,10 +4,10 @@ export const UserContext = createContext(null);
 
 export const UserProfile = (props) => {
   const [userId, setUserId] = useState(null);
-  const [userPw, setUserPw] = useState(null);
-  const [theme, setTheme] = useState(DEFAULT);
-  const [font, setFont] = useState(DEFAULT);
-  const [alertSound, setAlertSound] = useState(DEFAULT);
+  const [userPassword, setUserPassword] = useState(null);
+  // const [theme, setTheme] = useState(DEFAULT);
+  // const [font, setFont] = useState(DEFAULT);
+  // const [alertSound, setAlertSound] = useState(DEFAULT);
 
   // 코드 스니핏, 태그, 일기 관리하는 상태
   const [diaries, setDiaries] = useState(() => {
@@ -46,32 +46,26 @@ export const UserProfile = (props) => {
   };
 
   useEffect(() => {
-    setUserId(localStorage.getItem("userId") || null);
-    setUserPw(localStorage.getItem("userPw") || null);
-
-    // On initial load, if user info is available, load settings (theme, font, etc.)
-    // 최초 로드시 userInfo 가 있다면
-    if (userId && userPw) {
-      const userTheme = DEFAULT;
-      setTheme(userTheme);
-    } else {
-      setTheme(DEFAULT);
-    }
-  }, [userId, userPw, theme]);
+    const loadUserProfile = () => {
+      setUserId(localStorage.getItem("userId"));
+      setUserPassword(localStorage.getItem("userPassword"));
+    };
+    loadUserProfile();
+  }, []);
 
   return (
     <UserContext.Provider
       value={{
         userId,
         setUserId,
-        userPw,
-        setUserPw,
-        theme,
-        setTheme,
-        font,
-        setFont,
-        alertSound,
-        setAlertSound,
+        userPassword,
+        setUserPassword,
+        // theme,
+        // setTheme,
+        // font,
+        // setFont,
+        // alertSound,
+        // setAlertSound,
         diaries, // context에 일기 제공
         addDiary,
         updateDiary,
