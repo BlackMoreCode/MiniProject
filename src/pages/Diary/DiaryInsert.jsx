@@ -1,16 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext"; // Correct import
-import {
-  Container,
-  Div,
-  Form,
-  TagInput,
-  TagList,
-  TagItem,
-  InputGeneral,
-  TextArea,
-} from "./diaryComponent";
+import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -32,8 +23,12 @@ const DiaryInsert = () => {
   const [tagInput, setTagInput] = useState("");
   // 코드스니펫
   const [codeSnippets, setCodeSnippets] = useState([]);
-  // 코드메모 (코멘터리)
-  const [codeCommentary, setCodeCommentary] = useState([]);
+  // const [codeSnippets, setCodeSnippets] = useState([
+  //   { language: "javascript", code: "", commentary: [] },
+  // ]);
+
+  // 코드메모 (코멘터리) --> 다만 스니펫에 통합되서 이 상태는 필요 없을지도?
+  // const [codeCommentary, setCodeCommentary] = useState([]);
   const [index, setIndex] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,11 +37,17 @@ const DiaryInsert = () => {
   useEffect(() => {
     if (location.state) {
       const { diary, index } = location.state;
+
       setTitle(diary.title);
       setDescription(diary.description);
       setDate(diary.date || new Date().toISOString().split("T")[0]);
       setTags(diary.tags || []);
-      setCodeSnippets(diary.codeSnippets || []);
+      setCodeSnippets(
+        (diary.codeSnippets || []).map((snippet) => ({
+          ...snippet,
+          commentary: snippet.commentary || [], // 코멘터리가 배열이여야 한다..
+        }))
+      );
       setIndex(index);
     }
   }, [location.state]);
@@ -106,11 +107,12 @@ const DiaryInsert = () => {
     setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
   };
 
-  const updateCode = (index, newCode) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[index].code = newCode;
-    setCodeSnippets(updatedSnippets);
-  };
+  //필요 없으면 추후 제거
+  // const updateCode = (index, newCode) => {
+  //   const updatedSnippets = [...codeSnippets];
+  //   updatedSnippets[index].code = newCode;
+  //   setCodeSnippets(updatedSnippets);
+  // };
 
   // 코멘터리 추가 로직
   const addCodeCommentary = (snippetIndex) => {
@@ -148,24 +150,24 @@ const DiaryInsert = () => {
   };
 
   return (
-    <Container>
-      <Div className="phone-container">
-        <Form onSubmit={handleSubmit}>
+    <St.Container>
+      <St.Div className="phone-container">
+        <St.Form onSubmit={handleSubmit}>
           <p>제목</p>
-          <InputGeneral
+          <St.InputGeneral
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목 입력"
           />
           <p>날짜</p>
-          <InputGeneral
+          <St.InputGeneral
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
           <label htmlFor="description">내용:</label>
-          <TextArea
+          <St.TextArea
             id="description"
             ref={textarea}
             value={description}
@@ -175,31 +177,31 @@ const DiaryInsert = () => {
           />
 
           {/* 태그 섹션 */}
-          <Div className="tag-section">
-            <TagInput
+          <St.Div className="tag-section">
+            <St.TagInput
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               placeholder="태그를 입력하세요"
             />
-            <button type="button" onClick={addTag}>
+            <St.GeneralAddBtn type="button" onClick={addTag}>
               태그 추가
-            </button>
-            <TagList>
+            </St.GeneralAddBtn>
+            <St.TagList>
               {tags.map((tag, index) => (
-                <TagItem key={index}>
+                <St.TagItem key={index}>
                   {tag}
                   <button onClick={() => removeTag(tag)}>x</button>
-                </TagItem>
+                </St.TagItem>
               ))}
-            </TagList>
-          </Div>
+            </St.TagList>
+          </St.Div>
 
           {/* 코드스니펫 + 코멘터리 섹션 */}
-          <Div className="code-section">
-            <button type="button" onClick={addCodeSnippet}>
-              코드 추가 +
-            </button>
+          <St.Div className="code-section">
+            <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
+              코드 스니펫 추가
+            </St.GeneralAddBtn>
             {codeSnippets.map((snippet, snippetIndex) => (
               <div key={snippetIndex}>
                 {/* 코드 스니펫 */}
@@ -232,34 +234,30 @@ const DiaryInsert = () => {
                     setCodeSnippets(updatedSnippets);
                   }}
                 />
-                <button
+                <St.GeneralRmvBtn
                   type="button"
                   onClick={() => removeCodeSnippet(snippetIndex)}
                 >
                   코드 스니펫 삭제
-                </button>
+                </St.GeneralRmvBtn>
 
                 {/* 코드 코멘트 추가 버튼 */}
-                <button
+                <St.GeneralAddBtn
                   type="button"
                   onClick={() => addCodeCommentary(snippetIndex)}
                 >
                   코드 코멘트 추가
-                </button>
+                </St.GeneralAddBtn>
 
                 {/* 코드 코멘터리 렌더링 */}
                 {snippet.commentary.map((comment, commentaryIndex) => (
                   <div key={commentaryIndex} style={{ marginTop: "10px" }}>
-                    <textarea
-                      value={comment}
-                      placeholder="코멘트를 입력하세요"
-                      style={{
-                        width: "100%",
-                        padding: "5px",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        fontSize: "16px",
-                      }}
+                    <St.TextArea
+                      id="description"
+                      ref={textarea}
+                      value={description}
+                      rows={4} // 최초의 높이는 4줄로 설정
+                      placeholder="내용 입력"
                       onChange={(e) =>
                         updateCodeCommentary(
                           snippetIndex,
@@ -268,7 +266,7 @@ const DiaryInsert = () => {
                         )
                       }
                     />
-                    <button
+                    <St.GeneralRmvBtn
                       type="button"
                       onClick={() =>
                         removeCodeCommentary(snippetIndex, commentaryIndex)
@@ -276,30 +274,26 @@ const DiaryInsert = () => {
                       style={{ marginTop: "5px" }}
                     >
                       코멘트 삭제
-                    </button>
+                    </St.GeneralRmvBtn>
                   </div>
                 ))}
               </div>
             ))}
-          </Div>
+          </St.Div>
 
           <div className="buttonBox">
-            <button type="submit">저장</button>
+            <St.ConfirmBtn type="submit">저장</St.ConfirmBtn>
             {index !== null && (
-              <button
-                type="button"
-                onClick={handleDelete}
-                style={{ color: "red" }}
-              >
+              <St.RmvBtnS type="button" onClick={handleDelete}>
                 삭제
-              </button>
+              </St.RmvBtnS>
             )}
-            <button type="button" onClick={() => navigate("/")}>
+            <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
-            </button>
+            </St.EtcBtn>
           </div>
-        </Form>
-      </Div>
+        </St.Form>
+      </St.Div>
 
       <ConfirmationModal
         isOpen={isModalOpen}
@@ -316,7 +310,7 @@ const DiaryInsert = () => {
         onCancel={() => setIsModalOpen(false)}
         singleButton={index === null}
       />
-    </Container>
+    </St.Container>
   );
 };
 
