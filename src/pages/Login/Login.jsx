@@ -11,6 +11,7 @@ import AxiosApi from "../../api/AxiosApi";
 import MessageModal from "../../components/MessageModal";
 import { login, logout } from "../../util/loginUtils";
 import { UserContext } from "../../contexts/UserContext";
+import { PrevPageButton } from "../../components/PrevPageButton";
 
 export const Login = () => {
   const context = useContext(UserContext);
@@ -56,7 +57,9 @@ export const Login = () => {
 
   return (
     <LoginContents>
-      <LoginHeader></LoginHeader>
+      <LoginHeader>
+        <PrevPageButton />
+      </LoginHeader>
       <LoginMain>
         <h1>로그인</h1>
         <form noValidate>
