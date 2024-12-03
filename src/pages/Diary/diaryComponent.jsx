@@ -118,6 +118,13 @@ export const Form = styled.form`
   }
 `;
 
+export const InputGeneral = styled.input`
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+`;
+
 // 태그 관련
 
 export const TagInput = styled.input`

@@ -8,6 +8,7 @@ import {
   TagInput,
   TagList,
   TagItem,
+  InputGeneral,
 } from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -106,14 +107,14 @@ const DiaryInsert = () => {
       <Div className="phone-container">
         <Form onSubmit={handleSubmit}>
           <p>제목</p>
-          <input
+          <InputGeneral
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목 입력"
           />
           <p>날짜</p>
-          <input
+          <InputGeneral
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
