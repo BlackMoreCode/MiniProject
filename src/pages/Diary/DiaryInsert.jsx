@@ -23,12 +23,8 @@ const DiaryInsert = () => {
   const [tagInput, setTagInput] = useState("");
   // 코드스니펫
   const [codeSnippets, setCodeSnippets] = useState([]);
-  // const [codeSnippets, setCodeSnippets] = useState([
-  //   { language: "javascript", code: "", commentary: [] },
-  // ]);
+  const [showCodeSnippets, setShowCodeSnippets] = useState(false); // 코드 스니펫을 들어낼지 말지 결정하는 상태
 
-  // 코드메모 (코멘터리) --> 다만 스니펫에 통합되서 이 상태는 필요 없을지도?
-  // const [codeCommentary, setCodeCommentary] = useState([]);
   const [index, setIndex] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -85,9 +81,16 @@ const DiaryInsert = () => {
   };
 
   const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput)) {
-      setTags([...tags, tagInput]);
-      setTagInput("");
+    const trimmedTag = tagInput.trim(); // 스페이싱을 이용한 같은 단어지만 다른 태그가 입력되는 것을 방지.
+
+    // 빈 입력과 중복 확인
+    if (trimmedTag && !tags.includes(trimmedTag)) {
+      setTags([...tags, trimmedTag]); // valid test 통과하면 태그 추가
+      setTagInput(""); // 태그 추가 이후에는 입력 필드 지우기
+    } else if (tags.includes(trimmedTag)) {
+      setModalMessage("중복된 태그를 입력하였습니다");
+      setIsModalOpen(true);
+      return;
     }
   };
 
@@ -106,13 +109,6 @@ const DiaryInsert = () => {
   const removeCodeSnippet = (snippetIndex) => {
     setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
   };
-
-  //필요 없으면 추후 제거
-  // const updateCode = (index, newCode) => {
-  //   const updatedSnippets = [...codeSnippets];
-  //   updatedSnippets[index].code = newCode;
-  //   setCodeSnippets(updatedSnippets);
-  // };
 
   // 코멘터리 추가 로직
   const addCodeCommentary = (snippetIndex) => {
@@ -198,88 +194,100 @@ const DiaryInsert = () => {
           </St.Div>
 
           {/* 코드스니펫 + 코멘터리 섹션 */}
-          <St.Div className="code-section">
-            <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
-              코드 스니펫 추가
-            </St.GeneralAddBtn>
-            {codeSnippets.map((snippet, snippetIndex) => (
-              <div key={snippetIndex}>
-                {/* 코드 스니펫 */}
-                <select
-                  value={snippet.language}
-                  onChange={(e) => {
-                    const updatedSnippets = [...codeSnippets];
-                    updatedSnippets[snippetIndex].language = e.target.value;
-                    setCodeSnippets(updatedSnippets);
-                  }}
-                >
-                  <option value="javascript">JavaScript</option>
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                </select>
-                <CodeMirror
-                  value={snippet.code}
-                  height="200px"
-                  theme={dracula}
-                  extensions={[
-                    snippet.language === "javascript"
-                      ? javascript()
-                      : snippet.language === "python"
-                      ? python()
-                      : java(),
-                  ]}
-                  onChange={(value) => {
-                    const updatedSnippets = [...codeSnippets];
-                    updatedSnippets[snippetIndex].code = value;
-                    setCodeSnippets(updatedSnippets);
-                  }}
-                />
-                <St.GeneralRmvBtn
-                  type="button"
-                  onClick={() => removeCodeSnippet(snippetIndex)}
-                >
-                  코드 스니펫 삭제
-                </St.GeneralRmvBtn>
 
-                {/* 코드 코멘트 추가 버튼 */}
-                <St.GeneralAddBtn
-                  type="button"
-                  onClick={() => addCodeCommentary(snippetIndex)}
-                >
-                  코드 코멘트 추가
-                </St.GeneralAddBtn>
+          {/* Code Snippets Toggle Button */}
+          <St.GeneralAddBtn
+            type="button"
+            onClick={() => setShowCodeSnippets((prev) => !prev)}
+          >
+            {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
+          </St.GeneralAddBtn>
 
-                {/* 코드 코멘터리 렌더링 */}
-                {snippet.commentary.map((comment, commentaryIndex) => (
-                  <div key={commentaryIndex} style={{ marginTop: "10px" }}>
-                    <St.TextArea
-                      id="description"
-                      ref={textarea}
-                      value={comment}
-                      rows={4} // 최초의 높이는 4줄로 설정
-                      placeholder="내용 입력"
-                      onChange={(e) =>
-                        updateCodeCommentary(
-                          snippetIndex,
-                          commentaryIndex,
-                          e.target.value
-                        )
-                      }
-                    />
-                    <St.GeneralRmvBtn
-                      type="button"
-                      onClick={() =>
-                        removeCodeCommentary(snippetIndex, commentaryIndex)
-                      }
-                      style={{ marginTop: "5px" }}
-                    >
-                      코멘트 삭제
-                    </St.GeneralRmvBtn>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </St.Div>
+          {showCodeSnippets && (
+            <St.Div className="code-section">
+              {codeSnippets.map((snippet, snippetIndex) => (
+                <div key={snippetIndex}>
+                  {/* 코드 스니펫 */}
+                  <select
+                    value={snippet.language}
+                    onChange={(e) => {
+                      const updatedSnippets = [...codeSnippets];
+                      updatedSnippets[snippetIndex].language = e.target.value;
+                      setCodeSnippets(updatedSnippets);
+                    }}
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                  </select>
+                  <CodeMirror
+                    value={snippet.code}
+                    height="200px"
+                    theme={dracula}
+                    extensions={[
+                      snippet.language === "javascript"
+                        ? javascript()
+                        : snippet.language === "python"
+                        ? python()
+                        : java(),
+                    ]}
+                    onChange={(value) => {
+                      const updatedSnippets = [...codeSnippets];
+                      updatedSnippets[snippetIndex].code = value;
+                      setCodeSnippets(updatedSnippets);
+                    }}
+                  />
+                  <St.GeneralRmvBtn
+                    type="button"
+                    onClick={() => removeCodeSnippet(snippetIndex)}
+                  >
+                    코드 스니펫 삭제
+                  </St.GeneralRmvBtn>
+
+                  {/* 코드 코멘트 추가 버튼 */}
+                  <St.GeneralAddBtn
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralAddBtn>
+
+                  {/* 코드 코멘터리 렌더링 */}
+                  {snippet.commentary.map((comment, commentaryIndex) => (
+                    <div key={commentaryIndex} style={{ marginTop: "10px" }}>
+                      <St.TextArea
+                        ref={textarea}
+                        value={comment}
+                        rows={4} // 최초의 높이는 4줄로 설정
+                        placeholder="내용 입력"
+                        onChange={(e) =>
+                          updateCodeCommentary(
+                            snippetIndex,
+                            commentaryIndex,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <St.GeneralRmvBtn
+                        type="button"
+                        onClick={() =>
+                          removeCodeCommentary(snippetIndex, commentaryIndex)
+                        }
+                        style={{ marginTop: "5px" }}
+                      >
+                        코멘트 삭제
+                      </St.GeneralRmvBtn>
+                    </div>
+                  ))}
+                </div>
+              ))}
+
+              {/* Dynamically placed "코드 스니펫 추가" button */}
+              <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
+                코드 스니펫 추가
+              </St.GeneralAddBtn>
+            </St.Div>
+          )}
 
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
@@ -300,17 +308,29 @@ const DiaryInsert = () => {
       <ConfirmationModal
         isOpen={isModalOpen}
         message={modalMessage}
-        confirmText={index !== null ? "네" : "확인"}
-        cancelText={index !== null ? "아니오" : undefined}
+        confirmText={
+          index !== (null && modalMessage === "중복된 태그를 입력하였습니다")
+            ? "네"
+            : "확인"
+        }
+        cancelText={
+          index !== (null && modalMessage === "중복된 태그를 입력하였습니다")
+            ? "아니오"
+            : undefined
+        }
         onConfirm={() => {
-          if (index !== null) {
-            removeDiary(index); // 일기 삭제
-            navigate("/"); // 삭제후 이동
+          if (modalMessage === "중복된 태그를 입력하였습니다") {
+            setIsModalOpen(false);
+          } else if (index !== null) {
+            removeDiary(index);
+            navigate("/");
           }
-          setIsModalOpen(false); // 모달 닫기
+          setIsModalOpen(false);
         }}
         onCancel={() => setIsModalOpen(false)}
-        singleButton={index === null}
+        singleButton={
+          index === null || modalMessage === "중복된 태그를 입력하였습니다"
+        }
       />
     </St.Container>
   );

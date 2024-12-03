@@ -149,7 +149,11 @@ export const TagInput = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
-  width: 65%;
+  width: 100%;
+  resize: none; /* 수동으로 리사이징 막기 */
+  overflow: hidden; /* 오버플로우 숨겨서 스크롤바 막기 */
+  font-size: 14px;
+  box-sizing: border-box;
 `;
 
 export const TagList = styled.div`
