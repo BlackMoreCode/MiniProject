@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -11,7 +11,10 @@ import theme1 from "../assets/images/theme1.jpg";
 import { UserContext } from "../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
-import { LuSearch } from "react-icons/lu";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { AiOutlineClose } from "react-icons/ai";
+import { LuSearch, LuPaintbrush } from "react-icons/lu";
+import { BsSortDownAlt } from "react-icons/bs";
 
 const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
@@ -25,6 +28,18 @@ const Home = () => {
     console.log("Updated diaries in Home:", diaries); // Log updated diaries
   }, [diaries]);
 
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [searchCloseVisible, setSearchCloseVisible] = useState(false);
+
+  const searchVisibleOn = () => {
+    setSearchVisible(true);
+    setSearchCloseVisible(true);
+  }
+  const searchVisibleOff = () => {
+    setSearchVisible(false);
+    setSearchCloseVisible(false);
+  }
+
   return (
     <Container>
       <Div className="phone-container">
@@ -35,17 +50,34 @@ const Home = () => {
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
               {/* 왼쪽 메뉴 버튼 */}
-              <button className="phone-menuBtn">=</button>
+              <button className="phone-menuBtn">
+                <RxHamburgerMenu />
+              </button>
             </Div>
 
             <Div className="phone-headerRight">
-              {/* 테마 변경 버튼 */}
-              <button className="phone-themeBtn">테마</button>
+              <button className="phone-themeBtn">
+                <LuPaintbrush />
+              </button>
               <div className="phone-searchBox"> 
-                <input />
-                <button className="searchBtn"><LuSearch /></button>
+                <button 
+                  className="closeBtn" 
+                  onClick={searchVisibleOff}
+                  style={{ display: searchCloseVisible ? "block" : "none"}}
+                >
+                  <AiOutlineClose />
+                </button>
+                <input style={{ display: searchVisible ? "block" : "none"}} />
+                <button 
+                  className="searchBtn" 
+                  onClick={searchVisibleOn}
+                >
+                  <LuSearch />
+                </button>
               </div>
-              <button className="phone-sort">정렬</button>
+              <button className="phone-sort">
+                <BsSortDownAlt />
+              </button>
             </Div>
           </Div>
 

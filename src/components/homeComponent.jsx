@@ -28,24 +28,74 @@ export const Div = styled.div`
     padding: 10px;
   }
 
+  .phone-menuBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
   &.phone-headerRight {
     display: flex;
-
+    gap: 10px;
+    .phone-themeBtn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      svg {
+        width: 30px;
+        height: 30px;
+        path:nth-child(1) {
+          fill: rgb(220,110,50);
+        }
+        path:nth-child(2) {
+          fill: yellow;
+        }
+      }
+    }
     .phone-searchBox {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #007bff;
-      padding: 0 3px 0 10px;
+      background-color: transparent;
+      border: 1px solid black;
+      padding: 0 3px;
       border-radius: 15px;
+      .closeBtn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        /* color: white; */
+        font-size: 1rem;
+        padding-left: 5px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        svg {
+          display: flex;
+          width: 21px;
+          height: 21px;
+        }
+      }
       input {
         height: 100%;
         border: none;
         outline: none;
         background-color: transparent;
-        color: white;
+        /* color: white; */
+        font-size: 1em;
+        margin-left: 10px;
       }
-
       .searchBtn {
         border-radius: 50%;
         width: 30px;
@@ -54,15 +104,27 @@ export const Div = styled.div`
         justify-content: center;
         align-items: center;
         border: none;
-        background-color: #007bff;
+        background-color: transparent;
         cursor: pointer;
         svg {
           width: 70%;
           height: 70%;
           circle, path {
-            color: white;
+            /* color: white; */
           }
         }
+      }
+    }
+    .phone-sort {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      svg {
+        width: 30px;
+        height: 30px;
       }
     }
   }
