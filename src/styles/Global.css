@@ -28,6 +28,8 @@ body,
 }
 
 .screen {
+  position: relative;
+
   width: 380px;
   height: 678px;
 
@@ -37,4 +39,9 @@ body,
   overflow-y: auto;
 
   transform: translate(-3px, -1px);
+}
+
+a {
+  text-decoration: none;
+  color: black;
 }

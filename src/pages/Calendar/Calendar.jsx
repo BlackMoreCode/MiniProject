@@ -1,90 +1,19 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import CalendarGrid from "../components/CalendarGrid";
-import Modal from "../components/Modal";
+import * as Styles from "../Calendar/CalendarStyles";
+
+import CalendarGrid from "../../components/CalendarGrid";
+import Modal from "./CalendarModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-const CalendarWrapper = styled.div`
-  text-align: center;
-  color: white;
-  background-color: #121212;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Navigation = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-`;
-
-const Button = styled.button`
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #444;
-  }
-`;
-
-const CheckIndicator = styled.span`
-  color: green;
-  font-size: 18px;
-  margin-left: 10px;
-`;
-
-const EventListWrapper = styled.div`
-  padding: 20px;
-  background-color: #1e1e1e;
-  border-radius: 8px;
-  margin: 10px;
-`;
-
-const EventItem = styled.div`
-  background-color: #333;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  &:hover {
-    background-color: #444;
-  }
-`;
-
-const AddButton = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 30px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
+import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState({});
   const [modalData, setModalData] = useState(null);
+
+  const navigate = useNavigate();
 
   // 임시코드: localStorage로부 컴포넌트가 마운트될 때 events를 로드
   useEffect(() => {
@@ -257,14 +186,14 @@ const Calendar = () => {
     : [];
 
   return (
-    <CalendarWrapper>
-      <Navigation>
-        <Button onClick={handlePrevMonth}>이전 달</Button>
+    <Styles.CalendarWrapper>
+      <Styles.Navigation>
+        <Styles.Button onClick={handlePrevMonth}>이전 달</Styles.Button>
         <h2>
           {year} {monthName}
         </h2>
-        <Button onClick={handleNextMonth}>다음 달</Button>
-      </Navigation>
+        <Styles.Button onClick={handleNextMonth}>다음 달</Styles.Button>
+      </Styles.Navigation>
       <CalendarGrid
         date={currentDate}
         onDateClick={handleDateClick}
@@ -272,22 +201,32 @@ const Calendar = () => {
         events={events}
       />
       {selectedDate && (
-        <EventListWrapper>
+        <Styles.EventListWrapper>
           <h3>{selectedDate.toDateString()} 이벤트 목록</h3>
           {selectedDateEvents.map((event, index) => (
-            <EventItem key={index} onClick={() => handleEditEvent(event)}>
+            <Styles.EventItem
+              key={index}
+              onClick={() => handleEditEvent(event)}
+            >
               <span>
                 {event.isAllDay
                   ? "All Day"
                   : `${event.time.start} - ${event.time.end}`}{" "}
                 | {event.title} {event.importance && "⭐"}
               </span>
-              {event.checked && <CheckIndicator>✔</CheckIndicator>}
-            </EventItem>
+              {event.checked && (
+                <Styles.CheckIndicator>✔</Styles.CheckIndicator>
+              )}
+            </Styles.EventItem>
           ))}
-        </EventListWrapper>
+        </Styles.EventListWrapper>
       )}
-      <AddButton onClick={handleAddEvent}>+</AddButton>
+      <Styles.ButtonContainer>
+        <Styles.AddButtonBack onClick={() => navigate("/")}>
+          ←
+        </Styles.AddButtonBack>
+        <Styles.AddButton onClick={handleAddEvent}>+</Styles.AddButton>
+      </Styles.ButtonContainer>
       {console.log}
       {modalData && (
         <Modal
@@ -298,7 +237,7 @@ const Calendar = () => {
         />
       )}
       <ToastContainer />
-    </CalendarWrapper>
+    </Styles.CalendarWrapper>
   );
 };
 

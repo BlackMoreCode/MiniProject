@@ -76,13 +76,13 @@
 //   flex-direction: column;
 // `;
 
-// const Modal = ({ data, onSave, onDelete, closeModal }) => {
-//   const [title, setTitle] = useState("");
-//   const [time, setTime] = useState({ start: "", end: "" });
-//   const [isAllDay, setIsAllDay] = useState(false); // all-day toggle state
-//   const [alarms, setAlarms] = useState([]);
-//   const [notes, setNotes] = useState("");
-//   const [importance, setImportance] = useState(false); // Default importance: false
+const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
+  const [title, setTitle] = useState("");
+  const [time, setTime] = useState({ start: "", end: "" });
+  const [isAllDay, setIsAllDay] = useState(false); // all-day toggle state
+  const [alarms, setAlarms] = useState([]);
+  const [notes, setNotes] = useState("");
+  const [importance, setImportance] = useState(false); // Default importance: false
 
 //   useEffect(() => {
 //     if (data.event) {
@@ -227,4 +227,4 @@
 //   );
 // };
 
-// export default Modal;
+export default CalendarModal;
