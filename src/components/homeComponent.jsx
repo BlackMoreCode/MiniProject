@@ -131,6 +131,21 @@ export const Img1 = styled.img`
   z-index: -1;
 `;
 
+export const RedirectButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
 export const AddButton = styled.button`
   background-color: #007bff;
   color: white;
@@ -143,5 +158,22 @@ export const AddButton = styled.button`
 
   &:hover {
     background-color: #0056b3;
+  }
+`;
+
+export const RemoveButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darkred;
   }
 `;
