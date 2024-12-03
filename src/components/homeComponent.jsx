@@ -3,19 +3,20 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
 `;
 
 export const Div = styled.div`
   &.phone-container {
-    width: 500px;
+    width: 100%;
     height: 100%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
   }
 
   &.phone-header {
-    border: 2px solid red;
     position: relative;
     width: 100%;
     height: 300px;
@@ -29,11 +30,45 @@ export const Div = styled.div`
 
   &.phone-headerRight {
     display: flex;
+
+    .phone-searchBox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #007bff;
+      padding: 0 3px 0 10px;
+      border-radius: 15px;
+      input {
+        height: 100%;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: white;
+      }
+
+      .searchBtn {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        background-color: #007bff;
+        cursor: pointer;
+        svg {
+          width: 70%;
+          height: 70%;
+          circle, path {
+            color: white;
+          }
+        }
+      }
+    }
   }
 
   &.phone-header-theme {
     display: flex;
-    border: 1px solid blue;
     height: 100%;
     justify-content: center;
     align-items: center;
@@ -49,6 +84,7 @@ export const Div = styled.div`
   &.diary-container {
     background-color: rgb(225, 235, 255);
     overflow-y: auto;
+    height: 100%;
   }
 
   &.diary-box {
@@ -78,10 +114,11 @@ export const Div = styled.div`
     display: flex;
     justify-content: space-around;
     padding: 10px;
+    background-color: rgb(225, 235, 255);
   }
 
   &.menuBox {
-    padding: 0 10%;
+    padding: 30px;
     .linkBox button {
       width: 100%;
       height: 50px;

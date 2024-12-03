@@ -1,18 +1,15 @@
 import { Container, Div, Form } from "../components/ProfileComponent";
 import { useNavigate } from "react-router-dom";
+import { PrevPageButton } from "../components/PrevPageButton";
 
 const Profile = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
-
-  const onClickBackBtn = () => {
-    navigate("/mypage");
-  }
 
   return(
     <Container>
       <Div className="phone-container">
         <Div className="diary-header">
-          <button>뒤</button>
+          <PrevPageButton />
           <p>회원 정보 수정</p>
           <div></div>
         </Div>
@@ -30,7 +27,7 @@ const Profile = (/* 유저 아이디 받기?? */) => {
           <input type="text" name="profile-nickname" className="profile-nickname" value="닉네임" />
           <div className="buttonBox">
             <button>수정</button>
-            <button onClick={onClickBackBtn}>취소</button>
+            <button onClick={() => navigate("/mypage")}>취소</button>
           </div>
         </Form>
       </Div>

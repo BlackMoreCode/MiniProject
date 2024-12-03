@@ -11,6 +11,7 @@ import theme1 from "../assets/images/theme1.jpg";
 import { UserContext } from "../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
+import { LuSearch } from "react-icons/lu";
 
 const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
@@ -40,9 +41,9 @@ const Home = () => {
             <Div className="phone-headerRight">
               {/* 테마 변경 버튼 */}
               <button className="phone-themeBtn">테마</button>
-              <div className="phone-searchBox">
+              <div className="phone-searchBox"> 
                 <input />
-                <button>검색</button>
+                <button className="searchBtn"><LuSearch /></button>
               </div>
               <button className="phone-sort">정렬</button>
             </Div>
@@ -81,7 +82,7 @@ const Home = () => {
             <FontAwesomeIcon icon={faCalendar} />
           </RedirectButton>
           <AddButton onClick={() => navigate("/diaryInsert")}>+</AddButton>
-          <RedirectButton>
+          <RedirectButton onClick={() => navigate("/mypage")}>
             <FontAwesomeIcon icon={faPerson} />
           </RedirectButton>
         </Div>
