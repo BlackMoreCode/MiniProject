@@ -9,11 +9,15 @@ export const UserProfile = (props) => {
   // const [font, setFont] = useState(DEFAULT);
   // const [alertSound, setAlertSound] = useState(DEFAULT);
 
-  // 코드 스니핏, 태그, 일기 관리하는 상태
+  // 코드 스니핏, 태그, 일기 관리하는 상태. 백엔드랑 합쳐지기 전 까지 남아있기
   const [diaries, setDiaries] = useState(() => {
     const savedDiaries = localStorage.getItem("diaries");
     return savedDiaries ? JSON.parse(savedDiaries) : []; // load from localStorage
   });
+
+  // 로그인한 유저를 위한 헬퍼
+  const loggedInMember =
+    userId && userPassword ? { id: userId, password: userPassword } : null;
 
   // 태그와 코드스니펫과 함께 일기 추가
   const addDiary = (diary) => {
@@ -60,6 +64,7 @@ export const UserProfile = (props) => {
         setUserId,
         userPassword,
         setUserPassword,
+        loggedInMember,
         // theme,
         // setTheme,
         // font,

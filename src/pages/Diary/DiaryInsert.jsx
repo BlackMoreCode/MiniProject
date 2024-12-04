@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
+import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext"; // Correct import
 import * as St from "./diaryComponent";
@@ -14,6 +15,7 @@ const DiaryInsert = () => {
   const navigate = useNavigate();
   const textarea = useRef(null); // useRef 사용해서 동적으로 textarea의 height 조절하는데 쓸 계획
   const { addDiary, updateDiary, removeDiary } = useContext(UserContext); // Access removeDiary from context
+  const { loggedInMember } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,8 +36,8 @@ const DiaryInsert = () => {
     if (location.state) {
       const { diary, index } = location.state;
 
-      setTitle(diary.title);
-      setDescription(diary.description);
+      setTitle(diary.title || ""); // 빈 문자열 fallback 일단 세팅 (일기 수정시 undefined가 뜨는 문제 때문에.)
+      setDescription(diary.description || ""); // 빈 문자열 fallback 일단 세팅 (일기 수정시 undefined가 뜨는 문제 때문에.)
       setDate(diary.date || new Date().toISOString().split("T")[0]);
       setTags(diary.tags || []);
       setCodeSnippets(
@@ -48,25 +50,57 @@ const DiaryInsert = () => {
     }
   }, [location.state]);
 
-  // Handle submit
-  const handleSubmit = (e) => {
+  // Handle submit 비동기 함수
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title.trim() || !description.trim() || !date) {
+    // 디버깅용으로 콘솔로그 추가. 현재 null값이 불려와지는지 체크해야한다
+    console.log("Title:", title);
+    console.log("Description:", description);
+    console.log("Date:", date);
+
+    //옵셔널 체이닝을 통하여 적합한 string일때만 trim()이 불리도록 설정
+    if (!title?.trim() || !description?.trim() || !date?.trim()) {
       setModalMessage("일기 제목, 내용, 날짜를 입력하세요!");
       setIsModalOpen(true);
       return;
     }
 
-    const newDiary = { title, description, date, tags, codeSnippets };
+    // 기존 로컬에서 쓰던거 아직 모르니 주석처리
+    // const newDiary = { title, description, date, tags, codeSnippets };
 
-    if (index !== null) {
-      updateDiary(index, newDiary);
-    } else {
-      addDiary(newDiary);
+    const formatDate = (date) => {
+      const d = new Date(date);
+      const pad = (n) => (n < 10 ? "0" + n : n); // 한자리 수 관련 헬퍼함수
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+        d.getDate()
+      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+
+    const newDiary = {
+      title,
+      content: description,
+      tags,
+      writtenDate: formatDate(new Date()), // 기존 날짝 입력 에러를 막기 위하여 백엔드에서 요구하는 방향으로 여기서 수정
+      codingDiaryEntries: codeSnippets.map((snippet, index) => ({
+        programmingLanguageName: snippet.language || null,
+        content: snippet.code || snippet.commentary,
+        sequence: index + 1,
+      })),
+    };
+
+    try {
+      await AxiosApi.saveDiary(loggedInMember, newDiary);
+      addDiary(newDiary); // navigation 이전에 로컬 상태 저장되도록
+      navigate("/"); // 제대로 저장된 이후에만 이동하도록
+    } catch (error) {
+      console.error("Failed to save diary:", error);
+      setModalMessage("일기를 저장하는데 실패하였습니다.");
+      setIsModalOpen(true);
     }
 
-    navigate("/");
+    //반복이니 일단 주석처리
+    // navigate("/");
   };
 
   // Handle delete
@@ -222,7 +256,7 @@ const DiaryInsert = () => {
                   </select>
                   <CodeMirror
                     value={snippet.code}
-                    height="200px"
+                    height="auto"
                     theme={dracula}
                     extensions={[
                       snippet.language === "javascript"
@@ -309,17 +343,16 @@ const DiaryInsert = () => {
         isOpen={isModalOpen}
         message={modalMessage}
         confirmText={
-          index !== (null && modalMessage === "중복된 태그를 입력하였습니다")
-            ? "네"
-            : "확인"
-        }
+          modalMessage === "중복된 태그를 입력하였습니다" ? "확인" : "네"
+        } // "확인" for duplicate tags
         cancelText={
-          index !== (null && modalMessage === "중복된 태그를 입력하였습니다")
-            ? "아니오"
-            : undefined
+          modalMessage === "중복된 태그를 입력하였습니다" ? undefined : "아니오"
         }
         onConfirm={() => {
-          if (modalMessage === "중복된 태그를 입력하였습니다") {
+          if (
+            modalMessage === "일기 제목, 내용, 날짜를 입력하세요!" ||
+            modalMessage === "중복된 태그를 입력하였습니다"
+          ) {
             setIsModalOpen(false);
           } else if (index !== null) {
             removeDiary(index);
@@ -329,8 +362,9 @@ const DiaryInsert = () => {
         }}
         onCancel={() => setIsModalOpen(false)}
         singleButton={
-          index === null || modalMessage === "중복된 태그를 입력하였습니다"
-        }
+          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!" ||
+          modalMessage === "중복된 태그를 입력하였습니다"
+        } // 싱글 버튼은 태그 중복 및 필수입력 공간에 내용이 없어서 나는 validation error 용 처리에만!
       />
     </St.Container>
   );

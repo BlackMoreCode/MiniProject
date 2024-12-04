@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BACKEND_DOMAIN = "http://localhost:8111";
+const API_BASE_URL = "http://localhost:8111/api";
 
 export const AxiosApi = {
   signUp: async (id, password, email, nickname) => {
@@ -58,6 +59,18 @@ export const AxiosApi = {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  },
+
+  saveDiary: async (loggedInMember, newDiary) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/diary/save`, {
+        loggedInMember,
+        newDiary,
+      });
+      return response.data; // 성공 메세지 혹은 관련 데이터 반환
+    } catch (error) {
+      throw error.response ? error.response.data : error; // 에러시 백엔드 에러 보내기?
     }
   },
 };
