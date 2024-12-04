@@ -65,7 +65,7 @@ const Home = () => {
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
                 onClick={
-                  () => navigate("/diaryInsert", { state: { diary, index } }) // 일기 데이터랑 해당 인덱스 보내기...
+                  () => navigate("/diaryUpdate", { state: { diary, index } }) // 일기 데이터랑 해당 인덱스 보내기...
                 }
               >
                 <p className="diary-date">{diary.date}</p>

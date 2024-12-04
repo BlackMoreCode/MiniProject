@@ -1,7 +1,7 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
-import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext"; // Correct import
+import { useLocation, useNavigate } from "react-router-dom";
+import { UserContext, removeDiary } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -10,20 +10,63 @@ import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 
-const DiaryInsert = () => {
+const DiaryUpdate = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const textarea = useRef(null);
-  const { loggedInMember, addDiary } = useContext(UserContext);
+  const { loggedInMember } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [codeSnippets, setCodeSnippets] = useState([]);
   const [showCodeSnippets, setShowCodeSnippets] = useState(false);
+
+  const [index, setIndex] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  useEffect(() => {
+    if (location.state) {
+      const { diary, index } = location.state;
+
+      setTitle(diary.title || "");
+      setDescription(diary.description || "");
+      setDate(diary.date || new Date().toISOString().split("T")[0]);
+      setTags(diary.tags || []);
+      setCodeSnippets(
+        (diary.codeSnippets || []).map((snippet) => ({
+          ...snippet,
+          commentary: snippet.commentary || [],
+        }))
+      );
+      setIndex(index);
+    }
+  }, [location.state]);
+
+  // useEffect fetch diary 추가하고 변경?
+  // useEffect(() => {
+  //   const fetchDiary = async () => {
+  //     try {
+  //       const response = await AxiosApi.getDiaryById(id); // Fetch diary by ID
+  //       const fetchedDiary = response.data;
+  //       setTitle(fetchedDiary.title || "");
+  //       setDescription(fetchedDiary.content || "");
+  //       setDate(fetchedDiary.writtenDate || new Date().toISOString());
+  //       setTags(fetchedDiary.tags || []);
+  //       setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
+  //     } catch (error) {
+  //       console.error("Failed to fetch diary:", error);
+  //     }
+  //   };
+
+  //   if (location.state?.id) {
+  //     fetchDiary();
+  //   }
+  // }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +85,7 @@ const DiaryInsert = () => {
       )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     };
 
-    const newDiary = {
+    const updatedDiary = {
       title,
       content: description,
       tags,
@@ -55,28 +98,56 @@ const DiaryInsert = () => {
     };
 
     try {
-      await AxiosApi.saveDiary(loggedInMember, newDiary);
-      addDiary(newDiary);
+      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary); // Replace with the correct Axios API function
       navigate("/");
     } catch (error) {
-      console.error("Failed to save diary:", error);
-      setModalMessage("일기를 저장하는데 실패하였습니다.");
+      console.error("Failed to update diary:", error);
+      setModalMessage("일기를 수정하는데 실패하였습니다.");
       setIsModalOpen(true);
     }
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (index !== null) {
+      setModalMessage("정말로 일기를 삭제하시겠습니까?");
+      setIsModalOpen(true);
+
+      // Confirm deletion logic
+      const confirmDeletion = async () => {
+        try {
+          await AxiosApi.deleteDiary(loggedInMember, index); // Assuming you have a deleteDiary API endpoint
+          removeDiary(index); // Remove from local context
+          navigate("/"); // Redirect to home after deletion
+        } catch (error) {
+          console.error("Failed to delete diary:", error);
+          setModalMessage("일기를 삭제하는 데 실패했습니다.");
+          setIsModalOpen(true);
+        }
+      };
+
+      // Add the confirm logic in `onConfirm` in the modal
+    } else {
+      setModalMessage("삭제할 일기가 없습니다.");
+      setIsModalOpen(true);
+    }
+  };
+
+  const removeTag = (tag) => {
+    setTags(tags.filter((t) => t !== tag));
   };
 
   const addTag = () => {
     const trimmedTag = tagInput.trim();
+
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setTagInput("");
-    } else {
+    } else if (tags.includes(trimmedTag)) {
       setModalMessage("중복된 태그를 입력하였습니다");
       setIsModalOpen(true);
     }
   };
-
-  const removeTag = (tag) => setTags(tags.filter((t) => t !== tag));
 
   const addCodeSnippet = () => {
     setCodeSnippets([
@@ -85,12 +156,38 @@ const DiaryInsert = () => {
     ]);
   };
 
-  const handleChange = (e) => {
-    setDescription(e.target.value);
+  const removeCodeSnippet = (snippetIndex) => {
+    setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
+  };
+
+  const addCodeCommentary = (snippetIndex) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary.push("");
+    setCodeSnippets(updatedSnippets);
+  };
+
+  const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary.splice(commentaryIndex, 1);
+    setCodeSnippets(updatedSnippets);
+  };
+
+  const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary[commentaryIndex] = newComment;
+    setCodeSnippets(updatedSnippets);
+  };
+
+  const handleResizeHeight = () => {
     if (textarea.current) {
       textarea.current.style.height = "auto";
       textarea.current.style.height = `${textarea.current.scrollHeight}px`;
     }
+  };
+
+  const handleChange = (e) => {
+    setDescription(e.target.value);
+    handleResizeHeight();
   };
 
   return (
@@ -120,7 +217,6 @@ const DiaryInsert = () => {
             placeholder="내용 입력"
           />
 
-          {/* 태그 섹션 */}
           <St.Div className="tag-section">
             <St.TagInput
               type="text"
@@ -141,7 +237,6 @@ const DiaryInsert = () => {
             </St.TagList>
           </St.Div>
 
-          {/* 코드스니펫 + 코멘터리 섹션 */}
           <St.GeneralAddBtn
             type="button"
             onClick={() => setShowCodeSnippets((prev) => !prev)}
@@ -184,14 +279,44 @@ const DiaryInsert = () => {
                   />
                   <St.GeneralRmvBtn
                     type="button"
-                    onClick={() => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets.splice(snippetIndex, 1);
-                      setCodeSnippets(updatedSnippets);
-                    }}
+                    onClick={() => removeCodeSnippet(snippetIndex)}
                   >
                     코드 스니펫 삭제
                   </St.GeneralRmvBtn>
+
+                  <St.GeneralAddBtn
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralAddBtn>
+
+                  {snippet.commentary.map((comment, commentaryIndex) => (
+                    <div key={commentaryIndex} style={{ marginTop: "10px" }}>
+                      <St.TextArea
+                        ref={textarea}
+                        value={comment}
+                        rows={4}
+                        placeholder="내용 입력"
+                        onChange={(e) =>
+                          updateCodeCommentary(
+                            snippetIndex,
+                            commentaryIndex,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <St.GeneralRmvBtn
+                        type="button"
+                        onClick={() =>
+                          removeCodeCommentary(snippetIndex, commentaryIndex)
+                        }
+                        style={{ marginTop: "5px" }}
+                      >
+                        코멘트 삭제
+                      </St.GeneralRmvBtn>
+                    </div>
+                  ))}
                 </div>
               ))}
               <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
@@ -200,11 +325,16 @@ const DiaryInsert = () => {
             </St.Div>
           )}
 
-          {/* Submit Button */}
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
-              저장
+              수정
             </St.ConfirmBtn>
+            {/* 현재 data fetching api 가 제대로 붙어있지 않으므로 index가 null일거고, 그러면 삭제버튼은 렌더링 안된다 */}
+            {index !== null && (
+              <St.RmvBtnS type="button" onClick={handleDelete}>
+                삭제
+              </St.RmvBtnS>
+            )}
             <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
             </St.EtcBtn>
@@ -215,11 +345,21 @@ const DiaryInsert = () => {
       <ConfirmationModal
         isOpen={isModalOpen}
         message={modalMessage}
-        confirmText="확인"
+        confirmText={
+          modalMessage === "중복된 태그를 입력하였습니다" ? "확인" : "네"
+        }
+        cancelText={
+          modalMessage === "중복된 태그를 입력하였습니다" ? undefined : "아니오"
+        }
         onConfirm={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+        singleButton={
+          modalMessage === "중복된 태그를 입력하였습니다" ||
+          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
+        }
       />
     </St.Container>
   );
 };
 
-export default DiaryInsert;
+export default DiaryUpdate;
