@@ -47,7 +47,7 @@ const DiaryUpdate = () => {
     }
   }, [location.state]);
 
-  // useEffect fetch diary 추가하고 변경?
+  // useEffect fetch diary 추가하고 변경? (axioApi의 getDiary 부분?)
   // useEffect(() => {
   //   const fetchDiary = async () => {
   //     try {
@@ -112,23 +112,20 @@ const DiaryUpdate = () => {
     if (index !== null) {
       setModalMessage("정말로 일기를 삭제하시겠습니까?");
       setIsModalOpen(true);
-
-      // Confirm deletion logic
-      const confirmDeletion = async () => {
-        try {
-          await AxiosApi.deleteDiary(loggedInMember, index); // Assuming you have a deleteDiary API endpoint
-          removeDiary(index); // Remove from local context
-          navigate("/"); // Redirect to home after deletion
-        } catch (error) {
-          console.error("Failed to delete diary:", error);
-          setModalMessage("일기를 삭제하는 데 실패했습니다.");
-          setIsModalOpen(true);
-        }
-      };
-
-      // Add the confirm logic in `onConfirm` in the modal
     } else {
       setModalMessage("삭제할 일기가 없습니다.");
+      setIsModalOpen(true);
+    }
+  };
+
+  const confirmDeletion = async () => {
+    try {
+      await AxiosApi.deleteDiary(loggedInMember, index); // Assuming you have a delete API
+      removeDiary(index); // Remove from context or local state
+      navigate("/"); // Redirect to home after successful deletion
+    } catch (error) {
+      console.error("Failed to delete diary:", error);
+      setModalMessage("일기를 삭제하는 데 실패했습니다.");
       setIsModalOpen(true);
     }
   };
@@ -346,13 +343,27 @@ const DiaryUpdate = () => {
         isOpen={isModalOpen}
         message={modalMessage}
         confirmText={
-          modalMessage === "중복된 태그를 입력하였습니다" ? "확인" : "네"
+          modalMessage === "중복된 태그를 입력하였습니다" ||
+          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
+            ? "확인"
+            : "네"
         }
         cancelText={
-          modalMessage === "중복된 태그를 입력하였습니다" ? undefined : "아니오"
+          modalMessage === "중복된 태그를 입력하였습니다" ||
+          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
+            ? undefined
+            : "아니오"
         }
-        onConfirm={() => setIsModalOpen(false)}
-        onCancel={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          if (modalMessage === "중복된 태그를 입력하였습니다") {
+            setIsModalOpen(false); // 중복 태그 관련이면 그냥 모달 닫기
+          } else if (modalMessage === "일기 제목, 내용, 날짜를 입력하세요!") {
+            setIsModalOpen(false); // 필수 기입 내역 안했다면 그냥 모달 닫기
+          } else if (modalMessage === "정말로 일기를 삭제하시겠습니까?") {
+            confirmDeletion(); // 일기 삭제를 위해서는 confirmDeletion() 함수 호출
+          }
+        }}
+        onCancel={() => setIsModalOpen(false)} // 취소하면 무조건 모달 닫기
         singleButton={
           modalMessage === "중복된 태그를 입력하였습니다" ||
           modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
