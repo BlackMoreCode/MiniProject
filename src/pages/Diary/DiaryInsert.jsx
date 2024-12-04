@@ -50,6 +50,34 @@ const DiaryInsert = () => {
     }
   }, [location.state]);
 
+  //일기를 불러오는 API 들어오면 위의 useEffect 대신 이걸로 바꿔본다.
+  // useEffect(() => {
+  //   const fetchDiaryData = async () => {
+  //     if (index !== null) {
+  //       try {
+  //         const diary = await AxiosApi.getDiary(index);
+  //         setTitle(diary.title);
+  //         setDescription(diary.description); // 백엔드로부터 description 불러오시고...
+  //         setDate(diary.writtenDate);
+  //         setTags(diary.tags || []);
+  //         setCodeSnippets(
+  //           (diary.codingDiaryEntries || []).map((entry) => ({
+  //             language: entry.programmingLanguageName,
+  //             code: entry.content,
+  //             commentary: [], // 백엔드가 코드만 보낸다고 가정하고...
+  //           }))
+  //         );
+  //       } catch (error) {
+  //         console.error("Failed to fetch diary data:", error);
+  //         setModalMessage("일기를 불러오는 데 실패했습니다.");
+  //         setIsModalOpen(true);
+  //       }
+  //     }
+  //   };
+
+  //   fetchDiaryData();
+  // }, [index]);
+
   // Handle submit 비동기 함수
   const handleSubmit = async (e) => {
     e.preventDefault();

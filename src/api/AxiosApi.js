@@ -73,6 +73,17 @@ export const AxiosApi = {
       throw error.response ? error.response.data : error; // 에러시 백엔드 에러 보내기?
     }
   },
+
+  //추후에 백엔드에서 일기 데이터를 받아서 호출할 API 프로토타입?
+  getDiary: async (diaryId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/diary/${diaryId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch diary:", error);
+      throw error;
+    }
+  },
 };
 
 export default AxiosApi;
