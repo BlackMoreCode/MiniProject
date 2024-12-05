@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Hi+Melody&family=Nanum+Gothic&family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@200..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=Hi+Melody&family=Nanum+Gothic&family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@200..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hi+Melody&family=Nanum+Gothic&family=Nanum+Pen+Script&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&family=Hi+Melody&family=Jua&family=Nanum+Gothic&family=Nanum+Pen+Script&family=Noto+Serif+KR:wght@200..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Nanum+Pen+Script&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+.font-dohyeon {
+  font-family: 'Do Hyeon', sans-serif;
+}
+
+.font-gowundodum {
+  font-family: 'Gowun Dodum', sans-serif;
+}
+
+.font-himelody {
+  font-family: "Hi Melody", sans-serif;
+}
+
+.font-jua {
+  font-family: 'Jua', sans-serif;
+}
+
+.font-nanumgothic {
+  font-family: 'Nanum Gothic', sans-serif;
+}
