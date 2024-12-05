@@ -75,10 +75,19 @@ export const AxiosApi = {
     }
   },
 
-  //추후에 백엔드에서 일기 데이터를 받아서 호출할 API 프로토타입?
-  getDiaries: async () => {
+  //추후에 백엔드에서 일기 데이터를 받아서 호출할 API 프로토타입? 현재 불필요한가?
+  getDiaries: async ({ loggedInMember, year, month }) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/diary/all`); // Backend should provide an endpoint for fetching all diaries
+      const response = await axios.post(
+        `${API_BASE_URL}/diary/get-monthly-list`,
+        {
+          loggedInMember,
+          date: {
+            year,
+            month,
+          },
+        }
+      ); // Backend should provide an endpoint for fetching all diaries
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;

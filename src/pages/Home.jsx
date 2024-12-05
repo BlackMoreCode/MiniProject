@@ -16,13 +16,27 @@ const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
 
 const Home = () => {
-  const { diaries } = useContext(UserContext);
+  const { logout, diaries, loggedInMember, fetchDiaries } =
+    useContext(UserContext);
   const navigate = useNavigate();
 
-  // 디버깅용. HOME에 일기가 업데이트 되었나...
+  //로그인 상태가 아닐경우 로그인 페이지로 리다이렉트.
+  // useEffect(() => {
+  //   if (!loggedInMember) {
+  //     navigate("/login"); // Redirect to login page
+  //   }
+  // }, []);
+
+  // Fetch diaries when loggedInMember is updated
   useEffect(() => {
-    console.log("Updated diaries in Home:", diaries); // Log updated diaries
-  }, [diaries]);
+    if (loggedInMember) {
+      console.log("Home Update by loggedInMember");
+      fetchDiaries();
+    } else if (loggedInMember === null) {
+      console.log("go to intro page");
+      navigate("/intro");
+    }
+  }, []);
 
   return (
     <Container>
@@ -35,6 +49,14 @@ const Home = () => {
             <Div className="phone-headerLeft">
               {/* 왼쪽 메뉴 버튼 */}
               <button className="phone-menuBtn">=</button>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate("/intro");
+                }}
+              >
+                로그아웃
+              </button>
             </Div>
 
             <Div className="phone-headerRight">

@@ -29,32 +29,13 @@ const DiaryUpdate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  // 기존 사용하던 것.
-  // useEffect(() => {
-  //   if (location.state) {
-  //     const { diary, index } = location.state;
-
-  //     setTitle(diary.title || "");
-  //     setDescription(diary.description || "");
-  //     setDate(diary.date || new Date().toISOString().split("T")[0]);
-  //     setTags(diary.tags || []);
-  //     setCodeSnippets(
-  //       (diary.codeSnippets || []).map((snippet) => ({
-  //         ...snippet,
-  //         commentary: snippet.commentary || [],
-  //       }))
-  //     );
-  //     setIndex(index);
-  //   }
-  // }, [location.state]);
-
   // useEffect fetch diary 추가하고 변경? (axioApi의 getDiary 부분?)
   useEffect(() => {
     const fetchDiary = async () => {
-      const diaryNum = location.state?.diaryNum; // location.state 으로 부터 diaryNum을 추출
+      const diaryNum = location.state?.diaryNum; // Extract diaryNum
       if (diaryNum) {
         try {
-          const response = await AxiosApi.getDiary(diaryNum); // 일기 데이터 fetch
+          const response = await AxiosApi.getDiary(diaryNum); // Fetch diary details
           const fetchedDiary = response;
           setTitle(fetchedDiary.title);
           setDescription(fetchedDiary.content);
@@ -63,14 +44,14 @@ const DiaryUpdate = () => {
           );
           setTags(fetchedDiary.tags || []);
           setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
-          setIndex(diaryNum); // 추후 수정 및 삭제를 위해서 diaryNum 사용?
+          setIndex(diaryNum);
         } catch (error) {
           console.error("Failed to fetch diary:", error);
           setModalMessage("일기를 불러오는 데 실패했습니다.");
           setIsModalOpen(true);
         }
       } else {
-        navigate("/"); // diaryNum이 없다면 홈으로
+        navigate("/"); // Redirect if diaryNum is missing
       }
     };
 
@@ -86,19 +67,11 @@ const DiaryUpdate = () => {
       return;
     }
 
-    const formatDate = (date) => {
-      const d = new Date(date);
-      const pad = (n) => (n < 10 ? "0" + n : n);
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
-        d.getDate()
-      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-    };
-
     const updatedDiary = {
       title,
       content: description,
       tags,
-      writtenDate: formatDate(date), // Use the correct date
+      writtenDate: new Date(date).toISOString(), // Ensure correct date format
       codingDiaryEntries: codeSnippets.map((snippet, index) => ({
         programmingLanguageName: snippet.language || null,
         content: snippet.code || snippet.commentary,
@@ -107,8 +80,8 @@ const DiaryUpdate = () => {
     };
 
     try {
-      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary);
-      navigate("/");
+      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary); // Update diary
+      navigate("/"); // Redirect to home
     } catch (error) {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
@@ -129,9 +102,9 @@ const DiaryUpdate = () => {
 
   const confirmDeletion = async () => {
     try {
-      await AxiosApi.deleteDiary(loggedInMember, index); // Assuming you have a delete API
-      removeDiary(index); // Remove from context or local state
-      navigate("/"); // Redirect to home after successful deletion
+      await AxiosApi.deleteDiary(loggedInMember, index); // Delete diary API call
+      removeDiary(index); // Update context or state
+      navigate("/"); // Redirect to home
     } catch (error) {
       console.error("Failed to delete diary:", error);
       setModalMessage("일기를 삭제하는 데 실패했습니다.");

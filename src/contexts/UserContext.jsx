@@ -6,41 +6,39 @@ export const UserContext = createContext(null);
 export const UserProfile = (props) => {
   const [userId, setUserId] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
-  // const [theme, setTheme] = useState(DEFAULT);
-  // const [font, setFont] = useState(DEFAULT);
-  // const [alertSound, setAlertSound] = useState(DEFAULT);
-
-  // 코드 스니핏, 태그, 일기 관리하는 상태. 백엔드랑 합쳐지기 전 까지 남아있기
-  // const [diaries, setDiaries] = useState(() => {
-  //   const savedDiaries = localStorage.getItem("diaries");
-  //   return savedDiaries ? JSON.parse(savedDiaries) : []; // load from localStorage
-  // });
+  const [hasFetchedDiaries, setHasFetchedDiaries] = useState(false);
 
   // 윗 부분 수정?
   const [diaries, setDiaries] = useState([]);
-
-  useEffect(() => {
-    const fetchDiaries = async () => {
-      try {
-        const response = await AxiosApi.getDiaries(); // Implement a backend API to fetch all diaries
-        setDiaries(response);
-      } catch (error) {
-        console.error("Failed to fetch diaries from backend:", error);
-      }
-    };
-
-    fetchDiaries();
-  }, []);
-
   // 로그인한 유저를 위한 헬퍼
   const loggedInMember =
     userId && userPassword ? { id: userId, password: userPassword } : null;
+
+  /**
+   * 로그인 유저들의 일기를 fetch
+   * 이 함수는 로그인 혹은 재 로그인시 호출
+   */
+  const fetchDiaries = async () => {
+    if (!loggedInMember || hasFetchedDiaries) return;
+
+    try {
+      const year = new Date().getFullYear().toString();
+      const month = (new Date().getMonth() + 1).toString();
+      const response = await AxiosApi.getDiaries({
+        loggedInMember,
+        year,
+        month,
+      });
+      setDiaries(response.diaries); // Update context state
+    } catch (error) {
+      console.error("Failed to fetch diaries from backend:", error);
+    }
+  };
 
   // 태그와 코드스니펫과 함께 일기 추가
   const addDiary = (diary) => {
     setDiaries((prevDiaries) => {
       const updatedDiaries = [...prevDiaries, diary];
-      localStorage.setItem("diaries", JSON.stringify(updatedDiaries)); // Save to localStorage
       return updatedDiaries;
     });
   };
@@ -50,8 +48,6 @@ export const UserProfile = (props) => {
     setDiaries((prevDiaries) => {
       const updatedDiaries = [...prevDiaries];
       updatedDiaries[index] = updatedDiary; //특정 인덱스를 가진 일기 수정
-
-      localStorage.setItem("diaries", JSON.stringify(updatedDiaries)); // 로컬 스토리지에 저장
       return updatedDiaries;
     });
   };
@@ -60,12 +56,11 @@ export const UserProfile = (props) => {
   const removeDiary = (index) => {
     setDiaries((prevDiaries) => {
       const updatedDiaries = prevDiaries.filter((_, i) => i !== index); //특정 인덱스의 일기 제거
-
-      localStorage.setItem("diaries", JSON.stringify(updatedDiaries)); // 로컬 스토리지에 저장
       return updatedDiaries;
     });
   };
 
+  // 앱초기화에 로컬스토리로서부터 유저 프로필 불러오기 (credentials)
   useEffect(() => {
     const loadUserProfile = () => {
       setUserId(localStorage.getItem("userId"));
@@ -73,6 +68,27 @@ export const UserProfile = (props) => {
     };
     loadUserProfile();
   }, []);
+
+  const login = async (id, password) => {
+    setUserId(id);
+    setUserPassword(password);
+    localStorage.setItem("userId", id);
+    localStorage.setItem("userPassword", password);
+    console.log("const login");
+    await fetchDiaries(); // Fetch diaries after login
+  };
+
+  /**
+   * Logout: Clear user context state and localStorage
+   */
+  const logout = () => {
+    console.log("logged out");
+    setUserId(null);
+    setUserPassword(null);
+    // setDiaries([]); // Clear diaries on logout
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userPassword");
+  };
 
   return (
     <UserContext.Provider
@@ -82,16 +98,13 @@ export const UserProfile = (props) => {
         userPassword,
         setUserPassword,
         loggedInMember,
-        // theme,
-        // setTheme,
-        // font,
-        // setFont,
-        // alertSound,
-        // setAlertSound,
         diaries, // context에 일기 제공
         addDiary,
         updateDiary,
         removeDiary,
+        fetchDiaries,
+        login,
+        logout,
       }}
     >
       {props.children}
