@@ -75,13 +75,43 @@ export const AxiosApi = {
   },
 
   //추후에 백엔드에서 일기 데이터를 받아서 호출할 API 프로토타입?
-  getDiary: async (diaryId) => {
+  getDiaries: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/diary/${diaryId}`);
+      const response = await axios.get(`${API_BASE_URL}/diary/all`); // Backend should provide an endpoint for fetching all diaries
       return response.data;
     } catch (error) {
-      console.error("Failed to fetch diary:", error);
-      throw error;
+      throw error.response ? error.response.data : error;
+    }
+  },
+
+  // 기존 일기 수정
+  updateDiary: async (diaryNum, loggedInMember, updatedDiary) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/diary/update`, {
+        diaryNum,
+        loggedInMember,
+        ...updatedDiary,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update diary:", error);
+      throw error.response ? error.response.data : error;
+    }
+  },
+
+  // 기존 일기 삭제
+  deleteDiary: async (loggedInMember, diaryNum) => {
+    try {
+      const response = await axios.delete(
+        `${API_BASE_URL}/diary/delete/${diaryNum}`,
+        {
+          data: { loggedInMember }, // 백엔드에서 멤버 데이터를 요구시 (실제로 그래야하지 않나?)
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to delete diary:", error);
+      throw error.response ? error.response.data : error;
     }
   },
 };

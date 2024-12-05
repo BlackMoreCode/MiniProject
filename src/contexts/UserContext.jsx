@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import AxiosApi from "../api/AxiosApi.js";
 import { DEFAULT } from "../constant/diarySettingKeyword.js";
 export const UserContext = createContext(null);
 
@@ -10,10 +11,26 @@ export const UserProfile = (props) => {
   // const [alertSound, setAlertSound] = useState(DEFAULT);
 
   // 코드 스니핏, 태그, 일기 관리하는 상태. 백엔드랑 합쳐지기 전 까지 남아있기
-  const [diaries, setDiaries] = useState(() => {
-    const savedDiaries = localStorage.getItem("diaries");
-    return savedDiaries ? JSON.parse(savedDiaries) : []; // load from localStorage
-  });
+  // const [diaries, setDiaries] = useState(() => {
+  //   const savedDiaries = localStorage.getItem("diaries");
+  //   return savedDiaries ? JSON.parse(savedDiaries) : []; // load from localStorage
+  // });
+
+  // 윗 부분 수정?
+  const [diaries, setDiaries] = useState([]);
+
+  useEffect(() => {
+    const fetchDiaries = async () => {
+      try {
+        const response = await AxiosApi.getDiaries(); // Implement a backend API to fetch all diaries
+        setDiaries(response);
+      } catch (error) {
+        console.error("Failed to fetch diaries from backend:", error);
+      }
+    };
+
+    fetchDiaries();
+  }, []);
 
   // 로그인한 유저를 위한 헬퍼
   const loggedInMember =

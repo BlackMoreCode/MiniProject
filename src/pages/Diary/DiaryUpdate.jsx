@@ -29,44 +29,53 @@ const DiaryUpdate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  useEffect(() => {
-    if (location.state) {
-      const { diary, index } = location.state;
-
-      setTitle(diary.title || "");
-      setDescription(diary.description || "");
-      setDate(diary.date || new Date().toISOString().split("T")[0]);
-      setTags(diary.tags || []);
-      setCodeSnippets(
-        (diary.codeSnippets || []).map((snippet) => ({
-          ...snippet,
-          commentary: snippet.commentary || [],
-        }))
-      );
-      setIndex(index);
-    }
-  }, [location.state]);
-
-  // useEffect fetch diary 추가하고 변경? (axioApi의 getDiary 부분?)
+  // 기존 사용하던 것.
   // useEffect(() => {
-  //   const fetchDiary = async () => {
-  //     try {
-  //       const response = await AxiosApi.getDiaryById(id); // Fetch diary by ID
-  //       const fetchedDiary = response.data;
-  //       setTitle(fetchedDiary.title || "");
-  //       setDescription(fetchedDiary.content || "");
-  //       setDate(fetchedDiary.writtenDate || new Date().toISOString());
-  //       setTags(fetchedDiary.tags || []);
-  //       setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
-  //     } catch (error) {
-  //       console.error("Failed to fetch diary:", error);
-  //     }
-  //   };
+  //   if (location.state) {
+  //     const { diary, index } = location.state;
 
-  //   if (location.state?.id) {
-  //     fetchDiary();
+  //     setTitle(diary.title || "");
+  //     setDescription(diary.description || "");
+  //     setDate(diary.date || new Date().toISOString().split("T")[0]);
+  //     setTags(diary.tags || []);
+  //     setCodeSnippets(
+  //       (diary.codeSnippets || []).map((snippet) => ({
+  //         ...snippet,
+  //         commentary: snippet.commentary || [],
+  //       }))
+  //     );
+  //     setIndex(index);
   //   }
   // }, [location.state]);
+
+  // useEffect fetch diary 추가하고 변경? (axioApi의 getDiary 부분?)
+  useEffect(() => {
+    const fetchDiary = async () => {
+      const diaryNum = location.state?.diaryNum; // location.state 으로 부터 diaryNum을 추출
+      if (diaryNum) {
+        try {
+          const response = await AxiosApi.getDiary(diaryNum); // 일기 데이터 fetch
+          const fetchedDiary = response;
+          setTitle(fetchedDiary.title);
+          setDescription(fetchedDiary.content);
+          setDate(
+            fetchedDiary.writtenDate || new Date().toISOString().split("T")[0]
+          );
+          setTags(fetchedDiary.tags || []);
+          setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
+          setIndex(diaryNum); // 추후 수정 및 삭제를 위해서 diaryNum 사용?
+        } catch (error) {
+          console.error("Failed to fetch diary:", error);
+          setModalMessage("일기를 불러오는 데 실패했습니다.");
+          setIsModalOpen(true);
+        }
+      } else {
+        navigate("/"); // diaryNum이 없다면 홈으로
+      }
+    };
+
+    fetchDiary();
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,7 +98,7 @@ const DiaryUpdate = () => {
       title,
       content: description,
       tags,
-      writtenDate: formatDate(new Date()),
+      writtenDate: formatDate(date), // Use the correct date
       codingDiaryEntries: codeSnippets.map((snippet, index) => ({
         programmingLanguageName: snippet.language || null,
         content: snippet.code || snippet.commentary,
@@ -98,7 +107,7 @@ const DiaryUpdate = () => {
     };
 
     try {
-      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary); // Replace with the correct Axios API function
+      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary);
       navigate("/");
     } catch (error) {
       console.error("Failed to update diary:", error);

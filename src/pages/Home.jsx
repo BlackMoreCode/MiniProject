@@ -64,8 +64,11 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={
-                  () => navigate("/diaryUpdate", { state: { diary, index } }) // 일기 데이터랑 해당 인덱스 보내기...
+                // 전과 다르게 diaryNum 만 넘겨주자
+                onClick={() =>
+                  navigate("/diaryUpdate", {
+                    state: { diaryNum: diary.diaryNum },
+                  })
                 }
               >
                 <p className="diary-date">{diary.date}</p>
