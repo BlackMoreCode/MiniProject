@@ -84,7 +84,7 @@ const Home = () => {
             <FontAwesomeIcon icon={faCalendar} />
           </RedirectButton>
           <AddButton onClick={() => navigate("/diaryInsert")}>+</AddButton>
-          <RedirectButton>
+          <RedirectButton onClick={() => navigate("/mypage")}>
             <FontAwesomeIcon icon={faPerson} />
           </RedirectButton>
         </Div>

@@ -4,12 +4,13 @@ import Calendar from "../pages/Calendar/Calendar";
 import Home from "../pages/Home";
 import DiaryInsert from "../pages/Diary/DiaryInsert";
 import DiaryUpdate from "../pages/Diary/DiaryInsert";
-import MyPage from "../pages/MyPage";
-import Profile from "../pages/Profile";
+import MyPage from "../pages/MyPage/MyPage";
+import Profile from "../pages/MyPage/Profile";
 import { NotFound } from "../pages/NotFound/NotFound";
 import Intro from "../pages/Intro/Intro";
 import { SignUp } from "../pages/SignUp/SignUp";
 import { Login } from "../pages/Login/Login";
+import ChangePw from "../pages/MyPage/ChangePw";
 
 function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/changepw" element={<ChangePw />} />
 
         <Route path="/intro" element={<Intro />} />
         <Route path="/signup" element={<SignUp />} />

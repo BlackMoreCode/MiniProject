@@ -65,12 +65,13 @@ export const AxiosApi = {
   saveDiary: async (loggedInMember, newDiary) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/diary/save`, {
-        loggedInMember,
-        newDiary,
+        loggedInMember, // 로그인된 멤버 데이터 보내기
+        newDiary, // 일기 객체 (= Diary object; => title, content, tags, etc.)
       });
-      return response.data; // 성공 메세지 혹은 관련 데이터 반환
+      return response.data;
     } catch (error) {
-      throw error.response ? error.response.data : error; // 에러시 백엔드 에러 보내기?
+      console.error("Failed to save diary:", error);
+      throw error.response ? error.response.data : error;
     }
   },
 
