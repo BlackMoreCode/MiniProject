@@ -16,10 +16,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import { FiLogOut } from "react-icons/fi";
 import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
-import AxiosApi from "../api/AxiosApi";
-
-const monthName = new Date().toLocaleString("default", { month: "long" });
-const year = new Date().getFullYear();
 
 const Home = () => {
   const { logout, diaries, loggedInMember, fetchDiaries } =
@@ -29,6 +25,13 @@ const Home = () => {
   // 컨텍스트에서 직접적으로 정렬을 실행하는 것은 이상적이지 못하다.
   // 그러므로 Home.jsx에서 diaries의 로컬 복사본을 생성한다.
   const [sortedDiaries, setSortedDiaries] = useState([]);
+  // 검색
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  // 정렬 상태
+  const [isSort, setIsSort] = useState("asc");
+  const [diaryYear, setDiaryYear] = useState(new Date().getFullYear());
+  const [diaryMonth, setDiaryMonth] = useState(new Date().getMonth() + 1);
 
   const navigate = useNavigate();
 
@@ -43,37 +46,54 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    setSortedDiaries([...diaries]); // 받은 일기랑 정렬된 일기랑 동기화 처리
-  }, [diaries]);
+    // Synchronize sortedDiaries with diaries when diaries change
+    const filteredDiaries = diaries.filter(
+      (diary) =>
+        new Date(diary.writtenDate).getFullYear() === diaryYear &&
+        new Date(diary.writtenDate).getMonth() + 1 === diaryMonth
+    );
+    setSortedDiaries(filteredDiaries);
+  }, [diaries, diaryYear, diaryMonth]);
+
+  useEffect(() => {
+    // Apply search filter when searchValue changes
+    if (searchValue.trim() === "") {
+      setSearchResults([]);
+    } else {
+      const results = sortedDiaries.filter((diary) =>
+        diary.title.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setSearchResults(results);
+    }
+  }, [searchValue, sortedDiaries]);
 
   // 검색창 열고 닫기
+  const inputRef = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchCloseVisible, setSearchCloseVisible] = useState(false);
   const searchVisibleOn = () => {
     setSearchVisible(true);
     setSearchCloseVisible(true);
   };
-  useEffect(() => {
-    // 커서 포커싱
-    if (searchVisible) {
-      inputRef.current.focus();
-    }
-  }, [searchVisible]);
+
   const searchVisibleOff = () => {
     setSearchVisible(false);
     setSearchCloseVisible(false);
     setSearchValue("");
+    setSearchResults([]);
   };
 
-  // 검색
-  const inputRef = useRef(null);
-  const [searchValue, setSearchValue] = useState("");
+  // 검색에 따른 상태 변화
   const inputChange = (e) => {
     setSearchValue(e.target.value);
   };
 
-  // 정렬
-  const [isSort, setIsSort] = useState("asc");
+  // 커서 포커싱
+  useEffect(() => {
+    if (searchVisible) {
+      inputRef.current.focus();
+    }
+  }, [searchVisible]);
 
   //기존 로직이 완료되지 않아서 추가.
   const handleSort = () => {
@@ -86,11 +106,7 @@ const Home = () => {
           const dateA = new Date(a.writtenDate);
           const dateB = new Date(b.writtenDate);
 
-          if (newSortOrder === "asc") {
-            return dateA - dateB;
-          } else {
-            return dateB - dateA;
-          }
+          return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
         })
       );
 
@@ -98,13 +114,22 @@ const Home = () => {
     });
   };
 
-  // 날짜 선택 --> 미완성?
-  const selectDate = () => {};
+  // 날짜 선택 --> 미완성? --> 1차 시도
+  const changeMonth = (offset) => {
+    let newMonth = diaryMonth + offset;
+    let newYear = diaryYear;
 
-  // 일기 날짜 포맷
-  const currentDate = new Date();
-  const [diaryYear, setDiaryYear] = useState(currentDate.getFullYear());
-  const [diaryMonth, getDiaryMonth] = useState(currentDate.getMonth() + 1);
+    if (newMonth > 12) {
+      newMonth = 1;
+      newYear++;
+    } else if (newMonth < 1) {
+      newMonth = 12;
+      newYear--;
+    }
+
+    setDiaryYear(newYear);
+    setDiaryMonth(newMonth);
+  };
 
   return (
     <Container>
@@ -172,14 +197,39 @@ const Home = () => {
           </Div>
 
           <Div className="phone-theme">
-            <button onClick={selectDate}>
-              {diaryYear} {diaryMonth}월
-            </button>
+            <button onClick={() => changeMonth(-1)}>◀</button>
+            {diaryYear} {diaryMonth}월
+            <button onClick={() => changeMonth(1)}>▶</button>
           </Div>
         </Div>
         {/* Diary Section */}
         <Div className="diary-container">
-          {sortedDiaries.length === 0 ? (
+          {searchValue && searchResults.length === 0 ? (
+            <p>검색 결과가 없습니다.</p>
+          ) : searchValue ? (
+            searchResults.map((diary, index) => (
+              <Div
+                key={index}
+                className="diary-box"
+                style={{ position: "relative", cursor: "pointer" }}
+                onClick={() => {
+                  console.log(
+                    "Navigating to DiaryUpdate with diaryNum:",
+                    diary.diaryNum
+                  );
+                  navigate("/diaryUpdate", {
+                    state: { diaryNum: diary.diaryNum },
+                  });
+                }}
+              >
+                <p className="diary-date">
+                  {new Date(diary.writtenDate).toLocaleDateString()}
+                </p>
+                <p className="diary-title">{diary.title || "제목 없음"}</p>
+                <p className="diary-desc">{diary.content || "내용 없음"}</p>
+              </Div>
+            ))
+          ) : sortedDiaries.length === 0 ? (
             <p>추가된 일기가 아직 없습니다.</p>
           ) : (
             sortedDiaries.map((diary, index) => (
@@ -194,17 +244,7 @@ const Home = () => {
                 }
               >
                 <p className="diary-date">
-                  {(() => {
-                    const date = new Date(diary.writtenDate); // 백엔드로서부터 받는 writtenDate 사용
-                    return !isNaN(date.getTime())
-                      ? `${date.getFullYear()}-${String(
-                          date.getMonth() + 1
-                        ).padStart(2, "0")}-${String(date.getDate()).padStart(
-                          2,
-                          "0"
-                        )}`
-                      : "Invalid Date";
-                  })()}
+                  {new Date(diary.writtenDate).toLocaleDateString()}
                 </p>
                 <p className="diary-title">{diary.title || "제목 없음"}</p>
                 <p className="diary-desc">{diary.content || "내용 없음"}</p>
