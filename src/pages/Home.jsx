@@ -25,6 +25,11 @@ const Home = () => {
   const { logout, diaries, loggedInMember, fetchDiaries } =
     useContext(UserContext);
 
+  // 리액트 문맥 값 (context value) 는 디자인상 불변성이 유지되어야하므로 ("immutable")
+  // 컨텍스트에서 직접적으로 정렬을 실행하는 것은 이상적이지 못하다.
+  // 그러므로 Home.jsx에서 diaries의 로컬 복사본을 생성한다.
+  const [sortedDiaries, setSortedDiaries] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +41,10 @@ const Home = () => {
       navigate("/intro");
     }
   }, []);
+
+  useEffect(() => {
+    setSortedDiaries([...diaries]); // 받은 일기랑 정렬된 일기랑 동기화 처리
+  }, [diaries]);
 
   // 검색창 열고 닫기
   const [searchVisible, setSearchVisible] = useState(false);
@@ -68,7 +77,25 @@ const Home = () => {
 
   //기존 로직이 완료되지 않아서 추가.
   const handleSort = () => {
-    setIsSort((prevState) => (prevState === "asc" ? "desc" : "asc"));
+    setIsSort((prevState) => {
+      const newSortOrder = prevState === "asc" ? "desc" : "asc";
+
+      // Update sortedDiaries instead of original diaries
+      setSortedDiaries((prevDiaries) =>
+        [...prevDiaries].sort((a, b) => {
+          const dateA = new Date(a.writtenDate);
+          const dateB = new Date(b.writtenDate);
+
+          if (newSortOrder === "asc") {
+            return dateA - dateB;
+          } else {
+            return dateB - dateA;
+          }
+        })
+      );
+
+      return newSortOrder;
+    });
   };
 
   // 날짜 선택 --> 미완성?
@@ -152,52 +179,37 @@ const Home = () => {
         </Div>
         {/* Diary Section */}
         <Div className="diary-container">
-          {diaries.length === 0 ? (
+          {sortedDiaries.length === 0 ? (
             <p>추가된 일기가 아직 없습니다.</p>
           ) : (
-            diaries
-              .slice() // 원본 배열을 변조시키는걸 막기위해 slice메서드로  일기 배열을 복사
-              .sort((a, b) => {
-                const dateA = new Date(a.date); // 만약 다르다면 실제 date field 로 교체
-                const dateB = new Date(b.date);
-
-                if (isSort === "asc") {
-                  return dateA - dateB; // 오름차순 정렬
-                } else if (isSort === "desc") {
-                  return dateB - dateA; // 내림차순 정렬
+            sortedDiaries.map((diary, index) => (
+              <Div
+                key={index}
+                className="diary-box"
+                style={{ position: "relative", cursor: "pointer" }}
+                onClick={() =>
+                  navigate("/diaryUpdate", {
+                    state: { diaryNum: diary.diaryNum },
+                  })
                 }
-                return 0;
-              })
-              .map((diary, index) => (
-                <Div
-                  key={index}
-                  className="diary-box"
-                  style={{ position: "relative", cursor: "pointer" }}
-                  onClick={() =>
-                    navigate("/diaryUpdate", {
-                      state: { diaryNum: diary.diaryNum },
-                    })
-                  }
-                >
-                  <p className="diary-date">
-                    {(() => {
-                      const date = new Date(diary.writtenDate); // date 대신에 기존에 backend와 통신할때 쓰는 writtenDate 기용
-                      return !isNaN(date.getTime())
-                        ? `${date.getFullYear()}-${String(
-                            date.getMonth() + 1
-                          ).padStart(2, "0")}-${String(date.getDate()).padStart(
-                            2,
-                            "0"
-                          )}`
-                        : "Invalid Date";
-                    })()}
-                  </p>
-                  {/* 없을시 "내용 없음" 이라는 fallback 값 넣어두기 */}
-                  <p className="diary-title">{diary.title || "제목 없음"}</p>
-                  {/* 없을시 "내용 없음" 이라는 fallback 값 넣어두기 */}
-                  <p className="diary-desc">{diary.content || "내용 없음"}</p>
-                </Div>
-              ))
+              >
+                <p className="diary-date">
+                  {(() => {
+                    const date = new Date(diary.writtenDate); // 백엔드로서부터 받는 writtenDate 사용
+                    return !isNaN(date.getTime())
+                      ? `${date.getFullYear()}-${String(
+                          date.getMonth() + 1
+                        ).padStart(2, "0")}-${String(date.getDate()).padStart(
+                          2,
+                          "0"
+                        )}`
+                      : "Invalid Date";
+                  })()}
+                </p>
+                <p className="diary-title">{diary.title || "제목 없음"}</p>
+                <p className="diary-desc">{diary.content || "내용 없음"}</p>
+              </Div>
+            ))
           )}
         </Div>
         {/* Footer */}
