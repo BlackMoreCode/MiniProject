@@ -7,12 +7,13 @@ import {
   AddButton,
   RedirectButton,
 } from "../components/homeComponent";
-import theme1 from "../assets/images/theme1.jpg";
+import image5 from "../assets/bannerimages/image5.jpg";
 import { UserContext } from "../contexts/UserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { AiOutlineClose } from "react-icons/ai";
+import { FiLogOut } from "react-icons/fi";
 import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 import AxiosApi from "../api/AxiosApi";
@@ -21,19 +22,11 @@ const monthName = new Date().toLocaleString("default", { month: "long" });
 const year = new Date().getFullYear();
 
 const Home = () => {
-  const { userId } = useContext(UserContext);
   const { logout, diaries, loggedInMember, fetchDiaries } =
     useContext(UserContext);
+
   const navigate = useNavigate();
 
-  //로그인 상태가 아닐경우 로그인 페이지로 리다이렉트.
-  // useEffect(() => {
-  //   if (!loggedInMember) {
-  //     navigate("/login"); // Redirect to login page
-  //   }
-  // }, []);
-
-  // Fetch diaries when loggedInMember is updated
   useEffect(() => {
     if (loggedInMember) {
       console.log("Home Update by loggedInMember");
@@ -43,19 +36,6 @@ const Home = () => {
       navigate("/intro");
     }
   }, []);
-
-  useEffect(() => {
-    const getDiaries = async (userId) => {
-      try {
-        const diaryRsp = await AxiosApi.diaries(userId);
-        setDiaries(diaryRsp.data);
-      } catch (e) {
-        console.error("다이어리 불러오기 실패..", e);
-        alert("다이어리 불러오기 실패..", e);
-      }
-    };
-    getDiaries(userId);
-  }, [userId]);
 
   // 검색창 열고 닫기
   const [searchVisible, setSearchVisible] = useState(false);
@@ -85,11 +65,13 @@ const Home = () => {
 
   // 정렬
   const [isSort, setIsSort] = useState("asc");
+
+  //기존 로직이 완료되지 않아서 추가.
   const handleSort = () => {
     setIsSort((prevState) => (prevState === "asc" ? "desc" : "asc"));
   };
 
-  // 날짜 선택
+  // 날짜 선택 --> 미완성?
   const selectDate = () => {};
 
   // 일기 날짜 포맷
@@ -102,28 +84,34 @@ const Home = () => {
       <Div className="phone-container">
         {/* 헤더바 */}
         <Div className="phone-header">
-          <Img1 src={theme1} alt="theme1" />
+          <Img1 src={image5} alt="image5" />
+
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
-              <button className="phone-menuBtn">=</button>
+              {/* 왼쪽 메뉴 버튼 -- 구현 아직 안된듯? */}
+              <button className="phone-menuBtn">
+                <GiHamburgerMenu />
+              </button>
               <button
+                className="phone-menuBtn"
                 onClick={() => {
                   logout();
                   navigate("/intro");
                 }}
               >
-                로그아웃
-              </button>
-              <button className="phone-menuBtn">
-                <GiHamburgerMenu />
+                <FiLogOut />
               </button>
             </Div>
+
             <Div className="phone-headerRight">
+              {/* 테마 변경 버튼 --> 아직 기능 구현 처리 안됨 */}
               <button className="phone-themeBtn">
                 <LuPaintbrush />
               </button>
+
               <div className="phone-searchBox">
                 <input
+                  title="일기 검색"
                   type="text"
                   style={{ display: searchVisible ? "block" : "none" }}
                   value={searchValue}
@@ -147,9 +135,10 @@ const Home = () => {
               </div>
               <button className="phone-sort" onClick={handleSort}>
                 {isSort === "asc" ? (
-                  <BsSortNumericDown />
+                  // 가져다 대면 어떤 정렬인지 텍스트로도 표기
+                  <BsSortNumericDown title="오름차순 정렬" />
                 ) : (
-                  <BsSortNumericDownAlt />
+                  <BsSortNumericDownAlt title="내림차순 정렬" />
                 )}
               </button>
             </Div>
@@ -167,52 +156,46 @@ const Home = () => {
             <p>추가된 일기가 아직 없습니다.</p>
           ) : (
             diaries
-              .slice() // 원본 배열을 복사해 정렬
+              .slice() // 원본 배열을 변조시키는걸 막기위해 slice메서드로  일기 배열을 복사
               .sort((a, b) => {
-                const dayA = new Date(a.publishedAt).getDate();
-                const dayB = new Date(b.publishedAt).getDate();
+                const dateA = new Date(a.date); // 만약 다르다면 실제 date field 로 교체
+                const dateB = new Date(b.date);
 
                 if (isSort === "asc") {
-                  return dayA - dayB;
+                  return dateA - dateB; // 오름차순 정렬
                 } else if (isSort === "desc") {
-                  return dayB - dayA;
+                  return dateB - dateA; // 내림차순 정렬
                 }
                 return 0;
-              })
-              .filter((diary) => {
-                const matchDate =
-                  new Date(diary.publishedAt).getFullYear() === diaryYear &&
-                  new Date(diary.publishedAt).getMonth() + 1 === diaryMonth;
-                const matchSearch =
-                  diary.title
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase()) ||
-                  diary.content
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase());
-                return matchDate && matchSearch;
               })
               .map((diary, index) => (
                 <Div
                   key={index}
                   className="diary-box"
                   style={{ position: "relative", cursor: "pointer" }}
-                  // 전과 다르게 diaryNum 만 넘겨주자
                   onClick={() =>
                     navigate("/diaryUpdate", {
                       state: { diaryNum: diary.diaryNum },
                     })
                   }
                 >
-                  {/* {console.log(diaries)} */}
                   <p className="diary-date">
                     {(() => {
-                      const date = new Date(diary.publishedAt);
-                      return date.getDate().toString().padStart(2, "0");
+                      const date = new Date(diary.writtenDate); // date 대신에 기존에 backend와 통신할때 쓰는 writtenDate 기용
+                      return !isNaN(date.getTime())
+                        ? `${date.getFullYear()}-${String(
+                            date.getMonth() + 1
+                          ).padStart(2, "0")}-${String(date.getDate()).padStart(
+                            2,
+                            "0"
+                          )}`
+                        : "Invalid Date";
                     })()}
                   </p>
-                  <p className="diary-title">{diary.title}</p>
-                  <p className="diary-desc">{diary.content}</p>
+                  {/* 없을시 "내용 없음" 이라는 fallback 값 넣어두기 */}
+                  <p className="diary-title">{diary.title || "제목 없음"}</p>
+                  {/* 없을시 "내용 없음" 이라는 fallback 값 넣어두기 */}
+                  <p className="diary-desc">{diary.content || "내용 없음"}</p>
                 </Div>
               ))
           )}
