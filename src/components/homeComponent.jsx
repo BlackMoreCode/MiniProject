@@ -51,11 +51,6 @@ export const Div = styled.div`
     }
   }
 
-  &.phone-headerLeft {
-    display: flex;
-    gap: 10px;
-  }
-
   &.phone-headerRight {
     display: flex;
     gap: 10px;
@@ -74,7 +69,7 @@ export const Div = styled.div`
         width: 25px;
         height: 25px;
         path:nth-child(1) {
-          fill: rgb(220, 110, 50);
+          fill: rgb(220,110,50);
         }
         path:nth-child(2) {
           fill: yellow;

@@ -29,22 +29,18 @@ const DiaryUpdate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  // 백엔드로서부터 불러오기..?
+  // useEffect fetch diary 추가하고 변경? (axioApi의 getDiary 부분?)
   useEffect(() => {
     const fetchDiary = async () => {
       const diaryNum = location.state?.diaryNum; // Extract diaryNum
       if (diaryNum) {
         try {
-          console.log("Fetching diary with ID:", diaryNum); // Log diaryNum
-          const response = await AxiosApi.getDiary(loggedInMember, diaryNum); // Fetch diary details
-          console.log("Fetched Diary Response:", response); // Log fetched data
+          const response = await AxiosApi.getDiary(diaryNum); // Fetch diary details
           const fetchedDiary = response;
-          setTitle(fetchedDiary.title || "");
-          setDescription(fetchedDiary.content || "");
+          setTitle(fetchedDiary.title);
+          setDescription(fetchedDiary.content);
           setDate(
-            fetchedDiary.writtenDate
-              ? new Date(fetchedDiary.writtenDate).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0]
+            fetchedDiary.writtenDate || new Date().toISOString().split("T")[0]
           );
           setTags(fetchedDiary.tags || []);
           setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
@@ -55,13 +51,12 @@ const DiaryUpdate = () => {
           setIsModalOpen(true);
         }
       } else {
-        console.log("No diaryNum found in location.state");
         navigate("/"); // Redirect if diaryNum is missing
       }
     };
 
     fetchDiary();
-  }, [location.state, loggedInMember]);
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,12 +80,8 @@ const DiaryUpdate = () => {
     };
 
     try {
-      console.log("Diary to Update:", updatedDiary); // Log updated diary
-      console.log("Diary Index:", index); // Log diary ID (index)
-
-      // Ensure `updateDiary` is called, not `saveDiary`
-      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary);
-      navigate("/"); // Redirect to home after updating
+      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary); // Update diary
+      navigate("/"); // Redirect to home
     } catch (error) {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
@@ -110,13 +101,10 @@ const DiaryUpdate = () => {
   };
 
   const confirmDeletion = async () => {
-    console.log("Diary to be deleted:", index); // Log diary number to delete
-
     try {
-      const response = await AxiosApi.deleteDiary(loggedInMember, index);
-      console.log("Delete diary response:", response); // Log response from the API
+      await AxiosApi.deleteDiary(loggedInMember, index); // Delete diary API call
       removeDiary(index); // Update context or state
-      navigate("/");
+      navigate("/"); // Redirect to home
     } catch (error) {
       console.error("Failed to delete diary:", error);
       setModalMessage("일기를 삭제하는 데 실패했습니다.");
@@ -350,16 +338,14 @@ const DiaryUpdate = () => {
         }
         onConfirm={() => {
           if (modalMessage === "중복된 태그를 입력하였습니다") {
-            setIsModalOpen(false); // Close modal for duplicate tag
+            setIsModalOpen(false); // 중복 태그 관련이면 그냥 모달 닫기
           } else if (modalMessage === "일기 제목, 내용, 날짜를 입력하세요!") {
-            setIsModalOpen(false); // Close modal for incomplete form
+            setIsModalOpen(false); // 필수 기입 내역 안했다면 그냥 모달 닫기
           } else if (modalMessage === "정말로 일기를 삭제하시겠습니까?") {
-            confirmDeletion(); // Call delete confirmation function
-          } else {
-            setIsModalOpen(false); // Default close for any other messages
+            confirmDeletion(); // 일기 삭제를 위해서는 confirmDeletion() 함수 호출
           }
         }}
-        onCancel={() => setIsModalOpen(false)} // Close modal on cancel
+        onCancel={() => setIsModalOpen(false)} // 취소하면 무조건 모달 닫기
         singleButton={
           modalMessage === "중복된 태그를 입력하였습니다" ||
           modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"

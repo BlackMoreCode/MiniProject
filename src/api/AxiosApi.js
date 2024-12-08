@@ -94,20 +94,6 @@ export const AxiosApi = {
     }
   },
 
-  // 일기 업데이트할때 하나만 불러오기?
-  getDiary: async (loggedInMember, diaryNum) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/diary/get`, {
-        loggedInMember,
-        diaryNum,
-      });
-      return response.data.diary;
-    } catch (error) {
-      console.error("Failed to fetch diary:", error);
-      throw error.response ? error.response.data : error;
-    }
-  },
-
   // 기존 일기 수정
   updateDiary: async (diaryNum, loggedInMember, updatedDiary) => {
     try {
@@ -129,7 +115,7 @@ export const AxiosApi = {
       const response = await axios.delete(
         `${API_BASE_URL}/diary/delete/${diaryNum}`,
         {
-          data: { loggedInMember }, // loggedinMember 포함
+          data: { loggedInMember }, // 백엔드에서 멤버 데이터를 요구시 (실제로 그래야하지 않나?)
         }
       );
       return response.data;
@@ -138,7 +124,6 @@ export const AxiosApi = {
       throw error.response ? error.response.data : error;
     }
   },
-
   // 회원 다이어리 리스트
   diaries: async (userId) => {
     return await axios.get(BACKEND_DOMAIN + `/home/${userId}`);

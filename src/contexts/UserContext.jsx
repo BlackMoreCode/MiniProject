@@ -29,8 +29,6 @@ export const UserProfile = (props) => {
         year,
         month,
       });
-      console.log("Fetched diaries:", response); // 콘솔 로그 찍어서 어떤식으로 받는지 확인
-      console.log("Fetched diaries:", response.diaries); // response.diaries도 찍어둔다.
       setDiaries(response.diaries); // Update context state
     } catch (error) {
       console.error("Failed to fetch diaries from backend:", error);
