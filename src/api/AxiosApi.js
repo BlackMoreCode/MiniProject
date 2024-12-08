@@ -101,6 +101,7 @@ export const AxiosApi = {
         loggedInMember,
         diaryNum,
       });
+      console.log("Backend Response:", response.data); // 뱍앤드에서 오는거 확인용 로그 따기...
       return response.data.diary;
     } catch (error) {
       console.error("Failed to fetch diary:", error);
