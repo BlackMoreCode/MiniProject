@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
+
 const images = [
   { src: "/assets/bannerimages/image1.jpg", alt: "Image 1" },
   { src: "/assets/bannerimages/image2.jpg", alt: "Image 2" },
   { src: "/assets/bannerimages/image3.jpg", alt: "Image 3" },
   { src: "/assets/bannerimages/image4.jpg", alt: "Image 4" },
-  { src: "/assets/bannerimages/image5.jpg", alt: "Default Image" },
+  { src: "/assets/bannerimages/image5.jpg", alt: "Image 5" },
 ];
 
 const ChangeImage = () => {
@@ -21,7 +22,7 @@ const ChangeImage = () => {
   const handleImageChange = () => {
     // 배너 이미지를 변경하는 로직 (예: 상태 업데이트, 서버로 저장 요청 등)
     document.body.style.backgroundImage = `url(${selectedImage})`;
-    alert("배너 이미지가 변경되었습니다!");
+    alert("이미지가 변경되었습니다");
     navigate("/"); // 메인 페이지로 이동
   };
 

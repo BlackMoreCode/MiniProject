@@ -36,10 +36,10 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
             <button onClick={onClickChangeFont}>폰트 변경</button>
           </div>
           <div className="linkBox">
-            <button onClick={onClickChangeBanner}>테마 변경</button>
+            <button>테마 변경</button>
           </div>
           <div className="linkBox">
-            <button>배너 이미지 변경</button>
+            <button onClick={onClickChangeBanner}>배너 이미지 변경</button>
           </div>
           <div className="linkBox">
             <button>알림 사운드 변경</button>
