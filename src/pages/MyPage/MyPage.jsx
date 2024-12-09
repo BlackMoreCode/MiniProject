@@ -10,9 +10,6 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
   const onClickProfile = () => {
     navigate("/profile");
   };
-  const onClickChangePw = () => {
-    navigate("/changepw");
-  };
 
   return (
     <Container>
@@ -22,10 +19,7 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
             뒤
           </button>
           <div className="linkBox">
-            <button onClick={onClickProfile}>회원 정보 수정</button>
-          </div>
-          <div className="linkBox">
-            <button onClick={onClickChangePw}>비밀번호 변경</button>
+            <button onClick={onClickProfile}>회원 정보 수정</button>  
           </div>
           <div className="linkBox">
             <button>폰트 변경</button>
@@ -38,6 +32,9 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
           </div>
           <div className="linkBox">
             <button>알림 사운드 변경</button>
+          </div>
+          <div className="linkBox">
+            <button>회원 탈퇴</button>
           </div>
         </Div>
       </Div>
