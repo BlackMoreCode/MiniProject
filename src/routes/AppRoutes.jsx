@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Calendar from "../pages/Calendar/Calendar";
 import Home from "../pages/Home";
 import DiaryInsert from "../pages/Diary/DiaryInsert";
-import DiaryUpdate from "../pages/Diary/DiaryInsert";
+import DiaryUpdate from "../pages/Diary/DiaryUpdate";
 import MyPage from "../pages/MyPage/MyPage";
 import Profile from "../pages/MyPage/Profile";
 import { NotFound } from "../pages/NotFound/NotFound";

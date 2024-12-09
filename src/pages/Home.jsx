@@ -239,7 +239,10 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() => navigate(`/diaryUpdate/${diary.diaryNum}`)}
+                onClick={() => {
+                  console.log("Navigating to diaryNum:", `${diary.diaryNum}`);
+                  navigate(`/diaryUpdate/${diary.diaryNum}`);
+                }}
               >
                 <p className="diary-date">
                   {new Date(diary.writtenDate).toLocaleDateString()}

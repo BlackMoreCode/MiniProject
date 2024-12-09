@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { UserContext, removeDiary } from "../../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -28,11 +28,14 @@ const DiaryUpdate = () => {
   const [modalMessage, setModalMessage] = useState("");
 
   const { diaryNum } = useParams();
+  console.log("diaryNum from useParams:", diaryNum);
   const navigate = useNavigate();
-  const { loggedInMember } = useContext(UserContext);
+  const { loggedInMember, removeDiary } = useContext(UserContext);
 
   // 백엔드로서부터 불러오기..?
   useEffect(() => {
+    console.log("loggedInMember:", loggedInMember);
+    console.log("diaryNum:", diaryNum);
     const fetchDiary = async () => {
       try {
         const response = await AxiosApi.getDiary({
@@ -94,9 +97,15 @@ const DiaryUpdate = () => {
       console.log("Diary to Update:", updatedDiary); // Log updated diary
       console.log("Diary Index:", index); // Log diary ID (index)
 
-      // Ensure `updateDiary` is called, not `saveDiary`
-      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary);
-      navigate("/"); // Redirect to home after updating
+      // Call API to update the diary
+      await AxiosApi.updateDiary({
+        loggedInMember,
+        diaryNum,
+        updatedDiary,
+      });
+
+      console.log("Diary updated successfully!");
+      navigate("/"); // Redirect to home on success
     } catch (error) {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
@@ -141,7 +150,7 @@ const DiaryUpdate = () => {
       setTags([...tags, trimmedTag]);
       setTagInput("");
     } else if (tags.includes(trimmedTag)) {
-      setModalMessage("중복된 태그를 입력하였습니다");
+      setModalMessage("중복된 태그를 추가할 수 없습니다.");
       setIsModalOpen(true);
     }
   };
@@ -338,34 +347,9 @@ const DiaryUpdate = () => {
       <ConfirmationModal
         isOpen={isModalOpen}
         message={modalMessage}
-        confirmText={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-            ? "확인"
-            : "네"
-        }
-        cancelText={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-            ? undefined
-            : "아니오"
-        }
-        onConfirm={() => {
-          if (modalMessage === "중복된 태그를 입력하였습니다") {
-            setIsModalOpen(false); // Close modal for duplicate tag
-          } else if (modalMessage === "일기 제목, 내용, 날짜를 입력하세요!") {
-            setIsModalOpen(false); // Close modal for incomplete form
-          } else if (modalMessage === "정말로 일기를 삭제하시겠습니까?") {
-            confirmDeletion(); // Call delete confirmation function
-          } else {
-            setIsModalOpen(false); // Default close for any other messages
-          }
-        }}
-        onCancel={() => setIsModalOpen(false)} // Close modal on cancel
-        singleButton={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-        }
+        confirmText="확인"
+        onConfirm={() => setIsModalOpen(false)}
+        singleButton
       />
     </St.Container>
   );
