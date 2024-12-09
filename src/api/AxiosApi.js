@@ -95,13 +95,13 @@ export const AxiosApi = {
   },
 
   // 일기 업데이트할때 하나만 불러오기?
-  getDiary: async (loggedInMember, diaryNum) => {
+  getDiary: async ({ loggedInMember, diaryNum }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/diary/get`, {
         loggedInMember,
         diaryNum,
       });
-      console.log("Backend Response:", response.data); // 뱍앤드에서 오는거 확인용 로그 따기...
+      console.log("Backend Response:", response.data);
       return response.data.diary;
     } catch (error) {
       console.error("Failed to fetch diary:", error);

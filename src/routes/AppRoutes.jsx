@@ -20,7 +20,7 @@ function AppRoutes() {
         <Route path="/calendar" element={<Calendar />} />
 
         <Route path="/diaryInsert" element={<DiaryInsert />} />
-        <Route path="/diaryUpdate" element={<DiaryUpdate />} />
+        <Route path="/diaryUpdate/:diaryNum" element={<DiaryUpdate />} />
 
         <Route path="*" element={<NotFound />} />
         <Route path="/mypage" element={<MyPage />} />

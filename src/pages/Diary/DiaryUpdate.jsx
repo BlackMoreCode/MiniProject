@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { UserContext, removeDiary } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
@@ -12,9 +12,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 
 const DiaryUpdate = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const textarea = useRef(null);
-  const { loggedInMember } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -29,39 +27,39 @@ const DiaryUpdate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  const { diaryNum } = useParams();
+  const navigate = useNavigate();
+  const { loggedInMember } = useContext(UserContext);
+
   // 백엔드로서부터 불러오기..?
   useEffect(() => {
     const fetchDiary = async () => {
-      const diaryNum = location.state?.diaryNum; // Extract diaryNum
-      if (diaryNum) {
-        try {
-          console.log("Fetching diary with ID:", diaryNum); // Log diaryNum
-          const response = await AxiosApi.getDiary(loggedInMember, diaryNum); // Fetch diary details
-          console.log("Fetched Diary Response:", response); // Log fetched data
-          const fetchedDiary = response;
-          setTitle(fetchedDiary.title || "");
-          setDescription(fetchedDiary.content || "");
-          setDate(
-            fetchedDiary.writtenDate
-              ? new Date(fetchedDiary.writtenDate).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0]
-          );
-          setTags(fetchedDiary.tags || []);
-          setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
-          setIndex(diaryNum);
-        } catch (error) {
-          console.error("Failed to fetch diary:", error);
-          setModalMessage("일기를 불러오는 데 실패했습니다.");
-          setIsModalOpen(true);
-        }
-      } else {
-        console.log("No diaryNum found in location.state");
-        navigate("/"); // Redirect if diaryNum is missing
+      try {
+        const response = await AxiosApi.getDiary({
+          loggedInMember,
+          diaryNum,
+        });
+        console.log("Fetched diary data:", response);
+
+        // Ensure data is being set
+        setTitle(response.title || "");
+        setDescription(response.content || "");
+        setDate(
+          response.writtenDate
+            ? new Date(response.writtenDate).toISOString().split("T")[0]
+            : ""
+        );
+        setTags(response.tags || []);
+        setCodeSnippets(response.codingDiaryEntries || []);
+      } catch (error) {
+        console.error("Error fetching diary:", error);
       }
     };
 
-    fetchDiary();
-  }, [location.state, loggedInMember]);
+    if (diaryNum && loggedInMember) {
+      fetchDiary();
+    }
+  }, [diaryNum, loggedInMember]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,11 +70,19 @@ const DiaryUpdate = () => {
       return;
     }
 
+    const formatDate = (date) => {
+      const d = new Date(date);
+      const pad = (n) => (n < 10 ? "0" + n : n);
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+        d.getDate()
+      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+
     const updatedDiary = {
       title,
       content: description,
       tags,
-      writtenDate: new Date(date).toISOString(), // Ensure correct date format
+      writtenDate: formatDate(new Date()),
       codingDiaryEntries: codeSnippets.map((snippet, index) => ({
         programmingLanguageName: snippet.language || null,
         content: snippet.code || snippet.commentary,
@@ -169,16 +175,12 @@ const DiaryUpdate = () => {
     setCodeSnippets(updatedSnippets);
   };
 
-  const handleResizeHeight = () => {
+  const handleChange = (e) => {
+    setDescription(e.target.value);
     if (textarea.current) {
       textarea.current.style.height = "auto";
       textarea.current.style.height = `${textarea.current.scrollHeight}px`;
     }
-  };
-
-  const handleChange = (e) => {
-    setDescription(e.target.value);
-    handleResizeHeight();
   };
 
   return (
