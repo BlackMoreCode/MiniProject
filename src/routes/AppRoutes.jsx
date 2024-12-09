@@ -11,6 +11,7 @@ import Intro from "../pages/Intro/Intro";
 import { SignUp } from "../pages/SignUp/SignUp";
 import { Login } from "../pages/Login/Login";
 import ChangePw from "../pages/MyPage/ChangePw";
+import ChangeFont from "../pages/MyPage/ChangeFont";
 
 function AppRoutes() {
   return (
@@ -25,6 +26,7 @@ function AppRoutes() {
         <Route path="*" element={<NotFound />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/font" element={<ChangeFont />} />
         <Route path="/changepw" element={<ChangePw />} />
 
         <Route path="/intro" element={<Intro />} />

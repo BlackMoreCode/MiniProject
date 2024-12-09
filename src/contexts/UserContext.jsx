@@ -10,6 +10,10 @@ export const UserProfile = (props) => {
 
   // 윗 부분 수정?
   const [diaries, setDiaries] = useState([]);
+
+   // 폰트 관련 상태 추가
+   const [selectedFont, setSelectedFont] = useState("font-dohyeon");
+
   // 로그인한 유저를 위한 헬퍼
   const loggedInMember =
     userId && userPassword ? { id: userId, password: userPassword } : null;
@@ -107,6 +111,8 @@ export const UserProfile = (props) => {
         fetchDiaries,
         login,
         logout,
+        selectedFont, // 추가된 폰트 상태
+        setSelectedFont,
       }}
     >
       {props.children}
