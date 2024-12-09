@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext";
+import { UserContext, fetchDiaries } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -59,6 +59,7 @@ const DiaryUpdate = () => {
     }
   }, [diaryNum, loggedInMember]);
 
+  // 일기 수정 함수
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -113,6 +114,31 @@ const DiaryUpdate = () => {
     }
   };
 
+  //일기 제거 함수
+  const handleDelete = async () => {
+    if (!diaryNum) {
+      setModalMessage("삭제할 다이어리가 없습니다.");
+      setIsModalOpen(true);
+      return;
+    }
+
+    try {
+      await AxiosApi.deleteDiary({
+        loggedInMember,
+        diaryNum,
+      });
+
+      await fetchDiaries();
+
+      navigate("/"); // Redirect to home
+    } catch (error) {
+      console.error("Failed to delete diary:", error);
+      setModalMessage("다이어리를 삭제하는데 실패했습니다.");
+      setIsModalOpen(true);
+    }
+  };
+
+  //태그 추가 함수
   const addTag = () => {
     const trimmedTag = tagInput.trim();
 
@@ -292,6 +318,9 @@ const DiaryUpdate = () => {
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
               수정
             </St.ConfirmBtn>
+            <St.RmvBtnS type="button" onClick={handleDelete}>
+              삭제
+            </St.RmvBtnS>
             <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
             </St.EtcBtn>

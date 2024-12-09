@@ -255,7 +255,7 @@ const DiaryInsert = () => {
 
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
-              수정
+              저장
             </St.ConfirmBtn>
             <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
