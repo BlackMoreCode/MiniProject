@@ -17,6 +17,10 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
   const onClickChangeFont = () => {
     navigate("/font");
   };
+  const onClickChangeBanner = () => {
+    navigate("/banner");
+  };
+  
 
   return (
     <Container>
@@ -32,7 +36,7 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
             <button onClick={onClickChangeFont}>폰트 변경</button>
           </div>
           <div className="linkBox">
-            <button>테마 변경</button>
+            <button onClick={onClickChangeBanner}>테마 변경</button>
           </div>
           <div className="linkBox">
             <button>배너 이미지 변경</button>

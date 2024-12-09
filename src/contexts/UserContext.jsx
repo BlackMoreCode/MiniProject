@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import AxiosApi from "../api/AxiosApi.js";
 import { DEFAULT } from "../constant/diarySettingKeyword.js";
+
 export const UserContext = createContext(null);
 
 export const UserProfile = (props) => {

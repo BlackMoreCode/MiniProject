@@ -1,10 +1,8 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext"; // FontContext 대신 UserContext 가져오기
+import { UserContext } from "../../contexts/UserContext";
 import "../../styles/Font/fonts.css";
 import styled from "styled-components";
-
-
 
 const ChangeFont = () => {
   const navigate = useNavigate();

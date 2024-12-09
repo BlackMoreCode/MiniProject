@@ -12,6 +12,7 @@ import { SignUp } from "../pages/SignUp/SignUp";
 import { Login } from "../pages/Login/Login";
 import ChangePw from "../pages/MyPage/ChangePw";
 import ChangeFont from "../pages/MyPage/ChangeFont";
+import ChangeImage from "../pages/MyPage/ChangeImage";
 
 function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/font" element={<ChangeFont />} />
         <Route path="/changepw" element={<ChangePw />} />
+        <Route path="/banner" element={<ChangeImage />} />
 
         <Route path="/intro" element={<Intro />} />
         <Route path="/signup" element={<SignUp />} />
