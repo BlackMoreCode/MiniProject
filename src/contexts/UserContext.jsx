@@ -11,8 +11,8 @@ export const UserProfile = (props) => {
   // 윗 부분 수정?
   const [diaries, setDiaries] = useState([]);
 
-   // 폰트 관련 상태 추가
-   const [selectedFont, setSelectedFont] = useState("font-dohyeon");
+  // 폰트 관련 상태 추가
+  const [selectedFont, setSelectedFont] = useState("font-dohyeon");
 
   // 로그인한 유저를 위한 헬퍼
   const loggedInMember =
@@ -44,6 +44,7 @@ export const UserProfile = (props) => {
   // 태그와 코드스니펫과 함께 일기 추가
   const addDiary = (diary) => {
     setDiaries((prevDiaries) => {
+      if (prevDiaries === null) prevDiaries = []; // 맨 처음 추가면 당연히 그 전 일기가 없을테니, 밑에 라인에서 에러나는거 방지용
       const updatedDiaries = [...prevDiaries, diary];
       return updatedDiaries;
     });

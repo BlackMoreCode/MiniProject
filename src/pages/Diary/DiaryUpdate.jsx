@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { UserContext, fetchDiaries } from "../../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -13,6 +13,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
+  const { fetchDiaries } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -38,17 +39,29 @@ const DiaryUpdate = () => {
           loggedInMember,
           diaryNum,
         });
+
         console.log("Fetched diary data:", response);
 
-        setTitle(response.title || "");
-        setDescription(response.content || "");
-        setDate(
-          response.writtenDate
-            ? new Date(response.writtenDate).toISOString().split("T")[0]
-            : ""
-        );
-        setTags(response.tags || []);
-        setCodeSnippets(response.codingDiaryEntries || []);
+        // Check if the response contains a valid diary
+        if (response && response.title) {
+          setTitle(response.title || "");
+          setDescription(response.content || "");
+          setDate(
+            response.writtenDate
+              ? new Date(response.writtenDate).toISOString().split("T")[0]
+              : ""
+          );
+          setTags(response.tags || []);
+          setCodeSnippets(response.codingDiaryEntries || []);
+        } else {
+          // If the diary is not found or null, reset the states
+          console.warn("No diary data found.");
+          setTitle("");
+          setDescription("");
+          setDate("");
+          setTags([]);
+          setCodeSnippets([]);
+        }
       } catch (error) {
         console.error("Error fetching diary:", error);
       }
