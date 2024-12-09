@@ -7,8 +7,8 @@ import {
   AddButton,
   RedirectButton,
 } from "../components/homeComponent";
-import image5 from "../assets/bannerimages/image5.jpg";
 import { UserContext } from "../contexts/UserContext";
+import { BannerImageContext } from "../contexts/BannerImageContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -20,6 +20,8 @@ import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 const Home = () => {
   const { logout, diaries, loggedInMember, fetchDiaries } =
     useContext(UserContext);
+
+  const { bannerImage } = useContext(BannerImageContext);
 
   // 리액트 문맥 값 (context value) 는 디자인상 불변성이 유지되어야하므로 ("immutable")
   // 컨텍스트에서 직접적으로 정렬을 실행하는 것은 이상적이지 못하다.
@@ -147,7 +149,7 @@ const Home = () => {
       <Div className="phone-container">
         {/* 헤더바 */}
         <Div className="phone-header">
-          <Img1 src={image5} alt="image5" />
+          <Img1 src={bannerImage} alt="BannerImage" />
 
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
