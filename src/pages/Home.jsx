@@ -47,6 +47,7 @@ const Home = () => {
 
   useEffect(() => {
     // Synchronize sortedDiaries with diaries when diaries change
+    if (diaries === null) return;
     const filteredDiaries = diaries.filter(
       (diary) =>
         new Date(diary.writtenDate).getFullYear() === diaryYear &&
@@ -101,6 +102,7 @@ const Home = () => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
 
       // Update sortedDiaries instead of original diaries
+      console.log("sorteddiary check", sortedDiaries);
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
