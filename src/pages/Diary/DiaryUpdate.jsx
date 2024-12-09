@@ -28,14 +28,10 @@ const DiaryUpdate = () => {
   const [modalMessage, setModalMessage] = useState("");
 
   const { diaryNum } = useParams();
-  console.log("diaryNum from useParams:", diaryNum);
   const navigate = useNavigate();
   const { loggedInMember, removeDiary } = useContext(UserContext);
 
-  // 백엔드로서부터 불러오기..?
   useEffect(() => {
-    console.log("loggedInMember:", loggedInMember);
-    console.log("diaryNum:", diaryNum);
     const fetchDiary = async () => {
       try {
         const response = await AxiosApi.getDiary({
@@ -44,7 +40,6 @@ const DiaryUpdate = () => {
         });
         console.log("Fetched diary data:", response);
 
-        // Ensure data is being set
         setTitle(response.title || "");
         setDescription(response.content || "");
         setDate(
@@ -78,69 +73,44 @@ const DiaryUpdate = () => {
       const pad = (n) => (n < 10 ? "0" + n : n);
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
         d.getDate()
-      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      )}T00:00:00`;
     };
 
     const updatedDiary = {
       title,
       content: description,
       tags,
-      writtenDate: formatDate(new Date()),
-      codingDiaryEntries: codeSnippets.map((snippet, index) => ({
-        programmingLanguageName: snippet.language || null,
-        content: snippet.code || snippet.commentary,
-        sequence: index + 1,
-      })),
+      writtenDate: formatDate(date),
+      codingDiaryEntries: codeSnippets.map((snippet, index) => {
+        return {
+          programmingLanguageName: snippet.language || null,
+          entryType: snippet.language ? "snippet" : "comment",
+          content: snippet.language
+            ? snippet.code || ""
+            : snippet.commentary?.join("\n") || "",
+          sequence: index + 1,
+        };
+      }),
     };
 
-    try {
-      console.log("Diary to Update:", updatedDiary); // Log updated diary
-      console.log("Diary Index:", index); // Log diary ID (index)
+    console.log("Tags to be sent:", tags);
+    console.log("Updated Diary Payload:", updatedDiary);
 
-      // Call API to update the diary
+    try {
+      console.log("Diary to Update:", updatedDiary);
+
       await AxiosApi.updateDiary({
         loggedInMember,
         diaryNum,
         updatedDiary,
       });
 
-      console.log("Diary updated successfully!");
-      navigate("/"); // Redirect to home on success
+      navigate("/");
     } catch (error) {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
       setIsModalOpen(true);
     }
-  };
-
-  // Handle delete
-  const handleDelete = async () => {
-    if (index !== null) {
-      setModalMessage("정말로 일기를 삭제하시겠습니까?");
-      setIsModalOpen(true);
-    } else {
-      setModalMessage("삭제할 일기가 없습니다.");
-      setIsModalOpen(true);
-    }
-  };
-
-  const confirmDeletion = async () => {
-    console.log("Diary to be deleted:", index); // Log diary number to delete
-
-    try {
-      const response = await AxiosApi.deleteDiary(loggedInMember, index);
-      console.log("Delete diary response:", response); // Log response from the API
-      removeDiary(index); // Update context or state
-      navigate("/");
-    } catch (error) {
-      console.error("Failed to delete diary:", error);
-      setModalMessage("일기를 삭제하는 데 실패했습니다.");
-      setIsModalOpen(true);
-    }
-  };
-
-  const removeTag = (tag) => {
-    setTags(tags.filter((t) => t !== tag));
   };
 
   const addTag = () => {
@@ -149,7 +119,7 @@ const DiaryUpdate = () => {
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setTagInput("");
-    } else if (tags.includes(trimmedTag)) {
+    } else {
       setModalMessage("중복된 태그를 추가할 수 없습니다.");
       setIsModalOpen(true);
     }
@@ -162,20 +132,14 @@ const DiaryUpdate = () => {
     ]);
   };
 
-  const removeCodeSnippet = (snippetIndex) => {
-    setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
-  };
-
   const addCodeCommentary = (snippetIndex) => {
     const updatedSnippets = [...codeSnippets];
     updatedSnippets[snippetIndex].commentary.push("");
     setCodeSnippets(updatedSnippets);
   };
 
-  const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary.splice(commentaryIndex, 1);
-    setCodeSnippets(updatedSnippets);
+  const removeCodeSnippet = (snippetIndex) => {
+    setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
   };
 
   const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
@@ -184,12 +148,10 @@ const DiaryUpdate = () => {
     setCodeSnippets(updatedSnippets);
   };
 
-  const handleChange = (e) => {
-    setDescription(e.target.value);
-    if (textarea.current) {
-      textarea.current.style.height = "auto";
-      textarea.current.style.height = `${textarea.current.scrollHeight}px`;
-    }
+  const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary.splice(commentaryIndex, 1);
+    setCodeSnippets(updatedSnippets);
   };
 
   return (
@@ -214,7 +176,7 @@ const DiaryUpdate = () => {
             id="description"
             ref={textarea}
             value={description}
-            onChange={handleChange}
+            onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="내용 입력"
           />
@@ -233,7 +195,11 @@ const DiaryUpdate = () => {
               {tags.map((tag, index) => (
                 <St.TagItem key={index}>
                   {tag}
-                  <button onClick={() => removeTag(tag)}>x</button>
+                  <button
+                    onClick={() => setTags(tags.filter((t) => t !== tag))}
+                  >
+                    x
+                  </button>
                 </St.TagItem>
               ))}
             </St.TagList>
@@ -286,20 +252,10 @@ const DiaryUpdate = () => {
                     코드 스니펫 삭제
                   </St.GeneralRmvBtn>
 
-                  <St.GeneralAddBtn
-                    type="button"
-                    onClick={() => addCodeCommentary(snippetIndex)}
-                  >
-                    코드 코멘트 추가
-                  </St.GeneralAddBtn>
-
                   {snippet.commentary.map((comment, commentaryIndex) => (
-                    <div key={commentaryIndex} style={{ marginTop: "10px" }}>
+                    <div key={commentaryIndex}>
                       <St.TextArea
-                        ref={textarea}
                         value={comment}
-                        rows={4}
-                        placeholder="내용 입력"
                         onChange={(e) =>
                           updateCodeCommentary(
                             snippetIndex,
@@ -313,12 +269,17 @@ const DiaryUpdate = () => {
                         onClick={() =>
                           removeCodeCommentary(snippetIndex, commentaryIndex)
                         }
-                        style={{ marginTop: "5px" }}
                       >
                         코멘트 삭제
                       </St.GeneralRmvBtn>
                     </div>
                   ))}
+                  <St.GeneralAddBtn
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralAddBtn>
                 </div>
               ))}
               <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
@@ -331,12 +292,6 @@ const DiaryUpdate = () => {
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
               수정
             </St.ConfirmBtn>
-            {/* 현재 data fetching api 가 제대로 붙어있지 않으므로 index가 null일거고, 그러면 삭제버튼은 렌더링 안된다 */}
-            {index !== null && (
-              <St.RmvBtnS type="button" onClick={handleDelete}>
-                삭제
-              </St.RmvBtnS>
-            )}
             <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
             </St.EtcBtn>

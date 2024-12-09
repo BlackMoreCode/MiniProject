@@ -36,6 +36,12 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!diaries) {
+      fetchDiaries();
+    }
+  }, []);
+
+  useEffect(() => {
     if (loggedInMember) {
       console.log("Home Update by loggedInMember");
       fetchDiaries();
@@ -48,11 +54,14 @@ const Home = () => {
   useEffect(() => {
     // Synchronize sortedDiaries with diaries when diaries change
     if (diaries === null) return;
-    const filteredDiaries = diaries.filter(
-      (diary) =>
-        new Date(diary.writtenDate).getFullYear() === diaryYear &&
-        new Date(diary.writtenDate).getMonth() + 1 === diaryMonth
-    );
+    const filteredDiaries = diaries.filter((diary) => {
+      const diaryDate = new Date(diary.writtenDate);
+      return (
+        diaryDate.getFullYear() === diaryYear &&
+        diaryDate.getMonth() + 1 === diaryMonth
+      );
+    });
+
     setSortedDiaries(filteredDiaries);
   }, [diaries, diaryYear, diaryMonth]);
 

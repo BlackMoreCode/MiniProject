@@ -34,22 +34,25 @@ const DiaryInsert = () => {
       return;
     }
 
+    //일기에 시간을 원하는 시간으로 넣기위해서 처리중
     const formatDate = (date) => {
-      const d = new Date(date);
+      const d = new Date(date); // Use the selected date directly
       const pad = (n) => (n < 10 ? "0" + n : n);
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
         d.getDate()
-      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      )}T00:00:00`; // 시간을 일단 00:00:00 로 하드코딩 처리.
     };
 
     const newDiary = {
       title,
       content: description,
       tags,
-      writtenDate: formatDate(new Date()),
+      writtenDate: formatDate(date),
       codingDiaryEntries: codeSnippets.map((snippet, index) => ({
         programmingLanguageName: snippet.language || null,
-        content: snippet.code || snippet.commentary,
+        entryType: snippet.language ? "snippet" : "comment", // Entry type
+        content: snippet.code || "",
+        commentary: snippet.commentary || [], // Include commentary here
         sequence: index + 1,
       })),
     };
@@ -65,18 +68,27 @@ const DiaryInsert = () => {
     }
   };
 
+  const removeTag = (tag) => setTags(tags.filter((t) => t !== tag));
+
+  const handleChange = (e) => {
+    setDescription(e.target.value);
+    if (textarea.current) {
+      textarea.current.style.height = "auto";
+      textarea.current.style.height = `${textarea.current.scrollHeight}px`;
+    }
+  };
+
   const addTag = () => {
     const trimmedTag = tagInput.trim();
+
     if (trimmedTag && !tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setTagInput("");
     } else {
-      setModalMessage("중복된 태그를 입력하였습니다");
+      setModalMessage("중복된 태그를 추가할 수 없습니다.");
       setIsModalOpen(true);
     }
   };
-
-  const removeTag = (tag) => setTags(tags.filter((t) => t !== tag));
 
   const addCodeSnippet = () => {
     setCodeSnippets([
@@ -85,12 +97,26 @@ const DiaryInsert = () => {
     ]);
   };
 
-  const handleChange = (e) => {
-    setDescription(e.target.value);
-    if (textarea.current) {
-      textarea.current.style.height = "auto";
-      textarea.current.style.height = `${textarea.current.scrollHeight}px`;
-    }
+  const addCodeCommentary = (snippetIndex) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary.push("");
+    setCodeSnippets(updatedSnippets);
+  };
+
+  const removeCodeSnippet = (snippetIndex) => {
+    setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
+  };
+
+  const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary[commentaryIndex] = newComment;
+    setCodeSnippets(updatedSnippets);
+  };
+
+  const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
+    const updatedSnippets = [...codeSnippets];
+    updatedSnippets[snippetIndex].commentary.splice(commentaryIndex, 1);
+    setCodeSnippets(updatedSnippets);
   };
 
   return (
@@ -115,12 +141,11 @@ const DiaryInsert = () => {
             id="description"
             ref={textarea}
             value={description}
-            onChange={handleChange}
+            onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="내용 입력"
           />
 
-          {/* 태그 섹션 */}
           <St.Div className="tag-section">
             <St.TagInput
               type="text"
@@ -135,13 +160,16 @@ const DiaryInsert = () => {
               {tags.map((tag, index) => (
                 <St.TagItem key={index}>
                   {tag}
-                  <button onClick={() => removeTag(tag)}>x</button>
+                  <button
+                    onClick={() => setTags(tags.filter((t) => t !== tag))}
+                  >
+                    x
+                  </button>
                 </St.TagItem>
               ))}
             </St.TagList>
           </St.Div>
 
-          {/* 코드스니펫 + 코멘터리 섹션 */}
           <St.GeneralAddBtn
             type="button"
             onClick={() => setShowCodeSnippets((prev) => !prev)}
@@ -154,7 +182,7 @@ const DiaryInsert = () => {
               {codeSnippets.map((snippet, snippetIndex) => (
                 <div key={snippetIndex}>
                   <select
-                    value={snippet.language}
+                    value={snippet.language || ""}
                     onChange={(e) => {
                       const updatedSnippets = [...codeSnippets];
                       updatedSnippets[snippetIndex].language = e.target.value;
@@ -166,7 +194,7 @@ const DiaryInsert = () => {
                     <option value="java">Java</option>
                   </select>
                   <CodeMirror
-                    value={snippet.code}
+                    value={snippet.code || ""}
                     height="auto"
                     theme={dracula}
                     extensions={[
@@ -184,14 +212,39 @@ const DiaryInsert = () => {
                   />
                   <St.GeneralRmvBtn
                     type="button"
-                    onClick={() => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets.splice(snippetIndex, 1);
-                      setCodeSnippets(updatedSnippets);
-                    }}
+                    onClick={() => removeCodeSnippet(snippetIndex)}
                   >
                     코드 스니펫 삭제
                   </St.GeneralRmvBtn>
+
+                  {snippet.commentary.map((comment, commentaryIndex) => (
+                    <div key={commentaryIndex}>
+                      <St.TextArea
+                        value={comment}
+                        onChange={(e) =>
+                          updateCodeCommentary(
+                            snippetIndex,
+                            commentaryIndex,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <St.GeneralRmvBtn
+                        type="button"
+                        onClick={() =>
+                          removeCodeCommentary(snippetIndex, commentaryIndex)
+                        }
+                      >
+                        코멘트 삭제
+                      </St.GeneralRmvBtn>
+                    </div>
+                  ))}
+                  <St.GeneralAddBtn
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralAddBtn>
                 </div>
               ))}
               <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
@@ -200,10 +253,9 @@ const DiaryInsert = () => {
             </St.Div>
           )}
 
-          {/* Submit Button */}
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>
-              저장
+              수정
             </St.ConfirmBtn>
             <St.EtcBtn type="button" onClick={() => navigate("/")}>
               취소
@@ -217,6 +269,7 @@ const DiaryInsert = () => {
         message={modalMessage}
         confirmText="확인"
         onConfirm={() => setIsModalOpen(false)}
+        singleButton
       />
     </St.Container>
   );
