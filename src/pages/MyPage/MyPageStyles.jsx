@@ -50,6 +50,11 @@ export const Div = styled.div`
     margin-top: 40px;
     height: 100%;
   }
+
+  .inputBox {
+    position: relative;
+  }
+
   .profile-inputRqd,
   .profile-input {
     box-sizing: border-box;
@@ -59,13 +64,30 @@ export const Div = styled.div`
     outline: none;
     border-bottom: 2px solid #ddd;
     font-size: 1rem;
-    margin-bottom: 20px;
+    margin-bottom: 21px;
   }
 
   .profile-input:focus {
     border-bottom: 2px solid #aaa;
   }
 
+  .messageOn {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    font-size: 12px;
+    text-align: right;
+    color: green;
+  }
+  .messageOff {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    font-size: 12px;
+    text-align: right;
+    color: red;
+  }
+  
   .submitBtn {
     width: 90%;
     padding: 15px 0;

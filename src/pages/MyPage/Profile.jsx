@@ -1,69 +1,3 @@
-// import { Container, Div, Form } from "../../components/ProfileComponent";
-// import { useNavigate } from "react-router-dom";
-
-// const Profile = (/* 유저 아이디 받기?? */) => {
-//   const navigate = useNavigate();
-
-//   const onClickBackBtn = () => {
-//     navigate("/mypage");
-//   };
-
-//   return (
-//     <Container>
-//       <Div className="phone-container">
-//         <Div className="diary-header">
-//           <button>뒤</button>
-//           <p>회원 정보 수정</p>
-//           <div></div>
-//         </Div>
-
-//         <Form action="#" method="post" className="profile-container">
-//           <p>아이디</p>
-//           <input
-//             type="text"
-//             name="profile-id"
-//             className="profile-id"
-//             value="아이디"
-//           />
-//           <p>비밀번호</p>
-//           <input
-//             type="password"
-//             name="profile-pw"
-//             className="profile-pw"
-//             value="비밀번호"
-//           />
-//           <p>비밀번호 확인</p>
-//           <input
-//             type="password"
-//             name="profile-pwCheck"
-//             className="profile-pwCheck"
-//             value="비밀번호"
-//           />
-//           <p>이메일</p>
-//           <input
-//             type="email"
-//             name="profile-email"
-//             className="profile-email"
-//             value="이메일"
-//           />
-//           <p>닉네임</p>
-//           <input
-//             type="text"
-//             name="profile-nickname"
-//             className="profile-nickname"
-//             value="닉네임"
-//           />
-//           <div className="buttonBox">
-//             <button>수정</button>
-//             <button onClick={onClickBackBtn}>취소</button>
-//           </div>
-//         </Form>
-//       </Div>
-//     </Container>
-//   );
-// };
-// export default Profile;
-
 import React, { useContext, useEffect, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { UserContext } from "../../contexts/UserContext";
@@ -76,13 +10,100 @@ const Profile = () => {
   const { userPassword } = useContext(UserContext);
   const [userDetails, setUserDetails] = useState(null);
   const [email, setEmail] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [emailCheck, setEmailCheck] = useState(false);
   const [nickname, setNickname] = useState("");
-  const [message, setMessage] = useState("");
+  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [nicknameCheck, setNicknameCheck] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
+  const [currentPwMessage, setCurrentPwMessage] = useState("");
+  const [currentPwCheck, setCurrentPwCheck] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordCheck, setNewPasswordCheck] = useState("");
-
+  const [message, setMessage] = useState("");
+  
   const navigate = useNavigate();
+
+  // 이메일 체크
+  const onChangeEmail = (e) => {
+    setEmail(e.target.value);
+    const emailRgx = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if(!emailRgx.test(e.target.value)) {
+      setEmailMessage("올바른 이메일 형식이 아닙니다.");
+      setEmailCheck(false);
+    } else {
+      setEmailMessage("올바른 형식입니다.")
+      setEmailCheck(true);
+      // emailRegCheck(e.target.value);
+      emailUniqueCheck(e.target.value);
+    }
+  }
+  
+  // 이메일 중복 확인
+  const emailUniqueCheck = async (emailValue) => {
+    if (!emailValue) {
+      setEmailMessage("");
+      return;
+    }
+
+    // 값이 있으므로 중복 확인 수행
+    const isUnique = await AxiosApi.checkUnique("email", emailValue);
+    if (isUnique === null) {
+      setEmailMessage("이메일 중복 검증 실패");
+    } else {
+      if (isUnique) {
+        setEmailMessage("사용 가능한 이메일 입니다.");
+      } else {
+        setEmailMessage("중복된 이메일 입니다.");
+      }
+    }
+  }
+
+  // 닉네임 체크
+  const onChangeNickname = (e) => {
+    setNickname(e.target.value);
+    if(e.target.value.length <= 20) {
+      setNicknameCheck(true);
+      nicknameUniqueCheck(e.target.value);
+    } else {
+      setNicknameMessage("닉네임은 20자 이하여야 합니다.");
+      setNicknameCheck(false);
+    }
+  }
+
+  // 닉네임 중복 확인
+  const nicknameUniqueCheck = async (nicknameValue) => {
+    if(!nicknameValue) {
+      setNicknameMessage("");
+      return;
+    }
+    // 값이 있으므로 중복 확인 수행
+    const isUnique = await AxiosApi.checkUnique("nickname", nicknameValue);
+    if (isUnique === null) {
+      setNicknameMessage("닉네임 중복 검증 실패");
+    } else {
+      if (isUnique) {
+        setNicknameMessage("사용 가능한 닉네임 입니다.");
+      } else {
+        setNicknameMessage("중복된 닉네임 입니다.");
+        setNicknameCheck(false);
+      }
+    }
+  }
+
+  // 현재 비밀번호 확인
+  const onChangeCurrentPw = (e) => {
+    const inputPw = e.target.value;
+    setCurrentPassword(inputPw);
+    // currentPasswordCheck(e.target.value);
+    if(inputPw === userPassword) {
+      setCurrentPwMessage("비밀번호가 일치합니다.");
+      setCurrentPwCheck(true);
+    } else {
+      setCurrentPwMessage("비밀번호가 일치하지 않습니다.");
+      setCurrentPwCheck(false);
+    }
+  }
 
   //백엔드로서부터 데이터 받기 위한 프로토타입.
   useEffect(() => {
@@ -147,27 +168,43 @@ const Profile = () => {
             className="profile-inputRqd" 
             required
           />
-          <input
-            type="email"
-            placeholder="변경할 이메일"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} 
-            className="profile-input"
-          />
-          <input
-            type="text"
-            placeholder="변경할 닉네임"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)} 
-            className="profile-input"
-          />
-          <input
-            type="password"
-            placeholder="현재 비밀번호를 입력하세요."
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)} 
-            className="profile-input"
-          />
+          <div className="inputBox">
+            <input
+              type="email"
+              placeholder="변경할 이메일"
+              value={email}
+              onChange={onChangeEmail} 
+              className="profile-input"
+            />
+            {email.length > 0 && (
+              <p className={`message${emailCheck ? "On" : "Off"}`}>{emailMessage}</p>
+            )}
+          </div>
+          <div className="inputBox">
+            <input
+              type="text"
+              placeholder="변경할 닉네임"
+              value={nickname}
+              onChange={onChangeNickname} 
+              className="profile-input"
+            />
+            {nickname.length > 0 && (
+              <p className={`message${nicknameCheck ? "On" : "Off"}`}>{nicknameMessage}</p>
+            )}
+          </div>
+          <div className="inputBox">
+            <input
+              type="password"
+              placeholder="현재 비밀번호를 입력하세요."
+              value={currentPassword}
+              onChange={onChangeCurrentPw} 
+              className="profile-input"
+            />
+            {currentPassword.length > 0 && (
+              <p className={`message${currentPwCheck ? "On" : "Off"}`}>{currentPwMessage}</p>
+            )}
+          </div>
+          
           <input
             type="password"
             placeholder="새로운 비밀번호를 입력하세요."
@@ -183,7 +220,6 @@ const Profile = () => {
             className="profile-input"
           />
           <button onClick={handleUpdateProfile} className="submitBtn">프로필 수정</button>
-          <p>{message}</p>
         </form>
       </Div>
     </Container>
