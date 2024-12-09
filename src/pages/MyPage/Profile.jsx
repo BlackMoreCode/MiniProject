@@ -19,7 +19,11 @@ const Profile = () => {
   const [currentPwMessage, setCurrentPwMessage] = useState("");
   const [currentPwCheck, setCurrentPwCheck] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+  const [newPasswordMessage, setNewPasswordMessage] = useState("");
   const [newPasswordCheck, setNewPasswordCheck] = useState("");
+  const [newPassword2, setNewPassword2] = useState("");
+  const [newPasswordMessage2, setNewPasswordMessage2] = useState("");
+  const [newPasswordCheck2, setNewPasswordCheck2] = useState("");
   const [message, setMessage] = useState("");
   
   const navigate = useNavigate();
@@ -102,6 +106,33 @@ const Profile = () => {
     } else {
       setCurrentPwMessage("비밀번호가 일치하지 않습니다.");
       setCurrentPwCheck(false);
+    }
+  }
+
+  // 새 비밀번호 유효성 체크
+  const onChangeNewPassword = (e) => {
+    setNewPassword(e.target.value);
+    const pwRgx = /^[A-Za-z0-9!@#$%^&*()]+$/;
+    if(e.target.value.length < 8) {
+      setNewPasswordMessage("비밀번호는 8자 이상이어야 합니다.");
+      setNewPasswordCheck(false);
+    } else if(!pwRgx.test(e.target.value)) {
+      setNewPasswordMessage("올바르지 않은 형식입니다.")
+      setNewPasswordCheck(false);
+    } else {
+      setNewPasswordMessage("올바른 형식입니다.");
+      setNewPasswordCheck(true);
+    }
+  }
+  // 새 비밀번호 같은지 확인
+  const onChangeNewPassword2 = (e) => {
+    setNewPassword2(e.target.value);
+    if(e.target.value === newPassword){
+      setNewPasswordMessage2("비밀번호가 같습니다.");
+      setNewPasswordCheck2(true);
+    } else {
+      setNewPasswordMessage2("비밀번호가 같지 않습니다.");
+      setNewPasswordCheck2(false);
     }
   }
 
@@ -204,21 +235,32 @@ const Profile = () => {
               <p className={`message${currentPwCheck ? "On" : "Off"}`}>{currentPwMessage}</p>
             )}
           </div>
+          <div className="inputBox">
+            <input
+              type="password"
+              placeholder="새로운 비밀번호를 입력하세요."
+              value={newPassword}
+              onChange={onChangeNewPassword} 
+              className="profile-input"
+            />
+            {newPassword.length > 0 && (
+              <p className={`message${newPasswordCheck ? "On" : "Off"}`}>{newPasswordMessage}</p>
+            )}
+          </div>
+          <div className="inputBox">
+            <input
+              type="password"
+              placeholder="비밀번호 확인."
+              value={newPassword2}
+              onChange={onChangeNewPassword2} 
+              className="profile-input"
+            />
+            {newPassword2.length > 0 && (
+              <p className={`message${newPasswordCheck2 ? "On" : "Off"}`}>{newPasswordMessage2}</p>
+            )}
+          </div>
           
-          <input
-            type="password"
-            placeholder="새로운 비밀번호를 입력하세요."
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)} 
-            className="profile-input"
-          />
-          <input
-            type="password"
-            placeholder="비밀번호 확인."
-            value={newPasswordCheck}
-            onChange={(e) => setNewPasswordCheck(e.target.value)} 
-            className="profile-input"
-          />
+
           <button onClick={handleUpdateProfile} className="submitBtn">프로필 수정</button>
         </form>
       </Div>
