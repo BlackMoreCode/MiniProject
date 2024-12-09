@@ -102,7 +102,7 @@ const Home = () => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
 
       // Update sortedDiaries instead of original diaries
-      console.log("sorteddiary check", sortedDiaries);
+      console.log("sorted diary check", sortedDiaries);
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
@@ -239,11 +239,10 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() =>
-                  navigate("/diaryUpdate", {
-                    state: { diaryNum: diary.diaryNum },
-                  })
-                }
+                onClick={() => {
+                  console.log("Navigating to diaryNum:", `${diary.diaryNum}`);
+                  navigate(`/diaryUpdate/${diary.diaryNum}`);
+                }}
               >
                 <p className="diary-date">
                   {new Date(diary.writtenDate).toLocaleDateString()}

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
-import { useLocation, useNavigate } from "react-router-dom";
-import { UserContext, removeDiary } from "../../contexts/UserContext";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { UserContext } from "../../contexts/UserContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -12,9 +12,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 
 const DiaryUpdate = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const textarea = useRef(null);
-  const { loggedInMember } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -29,39 +27,42 @@ const DiaryUpdate = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  const { diaryNum } = useParams();
+  console.log("diaryNum from useParams:", diaryNum);
+  const navigate = useNavigate();
+  const { loggedInMember, removeDiary } = useContext(UserContext);
+
   // 백엔드로서부터 불러오기..?
   useEffect(() => {
+    console.log("loggedInMember:", loggedInMember);
+    console.log("diaryNum:", diaryNum);
     const fetchDiary = async () => {
-      const diaryNum = location.state?.diaryNum; // Extract diaryNum
-      if (diaryNum) {
-        try {
-          console.log("Fetching diary with ID:", diaryNum); // Log diaryNum
-          const response = await AxiosApi.getDiary(loggedInMember, diaryNum); // Fetch diary details
-          console.log("Fetched Diary Response:", response); // Log fetched data
-          const fetchedDiary = response;
-          setTitle(fetchedDiary.title || "");
-          setDescription(fetchedDiary.content || "");
-          setDate(
-            fetchedDiary.writtenDate
-              ? new Date(fetchedDiary.writtenDate).toISOString().split("T")[0]
-              : new Date().toISOString().split("T")[0]
-          );
-          setTags(fetchedDiary.tags || []);
-          setCodeSnippets(fetchedDiary.codingDiaryEntries || []);
-          setIndex(diaryNum);
-        } catch (error) {
-          console.error("Failed to fetch diary:", error);
-          setModalMessage("일기를 불러오는 데 실패했습니다.");
-          setIsModalOpen(true);
-        }
-      } else {
-        console.log("No diaryNum found in location.state");
-        navigate("/"); // Redirect if diaryNum is missing
+      try {
+        const response = await AxiosApi.getDiary({
+          loggedInMember,
+          diaryNum,
+        });
+        console.log("Fetched diary data:", response);
+
+        // Ensure data is being set
+        setTitle(response.title || "");
+        setDescription(response.content || "");
+        setDate(
+          response.writtenDate
+            ? new Date(response.writtenDate).toISOString().split("T")[0]
+            : ""
+        );
+        setTags(response.tags || []);
+        setCodeSnippets(response.codingDiaryEntries || []);
+      } catch (error) {
+        console.error("Error fetching diary:", error);
       }
     };
 
-    fetchDiary();
-  }, [location.state, loggedInMember]);
+    if (diaryNum && loggedInMember) {
+      fetchDiary();
+    }
+  }, [diaryNum, loggedInMember]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,11 +73,19 @@ const DiaryUpdate = () => {
       return;
     }
 
+    const formatDate = (date) => {
+      const d = new Date(date);
+      const pad = (n) => (n < 10 ? "0" + n : n);
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+        d.getDate()
+      )}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+
     const updatedDiary = {
       title,
       content: description,
       tags,
-      writtenDate: new Date(date).toISOString(), // Ensure correct date format
+      writtenDate: formatDate(new Date()),
       codingDiaryEntries: codeSnippets.map((snippet, index) => ({
         programmingLanguageName: snippet.language || null,
         content: snippet.code || snippet.commentary,
@@ -88,9 +97,15 @@ const DiaryUpdate = () => {
       console.log("Diary to Update:", updatedDiary); // Log updated diary
       console.log("Diary Index:", index); // Log diary ID (index)
 
-      // Ensure `updateDiary` is called, not `saveDiary`
-      await AxiosApi.updateDiary(index, loggedInMember, updatedDiary);
-      navigate("/"); // Redirect to home after updating
+      // Call API to update the diary
+      await AxiosApi.updateDiary({
+        loggedInMember,
+        diaryNum,
+        updatedDiary,
+      });
+
+      console.log("Diary updated successfully!");
+      navigate("/"); // Redirect to home on success
     } catch (error) {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
@@ -135,7 +150,7 @@ const DiaryUpdate = () => {
       setTags([...tags, trimmedTag]);
       setTagInput("");
     } else if (tags.includes(trimmedTag)) {
-      setModalMessage("중복된 태그를 입력하였습니다");
+      setModalMessage("중복된 태그를 추가할 수 없습니다.");
       setIsModalOpen(true);
     }
   };
@@ -169,16 +184,12 @@ const DiaryUpdate = () => {
     setCodeSnippets(updatedSnippets);
   };
 
-  const handleResizeHeight = () => {
+  const handleChange = (e) => {
+    setDescription(e.target.value);
     if (textarea.current) {
       textarea.current.style.height = "auto";
       textarea.current.style.height = `${textarea.current.scrollHeight}px`;
     }
-  };
-
-  const handleChange = (e) => {
-    setDescription(e.target.value);
-    handleResizeHeight();
   };
 
   return (
@@ -336,34 +347,9 @@ const DiaryUpdate = () => {
       <ConfirmationModal
         isOpen={isModalOpen}
         message={modalMessage}
-        confirmText={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-            ? "확인"
-            : "네"
-        }
-        cancelText={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-            ? undefined
-            : "아니오"
-        }
-        onConfirm={() => {
-          if (modalMessage === "중복된 태그를 입력하였습니다") {
-            setIsModalOpen(false); // Close modal for duplicate tag
-          } else if (modalMessage === "일기 제목, 내용, 날짜를 입력하세요!") {
-            setIsModalOpen(false); // Close modal for incomplete form
-          } else if (modalMessage === "정말로 일기를 삭제하시겠습니까?") {
-            confirmDeletion(); // Call delete confirmation function
-          } else {
-            setIsModalOpen(false); // Default close for any other messages
-          }
-        }}
-        onCancel={() => setIsModalOpen(false)} // Close modal on cancel
-        singleButton={
-          modalMessage === "중복된 태그를 입력하였습니다" ||
-          modalMessage === "일기 제목, 내용, 날짜를 입력하세요!"
-        }
+        confirmText="확인"
+        onConfirm={() => setIsModalOpen(false)}
+        singleButton
       />
     </St.Container>
   );
