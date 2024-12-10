@@ -100,11 +100,13 @@ export const Div = styled.div`
     position: absolute;
     left: 0;
     bottom: 20px;
-  }
-
-  .submitBtn:not(:disabled):hover,
-  .submitBtn:not(:disabled):active {
-    background-color: #0a6dce;
+    &:hover,
+    &:active {
+      background-color: #0a6dce;
+    }
+    &:disabled {
+      background-color: #ccc;
+    }
   }
 `;
 
