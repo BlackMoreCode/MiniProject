@@ -64,10 +64,12 @@ export const AxiosApi = {
 
   saveDiary: async (loggedInMember, newDiary) => {
     try {
+      console.log("Saving diary to backend..."); // 제대로 들어간다는거 확인용
       const response = await axios.post(`${API_BASE_URL}/diary/save`, {
         loggedInMember, // 로그인된 멤버 데이터 보내기
         newDiary, // 일기 객체 (= Diary object; => title, content, tags, etc.)
       });
+      console.log("Backend response:", response); //백엔드 응답
       return response.data;
     } catch (error) {
       console.error("Failed to save diary:", error);
@@ -75,7 +77,7 @@ export const AxiosApi = {
     }
   },
 
-  //추후에 백엔드에서 일기 데이터를 받아서 호출할 API 프로토타입? 현재 불필요한가?
+  //추후에 백엔드에서 일기 데이터를 받아서 호출할 API
   getDiaries: async ({ loggedInMember, year, month }) => {
     try {
       const response = await axios.post(

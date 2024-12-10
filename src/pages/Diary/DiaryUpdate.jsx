@@ -11,6 +11,8 @@ import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 
+let sequenceCounter = 1;
+
 const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
@@ -32,7 +34,6 @@ const DiaryUpdate = () => {
   const { diaryNum } = useParams();
   const navigate = useNavigate();
   const { loggedInMember } = useContext(LoginContext);
-  const { removeDiary } = useContext(DiaryContext);
 
   useEffect(() => {
     const fetchDiary = async () => {
@@ -44,8 +45,7 @@ const DiaryUpdate = () => {
 
         console.log("Fetched diary data:", response);
 
-        // Check if the response contains a valid diary
-        if (response && response.title) {
+        if (response) {
           setTitle(response.title || "");
           setDescription(response.content || "");
           setDate(
@@ -54,15 +54,21 @@ const DiaryUpdate = () => {
               : ""
           );
           setTags(response.tags || []);
-          setCodeSnippets(response.codingDiaryEntries || []);
-        } else {
-          // If the diary is not found or null, reset the states
-          console.warn("No diary data found.");
-          setTitle("");
-          setDescription("");
-          setDate("");
-          setTags([]);
-          setCodeSnippets([]);
+
+          // Set codingDiaryEntries with default commentary
+          setCodeSnippets(
+            (response.codingDiaryEntries || []).map((snippet) => ({
+              programmingLanguageName:
+                snippet.programmingLanguageName || "javascript",
+              content: snippet.content || "",
+              commentary:
+                Array.isArray(snippet.commentary) && snippet.commentary.length
+                  ? snippet.commentary
+                  : [""], // Ensure at least one empty commentary
+              entryType: snippet.entryType || "snippet",
+              sequence: snippet.sequence || 1,
+            }))
+          );
         }
       } catch (error) {
         console.error("Error fetching diary:", error);
@@ -97,24 +103,47 @@ const DiaryUpdate = () => {
       content: description,
       tags,
       writtenDate: formatDate(date),
-      codingDiaryEntries: codeSnippets.map((snippet, index) => {
-        return {
-          programmingLanguageName: snippet.language || null,
-          entryType: snippet.language ? "snippet" : "comment",
-          content: snippet.language
-            ? snippet.code || ""
-            : snippet.commentary?.join("\n") || "",
-          sequence: index + 1,
-        };
+      // codingDiaryEntries: codeSnippets.map((snippet, index) => ({
+      //   programmingLanguageName: snippet.programmingLanguageName, // No need for null check, default handled earlier
+      //   entryType: snippet.programmingLanguageName ? "snippet" : "comment",
+      //   content: snippet.content || "",
+      //   commentary: snippet.commentary || [""], // At least one empty commentary
+      //   sequence: index + 1,
+      // })),
+      codingDiaryEntries: codeSnippets.flatMap((snippet, snippetIndex) => {
+        const entries = [];
+
+        // Add the snippet entry
+        if (snippet.code) {
+          entries.push({
+            entryType: "snippet", // 스니펫 타입
+            programmingLanguageName: snippet.programmingLanguageName || null,
+            content: snippet.code, // 스니펫의 코드
+            sequence: snippetIndex * 2 + 1, // 순서 계산
+          });
+        }
+
+        // Add commentary entries
+        if (Array.isArray(snippet.commentary)) {
+          snippet.commentary.forEach((comment, commentIndex) => {
+            entries.push({
+              entryType: "comment", // 코멘트 타입
+              programmingLanguageName: null, // 코멘트에는 언어 없음
+              content: comment, // 코멘트 내용
+              sequence: snippetIndex * 2 + 2 + commentIndex, // 순서 계산
+            });
+          });
+        }
+
+        return entries;
       }),
     };
 
-    console.log("Tags to be sent:", tags);
-    console.log("Updated Diary Payload:", updatedDiary);
+    // console.log("codeSnippets 검사", codeSnippets);
+    // console.log("Tags to be sent:", tags);
+    console.log("Updated Diary Payload (Update):", updatedDiary); // updateDiary API 호출 직전에  콘솔로그 따보기
 
     try {
-      console.log("Diary to Update:", updatedDiary);
-
       await AxiosApi.updateDiary({
         loggedInMember,
         diaryNum,
@@ -126,6 +155,8 @@ const DiaryUpdate = () => {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
       setIsModalOpen(true);
+    } finally {
+      sequenceCounter = 1;
     }
   };
 
@@ -167,10 +198,24 @@ const DiaryUpdate = () => {
   };
 
   const addCodeSnippet = () => {
-    setCodeSnippets([
-      ...codeSnippets,
-      { language: "javascript", code: "", commentary: [] },
+    setCodeSnippets((prevSnippets) => [
+      ...prevSnippets,
+      {
+        programmingLanguageName: "javascript",
+        code: "",
+        commentary: ["기본 코멘터리"], //기본 코멘터리 일단 추가
+      },
     ]);
+  };
+
+  const updateCodeSnippet = (snippetIndex, newCode) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? { ...snippet, code: newCode } // 해당 스니펫의 코드를 업데이트
+          : snippet
+      )
+    );
   };
 
   const addCodeCommentary = (snippetIndex) => {
@@ -257,11 +302,13 @@ const DiaryUpdate = () => {
             <St.Div className="code-section">
               {codeSnippets.map((snippet, snippetIndex) => (
                 <div key={snippetIndex}>
+                  {/* Render the language dropdown */}
                   <select
-                    value={snippet.language}
+                    value={snippet.programmingLanguageName}
                     onChange={(e) => {
                       const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].language = e.target.value;
+                      updatedSnippets[snippetIndex].programmingLanguageName =
+                        e.target.value;
                       setCodeSnippets(updatedSnippets);
                     }}
                   >
@@ -269,23 +316,27 @@ const DiaryUpdate = () => {
                     <option value="python">Python</option>
                     <option value="java">Java</option>
                   </select>
+
+                  {/* Render the code editor */}
                   <CodeMirror
-                    value={snippet.code}
+                    value={snippet.content}
                     height="auto"
                     theme={dracula}
                     extensions={[
-                      snippet.language === "javascript"
+                      snippet.programmingLanguageName === "javascript"
                         ? javascript()
-                        : snippet.language === "python"
+                        : snippet.programmingLanguageName === "python"
                         ? python()
                         : java(),
                     ]}
-                    onChange={(value) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].code = value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
+                    onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+                    // onChange={(value) => {
+                    //   const updatedSnippets = [...codeSnippets];
+                    //   updatedSnippets[snippetIndex].content = value;
+                    //   setCodeSnippets(updatedSnippets);
+                    // }}
                   />
+
                   <St.GeneralRmvBtn
                     type="button"
                     onClick={() => removeCodeSnippet(snippetIndex)}
@@ -293,6 +344,7 @@ const DiaryUpdate = () => {
                     코드 스니펫 삭제
                   </St.GeneralRmvBtn>
 
+                  {/* Render commentary */}
                   {snippet.commentary.map((comment, commentaryIndex) => (
                     <div key={commentaryIndex}>
                       <St.TextArea
@@ -315,6 +367,7 @@ const DiaryUpdate = () => {
                       </St.GeneralRmvBtn>
                     </div>
                   ))}
+
                   <St.GeneralAddBtn
                     type="button"
                     onClick={() => addCodeCommentary(snippetIndex)}
@@ -323,6 +376,7 @@ const DiaryUpdate = () => {
                   </St.GeneralAddBtn>
                 </div>
               ))}
+
               <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
                 코드 스니펫 추가
               </St.GeneralAddBtn>

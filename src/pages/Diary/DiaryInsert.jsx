@@ -11,6 +11,8 @@ import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 
+let sequenceCounter = 1;
+
 const DiaryInsert = () => {
   const navigate = useNavigate();
   const textarea = useRef(null);
@@ -52,14 +54,44 @@ const DiaryInsert = () => {
         content: description,
         tags,
         writtenDate: formatDate(date),
-        codingDiaryEntries: codeSnippets.map((snippet, index) => ({
-          programmingLanguageName: snippet.language || null,
-          entryType: snippet.language ? "snippet" : "comment",
-          content: snippet.code || "",
-          commentary: snippet.commentary || [],
-          sequence: index + 1,
-        })),
+        // codingDiaryEntries: codeSnippets.map((snippet, index) => ({
+        //   programmingLanguageName: snippet.language || null,
+        //   entryType: snippet.language ? "snippet" : "comment",
+        //   content: snippet.code || "",
+        //   commentary: snippet.commentary?.length ? snippet.commentary : [""],
+        //   sequence: index + 1,
+        // })),
+        codingDiaryEntries: codeSnippets.flatMap((snippet, snippetIndex) => {
+          const entries = [];
+
+          // Add the snippet entry
+          if (snippet.code) {
+            entries.push({
+              entryType: "snippet", // 스니펫 타입
+              programmingLanguageName: snippet.programmingLanguageName || null,
+              content: snippet.code, // 스니펫의 코드
+              sequence: snippetIndex * 2 + 1, // 순서 계산
+            });
+          }
+
+          // Add commentary entries
+          if (Array.isArray(snippet.commentary)) {
+            snippet.commentary.forEach((comment, commentIndex) => {
+              entries.push({
+                entryType: "comment", // 코멘트 타입
+                programmingLanguageName: null, // 코멘트에는 언어 없음
+                content: comment, // 코멘트 내용
+                sequence: snippetIndex * 2 + 2 + commentIndex, // 순서 계산
+              });
+            });
+          }
+
+          return entries;
+        }),
       };
+
+      //try 구문 이전에 기입되는 자료를 보기위해서 로그 작성.
+      console.log("New Diary Payload (Insert):", newDiary);
 
       try {
         await AxiosApi.saveDiary(loggedInMember, newDiary);
@@ -69,6 +101,8 @@ const DiaryInsert = () => {
         console.error("Failed to save diary:", error);
         setModalMessage("일기를 저장하는데 실패하였습니다.");
         setIsModalOpen(true);
+      } finally {
+        sequenceCounter = 1;
       }
     },
     [
@@ -97,7 +131,7 @@ const DiaryInsert = () => {
   const addCodeSnippet = useCallback(() => {
     setCodeSnippets((prevSnippets) => [
       ...prevSnippets,
-      { language: "javascript", code: "", commentary: [] },
+      { language: "javascript", code: "", commentary: ["Default commentary"] },
     ]);
   }, []);
 
@@ -108,6 +142,16 @@ const DiaryInsert = () => {
       )
     );
   }, []);
+
+  const updateCodeSnippetInput = (snippetIndex, newCode) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? { ...snippet, code: newCode } // 해당 스니펫의 코드를 업데이트
+          : snippet
+      )
+    );
+  };
 
   const addCodeCommentary = useCallback((snippetIndex) => {
     setCodeSnippets((prevSnippets) =>
@@ -251,7 +295,7 @@ const DiaryInsert = () => {
                         : java(),
                     ]}
                     onChange={(value) =>
-                      updateCodeSnippet(snippetIndex, "code", value)
+                      updateCodeSnippetInput(snippetIndex, value)
                     }
                   />
                   <St.GeneralRmvBtn

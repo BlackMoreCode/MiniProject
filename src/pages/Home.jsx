@@ -20,7 +20,7 @@ import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
-  const { diaries, fetchDiaries } = useContext(DiaryContext);
+  const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
 
   const { bannerImage } = useContext(BannerImageContext);
 
@@ -39,24 +39,18 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!diaries) {
-      fetchDiaries();
-    }
-  }, []);
-
-  useEffect(() => {
+    // 현재 달에 있는 일기 fetch
     if (loggedInMember) {
-      console.log("Home Update by loggedInMember");
-      fetchDiaries();
-    } else if (loggedInMember === null) {
-      console.log("go to intro page");
-      navigate("/intro");
+      fetchDiariesForMonth(diaryYear, diaryMonth, loggedInMember);
     }
-  }, []);
+  }, [loggedInMember, diaryYear, diaryMonth]);
 
   useEffect(() => {
-    // Synchronize sortedDiaries with diaries when diaries change
-    if (diaries === null || undefined) return;
+    // 현재 달에 있는 일기 정렬
+    if (!diaries || diaries.length === 0) {
+      setSortedDiaries([]);
+      return;
+    }
     const filteredDiaries = diaries.filter((diary) => {
       const diaryDate = new Date(diary.writtenDate);
       return (
@@ -64,12 +58,11 @@ const Home = () => {
         diaryDate.getMonth() + 1 === diaryMonth
       );
     });
-
     setSortedDiaries(filteredDiaries);
   }, [diaries, diaryYear, diaryMonth]);
 
   useEffect(() => {
-    // Apply search filter when searchValue changes
+    // 검색 필터 적용
     if (searchValue.trim() === "") {
       setSearchResults([]);
     } else {
@@ -80,10 +73,10 @@ const Home = () => {
     }
   }, [searchValue, sortedDiaries]);
 
-  // 검색창 열고 닫기
   const inputRef = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchCloseVisible, setSearchCloseVisible] = useState(false);
+
   const searchVisibleOn = () => {
     setSearchVisible(true);
     setSearchCloseVisible(true);
@@ -96,25 +89,20 @@ const Home = () => {
     setSearchResults([]);
   };
 
-  // 검색에 따른 상태 변화
   const inputChange = (e) => {
     setSearchValue(e.target.value);
   };
 
-  // 커서 포커싱
   useEffect(() => {
     if (searchVisible) {
       inputRef.current.focus();
     }
   }, [searchVisible]);
 
-  //기존 로직이 완료되지 않아서 추가.
   const handleSort = () => {
     setIsSort((prevState) => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
 
-      // Update sortedDiaries instead of original diaries
-      console.log("sorted diary check", sortedDiaries);
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
@@ -128,7 +116,6 @@ const Home = () => {
     });
   };
 
-  // 날짜 선택 --> 미완성? --> 1차 시도
   const changeMonth = (offset) => {
     let newMonth = diaryMonth + offset;
     let newYear = diaryYear;
@@ -148,13 +135,11 @@ const Home = () => {
   return (
     <Container>
       <Div className="phone-container">
-        {/* 헤더바 */}
         <Div className="phone-header">
           <Img1 src={bannerImage} alt="BannerImage" />
 
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
-              {/* 왼쪽 메뉴 버튼 -- 구현 아직 안된듯? */}
               <button className="phone-menuBtn">
                 <GiHamburgerMenu />
               </button>
@@ -170,7 +155,6 @@ const Home = () => {
             </Div>
 
             <Div className="phone-headerRight">
-              {/* 테마 변경 버튼 --> 아직 기능 구현 처리 안됨 */}
               <button className="phone-themeBtn">
                 <LuPaintbrush />
               </button>
@@ -201,7 +185,6 @@ const Home = () => {
               </div>
               <button className="phone-sort" onClick={handleSort}>
                 {isSort === "asc" ? (
-                  // 가져다 대면 어떤 정렬인지 텍스트로도 표기
                   <BsSortNumericDown title="오름차순 정렬" />
                 ) : (
                   <BsSortNumericDownAlt title="내림차순 정렬" />
@@ -216,7 +199,7 @@ const Home = () => {
             <button onClick={() => changeMonth(1)}>▶</button>
           </Div>
         </Div>
-        {/* Diary Section */}
+
         <Div className="diary-container">
           {searchValue && searchResults.length === 0 ? (
             <p>검색 결과가 없습니다.</p>
@@ -226,15 +209,7 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() => {
-                  console.log(
-                    "Navigating to DiaryUpdate with diaryNum:",
-                    diary.diaryNum
-                  );
-                  navigate("/diaryUpdate", {
-                    state: { diaryNum: diary.diaryNum },
-                  });
-                }}
+                onClick={() => navigate(`/diaryUpdate/${diary.diaryNum}`)}
               >
                 <p className="diary-date">
                   {new Date(diary.writtenDate).toLocaleDateString()}
@@ -251,10 +226,7 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() => {
-                  console.log("Navigating to diaryNum:", `${diary.diaryNum}`);
-                  navigate(`/diaryUpdate/${diary.diaryNum}`);
-                }}
+                onClick={() => navigate(`/diaryUpdate/${diary.diaryNum}`)}
               >
                 <p className="diary-date">
                   {new Date(diary.writtenDate).toLocaleDateString()}
@@ -265,7 +237,7 @@ const Home = () => {
             ))
           )}
         </Div>
-        {/* Footer */}
+
         <Div className="phone-footer">
           <RedirectButton onClick={() => navigate("/calendar")}>
             <FontAwesomeIcon icon={faCalendar} />
