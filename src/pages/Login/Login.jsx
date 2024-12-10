@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   LoginContents,
@@ -18,7 +18,9 @@ export const Login = () => {
   const { userId, userPassword, setUserId, setUserPassword } = context;
   const navigate = useNavigate();
 
-  if (userId && userPassword) navigate("/");
+  useEffect(() => {
+    if (userId && userPassword) navigate("/");
+  }, [userId, userPassword])
 
   const [formValues, setFormValues] = useState({
     id: "",

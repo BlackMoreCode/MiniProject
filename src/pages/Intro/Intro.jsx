@@ -1,10 +1,24 @@
-import { Link } from "react-router-dom";
+import { useEffect, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { IntroContents } from "./IntroStyles";
 import logoIcon from "../../assets/icons/logo.png";
 import introPageWomanImage from "../../assets/images/intro-page-woman.png";
 import introPageManImage from "../../assets/images/intro-page-man.png";
+import { LoginContext } from "../../contexts/LoginContext";
+
 
 const Intro = () => {
+  const context = useContext(LoginContext);
+  const { userId, userPassword } = context;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(userId, userPassword)
+    if (userId && userPassword) {
+      navigate("/");
+    }
+  }, [userId, userPassword])
+
   return (
     <IntroContents>
       <header>
