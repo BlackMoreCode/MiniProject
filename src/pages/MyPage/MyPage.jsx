@@ -1,7 +1,12 @@
-import { Container, Div } from "../../components/homeComponent";
+import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
+
 import { useContext } from "react";
 // import { FontContext } from "../../contexts/FontContext";
+
+import { PrevPageButton } from "../../components/PrevPageButton";
+import { Div } from "./MyPageStyles";
+
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
@@ -26,8 +31,8 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
     <Container>
       <Div className="phone-container">
         <Div className="menuBox">
-          <button onClick={onClickBack} className="backBtn">
-            뒤
+          <button onClick={()=>navigate("/")} className="backBtn">
+            <PrevPageButton />
           </button>
           <div className="linkBox">
             <button onClick={onClickProfile}>회원 정보 수정</button>  
