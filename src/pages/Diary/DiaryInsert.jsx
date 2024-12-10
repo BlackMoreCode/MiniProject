@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useContext, useState, useRef, useCallback } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../contexts/LoginContext";
@@ -27,104 +27,139 @@ const DiaryInsert = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // useCallback을 사용해서 핸들러 보조; 불필요한 생성/렌더링 막기
+  // state(상태) 의 과남용 방지, 가독성 증가
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    if (!title?.trim() || !description?.trim() || !date?.trim()) {
-      setModalMessage("일기 제목, 내용, 날짜를 입력하세요!");
-      setIsModalOpen(true);
-      return;
-    }
+      if (!title?.trim() || !description?.trim() || !date?.trim()) {
+        setModalMessage("일기 제목, 내용, 날짜를 입력하세요!");
+        setIsModalOpen(true);
+        return;
+      }
 
-    //일기에 시간을 원하는 시간으로 넣기위해서 처리중
-    const formatDate = (date) => {
-      const d = new Date(date); // Use the selected date directly
-      const pad = (n) => (n < 10 ? "0" + n : n);
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
-        d.getDate()
-      )}T00:00:00`; // 시간을 일단 00:00:00 로 하드코딩 처리.
-    };
+      const formatDate = (date) => {
+        const d = new Date(date);
+        const pad = (n) => (n < 10 ? "0" + n : n);
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+          d.getDate()
+        )}T00:00:00`;
+      };
 
-    const newDiary = {
+      const newDiary = {
+        title,
+        content: description,
+        tags,
+        writtenDate: formatDate(date),
+        codingDiaryEntries: codeSnippets.map((snippet, index) => ({
+          programmingLanguageName: snippet.language || null,
+          entryType: snippet.language ? "snippet" : "comment",
+          content: snippet.code || "",
+          commentary: snippet.commentary || [],
+          sequence: index + 1,
+        })),
+      };
+
+      try {
+        await AxiosApi.saveDiary(loggedInMember, newDiary);
+        addDiary(newDiary);
+        navigate("/");
+      } catch (error) {
+        console.error("Failed to save diary:", error);
+        setModalMessage("일기를 저장하는데 실패하였습니다.");
+        setIsModalOpen(true);
+      }
+    },
+    [
       title,
-      content: description,
+      description,
+      date,
       tags,
-      writtenDate: formatDate(date),
-      codingDiaryEntries: codeSnippets.map((snippet, index) => ({
-        programmingLanguageName: snippet.language || null,
-        entryType: snippet.language ? "snippet" : "comment", // Entry type
-        content: snippet.code || "",
-        commentary: snippet.commentary || [], // Include commentary here
-        sequence: index + 1,
-      })),
-    };
+      codeSnippets,
+      loggedInMember,
+      addDiary,
+      navigate,
+    ]
+  );
 
-    try {
-      await AxiosApi.saveDiary(loggedInMember, newDiary);
-      addDiary(newDiary);
-      navigate("/");
-    } catch (error) {
-      console.error("Failed to save diary:", error);
-      setModalMessage("일기를 저장하는데 실패하였습니다.");
-      setIsModalOpen(true);
-    }
-  };
-
-  const removeTag = (tag) => setTags(tags.filter((t) => t !== tag));
-
-  const handleChange = (e) => {
-    setDescription(e.target.value);
-    if (textarea.current) {
-      textarea.current.style.height = "auto";
-      textarea.current.style.height = `${textarea.current.scrollHeight}px`;
-    }
-  };
-
-  const addTag = () => {
+  const addTag = useCallback(() => {
     const trimmedTag = tagInput.trim();
-
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag]);
+      setTags((prevTags) => [...prevTags, trimmedTag]);
       setTagInput("");
     } else {
       setModalMessage("중복된 태그를 추가할 수 없습니다.");
       setIsModalOpen(true);
     }
-  };
+  }, [tagInput, tags]);
 
-  const addCodeSnippet = () => {
-    setCodeSnippets([
-      ...codeSnippets,
+  const addCodeSnippet = useCallback(() => {
+    setCodeSnippets((prevSnippets) => [
+      ...prevSnippets,
       { language: "javascript", code: "", commentary: [] },
     ]);
-  };
+  }, []);
 
-  const addCodeCommentary = (snippetIndex) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary.push("");
-    setCodeSnippets(updatedSnippets);
-  };
+  const updateCodeSnippet = useCallback((snippetIndex, key, value) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex ? { ...snippet, [key]: value } : snippet
+      )
+    );
+  }, []);
 
-  const removeCodeSnippet = (snippetIndex) => {
-    setCodeSnippets(codeSnippets.filter((_, index) => index !== snippetIndex));
-  };
+  const addCodeCommentary = useCallback((snippetIndex) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? {
+              ...snippet,
+              commentary: [...snippet.commentary, ""],
+            }
+          : snippet
+      )
+    );
+  }, []);
 
-  const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary[commentaryIndex] = newComment;
-    setCodeSnippets(updatedSnippets);
-  };
+  const updateCodeCommentary = useCallback(
+    (snippetIndex, commentaryIndex, newComment) => {
+      setCodeSnippets((prevSnippets) =>
+        prevSnippets.map((snippet, index) =>
+          index === snippetIndex
+            ? {
+                ...snippet,
+                commentary: snippet.commentary.map((comment, i) =>
+                  i === commentaryIndex ? newComment : comment
+                ),
+              }
+            : snippet
+        )
+      );
+    },
+    []
+  );
 
-  const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary.splice(commentaryIndex, 1);
-    setCodeSnippets(updatedSnippets);
-  };
+  const removeCodeCommentary = useCallback((snippetIndex, commentaryIndex) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? {
+              ...snippet,
+              commentary: snippet.commentary.filter(
+                (_, i) => i !== commentaryIndex
+              ),
+            }
+          : snippet
+      )
+    );
+  }, []);
 
   return (
     <St.Container>
       <St.Div className="phone-container">
         <St.Form onSubmit={handleSubmit}>
+          {/* Title and Date */}
           <p>제목</p>
           <St.InputGeneral
             type="text"
@@ -138,6 +173,8 @@ const DiaryInsert = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
+
+          {/* Description */}
           <label htmlFor="description">내용:</label>
           <St.TextArea
             id="description"
@@ -148,6 +185,7 @@ const DiaryInsert = () => {
             placeholder="내용 입력"
           />
 
+          {/* Tags */}
           <St.Div className="tag-section">
             <St.TagInput
               type="text"
@@ -163,7 +201,9 @@ const DiaryInsert = () => {
                 <St.TagItem key={index}>
                   {tag}
                   <button
-                    onClick={() => setTags(tags.filter((t) => t !== tag))}
+                    onClick={() =>
+                      setTags((prev) => prev.filter((t) => t !== tag))
+                    }
                   >
                     x
                   </button>
@@ -172,6 +212,7 @@ const DiaryInsert = () => {
             </St.TagList>
           </St.Div>
 
+          {/* Code Snippets */}
           <St.GeneralAddBtn
             type="button"
             onClick={() => setShowCodeSnippets((prev) => !prev)}
@@ -183,13 +224,16 @@ const DiaryInsert = () => {
             <St.Div className="code-section">
               {codeSnippets.map((snippet, snippetIndex) => (
                 <div key={snippetIndex}>
+                  {/* Code Snippet Section */}
                   <select
                     value={snippet.language || ""}
-                    onChange={(e) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].language = e.target.value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
+                    onChange={(e) =>
+                      updateCodeSnippet(
+                        snippetIndex,
+                        "language",
+                        e.target.value
+                      )
+                    }
                   >
                     <option value="javascript">JavaScript</option>
                     <option value="python">Python</option>
@@ -206,19 +250,22 @@ const DiaryInsert = () => {
                         ? python()
                         : java(),
                     ]}
-                    onChange={(value) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].code = value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
+                    onChange={(value) =>
+                      updateCodeSnippet(snippetIndex, "code", value)
+                    }
                   />
                   <St.GeneralRmvBtn
                     type="button"
-                    onClick={() => removeCodeSnippet(snippetIndex)}
+                    onClick={() =>
+                      setCodeSnippets((prevSnippets) =>
+                        prevSnippets.filter((_, i) => i !== snippetIndex)
+                      )
+                    }
                   >
                     코드 스니펫 삭제
                   </St.GeneralRmvBtn>
 
+                  {/* Commentary Section */}
                   {snippet.commentary.map((comment, commentaryIndex) => (
                     <div key={commentaryIndex}>
                       <St.TextArea

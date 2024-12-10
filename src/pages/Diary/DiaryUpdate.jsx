@@ -14,7 +14,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
-  const { fetchDiaries } = useContext(LoginContext);
+  const { fetchDiaries } = useContext(DiaryContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

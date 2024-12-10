@@ -23,6 +23,10 @@ const ChangeFont = () => {
     document.body.className = fontClass; // DOM 업데이트
   };
 
+  const onClickBack = () => {
+    navigate("/mypage");
+  };
+
   return (
     <div className="change-font-container">
       <h1>폰트 변경</h1>
@@ -40,6 +44,9 @@ const ChangeFont = () => {
         ))}
       </div>
       <button onClick={() => navigate("/")}>폰트 변경</button>{" "}
+      <button onClick={onClickBack} className="backBtn">
+        뒤
+      </button>
       {/* 버튼 텍스트 변경 */}
     </div>
   );
