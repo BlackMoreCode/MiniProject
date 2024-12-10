@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
+
+import { LoginContext } from "../../contexts/LoginContext";
 import { UserContext } from "../../contexts/UserContext";
 import { Container, Div } from "./MyPageStyles";
 import { PrevPageButton } from "../../components/PrevPageButton";
@@ -166,19 +168,21 @@ const Profile = () => {
     }
   };
 
-  const ChangePw = async () => {
-    try {
-      const response = await AxiosApi.updatePassword(
-        userId,
-        currentPassword,
-        newPassword,
-        newPasswordCheck
-      );
-      setMessage("비밀번호가 성공적으로 수정되었습니다.");
-    } catch (error) {
-      console.error("Failed to update password:", error);
-      setMessage("비밀번호 수정에 실패하였습니다.");
-    }
+
+  const ChangePw = () => {
+    const handleChangePassword = async () => {
+      try {
+        const response = await AxiosApi.updatePassword(
+          userId,
+          currentPassword,
+          newPassword
+        );
+        setMessage("비밀번호가 성공적으로 수정되었습니다.");
+      } catch (error) {
+        console.error("Failed to update password:", error);
+        setMessage("비밀번호 수정에 실패하였습니다.");
+      }
+    };
   };
 
   return (

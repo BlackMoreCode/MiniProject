@@ -127,14 +127,12 @@ export const AxiosApi = {
   },
 
   // 기존 일기 삭제
-  deleteDiary: async (loggedInMember, diaryNum) => {
+  deleteDiary: async ({ loggedInMember, diaryNum }) => {
     try {
-      const response = await axios.delete(
-        `${API_BASE_URL}/diary/delete/${diaryNum}`,
-        {
-          data: { loggedInMember }, // loggedinMember 포함
-        }
-      );
+      const response = await axios.post(`${API_BASE_URL}/diary/delete`, {
+        loggedInMember,
+        diaryNum,
+      });
       return response.data;
     } catch (error) {
       console.error("Failed to delete diary:", error);

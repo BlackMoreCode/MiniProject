@@ -7,8 +7,9 @@ import {
   AddButton,
   RedirectButton,
 } from "../components/homeComponent";
-import image5 from "../assets/bannerimages/image5.jpg";
-import { UserContext } from "../contexts/UserContext";
+import { LoginContext } from "../contexts/LoginContext";
+import { DiaryContext } from "../contexts/DiaryContext";
+import { BannerImageContext } from "../contexts/BannerImageContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -18,8 +19,10 @@ import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 
 const Home = () => {
-  const { logout, diaries, loggedInMember, fetchDiaries } =
-    useContext(UserContext);
+  const { logout, loggedInMember } = useContext(LoginContext);
+  const { diaries, fetchDiaries } = useContext(DiaryContext);
+
+  const { bannerImage } = useContext(BannerImageContext);
 
   // 리액트 문맥 값 (context value) 는 디자인상 불변성이 유지되어야하므로 ("immutable")
   // 컨텍스트에서 직접적으로 정렬을 실행하는 것은 이상적이지 못하다.
@@ -36,6 +39,12 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!diaries) {
+      fetchDiaries();
+    }
+  }, []);
+
+  useEffect(() => {
     if (loggedInMember) {
       console.log("Home Update by loggedInMember");
       fetchDiaries();
@@ -47,12 +56,15 @@ const Home = () => {
 
   useEffect(() => {
     // Synchronize sortedDiaries with diaries when diaries change
-    if (diaries === null) return;
-    const filteredDiaries = diaries.filter(
-      (diary) =>
-        new Date(diary.writtenDate).getFullYear() === diaryYear &&
-        new Date(diary.writtenDate).getMonth() + 1 === diaryMonth
-    );
+    if (diaries === null || undefined) return;
+    const filteredDiaries = diaries.filter((diary) => {
+      const diaryDate = new Date(diary.writtenDate);
+      return (
+        diaryDate.getFullYear() === diaryYear &&
+        diaryDate.getMonth() + 1 === diaryMonth
+      );
+    });
+
     setSortedDiaries(filteredDiaries);
   }, [diaries, diaryYear, diaryMonth]);
 
@@ -138,7 +150,7 @@ const Home = () => {
       <Div className="phone-container">
         {/* 헤더바 */}
         <Div className="phone-header">
-          <Img1 src={image5} alt="image5" />
+          <Img1 src={bannerImage} alt="BannerImage" />
 
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">

@@ -1,14 +1,31 @@
 import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
+
+import { useContext } from "react";
+// import { FontContext } from "../../contexts/FontContext";
+
 import { PrevPageButton } from "../../components/PrevPageButton";
 import { Div } from "./MyPageStyles";
+
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
 
+  // const { selectedFont } = useContext(FontContext);
+
+  const onClickBack = () => {
+    navigate("/");
+  };
   const onClickProfile = () => {
     navigate("/profile");
   };
+  const onClickChangeFont = () => {
+    navigate("/font");
+  };
+  const onClickChangeBanner = () => {
+    navigate("/banner");
+  };
+  
 
   return (
     <Container>
@@ -21,13 +38,13 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
             <button onClick={onClickProfile}>회원 정보 수정</button>  
           </div>
           <div className="linkBox">
-            <button>폰트 변경</button>
+            <button onClick={onClickChangeFont}>폰트 변경</button>
           </div>
           <div className="linkBox">
             <button>테마 변경</button>
           </div>
           <div className="linkBox">
-            <button>배너 이미지 변경</button>
+            <button onClick={onClickChangeBanner}>배너 이미지 변경</button>
           </div>
           <div className="linkBox">
             <button>알림 사운드 변경</button>

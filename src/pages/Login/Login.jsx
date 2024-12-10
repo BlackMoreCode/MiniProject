@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   LoginContents,
@@ -10,15 +10,17 @@ import signUpIcon from "../../assets/icons/signup-icon.png";
 import AxiosApi from "../../api/AxiosApi";
 import MessageModal from "../../components/MessageModal";
 import { login, logout } from "../../util/loginUtils";
-import { UserContext } from "../../contexts/UserContext";
+import { LoginContext } from "../../contexts/LoginContext";
 import { PrevPageButton } from "../../components/PrevPageButton";
 
 export const Login = () => {
-  const context = useContext(UserContext);
+  const context = useContext(LoginContext);
   const { userId, userPassword, setUserId, setUserPassword } = context;
   const navigate = useNavigate();
 
-  if (userId && userPassword) navigate("/");
+  useEffect(() => {
+    if (userId && userPassword) navigate("/");
+  }, [userId, userPassword])
 
   const [formValues, setFormValues] = useState({
     id: "",
