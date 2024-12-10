@@ -40,6 +40,18 @@ export const Div = styled.div`
   .profile-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .backBtn {
+    width: 30px;
+    height: 30px;
+    border: 2px solid black;
+    border-radius: 50%;
+    cursor: pointer;
+    img {
+      width: 100%;
+    }
   }
 
   .header-blank {

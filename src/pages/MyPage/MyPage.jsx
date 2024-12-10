@@ -5,6 +5,7 @@ import { useContext } from "react";
 // import { FontContext } from "../../contexts/FontContext";
 
 import { PrevPageButton } from "../../components/PrevPageButton";
+import leftArrowIcon from "../../assets/icons/left-arrow.png";
 import { Div } from "./MyPageStyles";
 
 
@@ -32,7 +33,7 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
       <Div className="phone-container">
         <Div className="menuBox">
           <button onClick={()=>navigate("/")} className="backBtn">
-            <PrevPageButton />
+            <img src={leftArrowIcon} alt="뒤로가기" />
           </button>
           <div className="linkBox">
             <button onClick={onClickProfile}>회원 정보 수정</button>  

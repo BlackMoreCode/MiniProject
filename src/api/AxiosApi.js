@@ -148,13 +148,13 @@ export const AxiosApi = {
   // 회원 정보 수정
   updateProfile: async (id, email, nickname, password) => {
     try {
-      const response = await axios.get(`${BACKEND_DOMAIN}/members/${id}/update`, {
+      const response = await axios.post(`${BACKEND_DOMAIN}/members/update`, {
         id, 
         email, 
         nickname, 
         password
       });
-      if (response.data.success) {
+      if (response.status === 200 && response.data.success) {
         return true;
       } else {
         // success가 false이면 백엔드 응답 구조 상 원래 항상 catch로 가야하기 때문에
@@ -164,6 +164,18 @@ export const AxiosApi = {
     } catch (error) {
       console.error(error);
       return false;
+    }
+  },
+
+  getUserDetails: async (id) => {
+    try {
+      const response = await axios.post(`${BACKEND_DOMAIN}/members/get`, {
+        id
+      });
+      return response.data.memberInfo;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   }
 };

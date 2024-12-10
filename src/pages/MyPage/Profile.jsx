@@ -5,16 +5,20 @@ import { LoginContext } from "../../contexts/LoginContext";
 import { Container, Div } from "./MyPageStyles";
 import { PrevPageButton } from "../../components/PrevPageButton";
 import { useNavigate } from "react-router-dom";
+import leftArrowIcon from "../../assets/icons/left-arrow.png";
 
 const Profile = () => {
-  const { userId, userPassword, email, nickname } = useContext(LoginContext);
+  const { userId, userPassword, setUserPassword } = useContext(LoginContext);
   const [userDetails, setUserDetails] = useState(null);
+  const [email, setEmail] = useState("");
   const [inputEmail, setInputEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
-  const [emailCheck, setEmailCheck] = useState(false);
+  const [emailCheck, setEmailCheck] = useState(true);
+  const [nickname, setNickname] = useState("");
   const [inputNickname, setInputNickname] = useState("");
   const [nicknameMessage, setNicknameMessage] = useState("");
-  const [nicknameCheck, setNicknameCheck] = useState(false);
+  const [nicknameCheck, setNicknameCheck] = useState(true);
+  const [password, setPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [currentPwMessage, setCurrentPwMessage] = useState("");
   const [currentPwCheck, setCurrentPwCheck] = useState(false);
@@ -34,18 +38,20 @@ const Profile = () => {
 
   // 이메일 체크
   const onChangeEmail = (e) => {
-    setInputEmail(e.target.value);
+    const value = e.target.value;
+    setInputEmail(value);
+
     const emailRgx = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if(!emailRgx.test(e.target.value)) {
+    if(!emailRgx.test(value)) {
       setEmailMessage("올바른 이메일 형식이 아닙니다.");
       setEmailCheck(false);
     } else {
       setEmailCheck(true);
-      if(email === inputEmail) {
+      if(email === value) {
         setEmailMessage("");
       } else {
         setEmailMessage("올바른 형식입니다.")
-      emailUniqueCheck(e.target.value);
+        emailUniqueCheck(value);
       }
     }
   }
@@ -60,6 +66,7 @@ const Profile = () => {
     const isUnique = await AxiosApi.checkUnique("email", emailValue);
     if (isUnique === null) {
       setEmailMessage("이메일 중복 검증 실패");
+      setEmailCheck(false);
     } else {
       if (isUnique) {
         setEmailMessage("사용 가능한 이메일 입니다.");
@@ -73,13 +80,14 @@ const Profile = () => {
 
   // 닉네임 체크
   const onChangeNickname = (e) => {
-    setInputNickname(e.target.value);
-    if(e.target.value.length <= 20) {
+    const value = e.target.value;
+    setInputNickname(value);
+    if(value.length <= 20) {
       setNicknameCheck(true);
-      if (nickname === inputNickname) {
+      if (nickname === value) {
         setNicknameMessage("");
       } else {
-        nicknameUniqueCheck(e.target.value);
+        nicknameUniqueCheck(value);
       }
     } else {
       setNicknameMessage("닉네임은 20자 이하여야 합니다.");
@@ -112,7 +120,7 @@ const Profile = () => {
   const onChangeCurrentPw = (e) => {
     const inputPw = e.target.value;
     setCurrentPassword(inputPw);
-    if(inputPw === userPassword) {
+    if(inputPw === password) {
       setCurrentPwMessage("비밀번호가 일치합니다.");
       setCurrentPwCheck(true);
     } else {
@@ -152,10 +160,12 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await AxiosApi.getUserDetails(userId);
-        setUserDetails(response);
-        setInputEmail(response.email);
-        setInputNickname(response.nickname);
+        const userInfo = await AxiosApi.getUserDetails(userId);
+        setEmail(userInfo.email);
+        setInputEmail(userInfo.email);
+        setNickname(userInfo.nickname);
+        setInputNickname(userInfo.nickname);
+        setPassword(localStorage.getItem("userPassword"));
       } catch (error) {
         console.error("Failed to fetch user details:", error);
       }
@@ -182,45 +192,39 @@ const Profile = () => {
   }, [emailCheck, nicknameCheck, currentPwCheck, newPassword.length, newPassword2.length, newPasswordCheck, newPasswordCheck2]);
 
   // 회원 정보 수정 기능
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault(); // 기본 동작 방지
     try {
-      const dynamicPassword = userPassword;
-      if(newPassword.length > 0 || newPassword2.length > 0){
-        if(newPasswordCheck && newPasswordCheck2){
-          dynamicPassword = newPassword;
-        }
-      }
+      const dynamicPassword = 
+        newPassword.length > 0 || newPassword2.length > 0 
+        ? newPassword 
+        : currentPassword;
+
       await AxiosApi.updateProfile(userId, inputEmail, inputNickname, dynamicPassword);
-      // setMessage("프로필이 성공적으로 수정되었습니다");
+
+      // localStorage 업데이트
+      localStorage.setItem("userPassword", dynamicPassword);
+      // 비밀번호 업데이트
+      setPassword(dynamicPassword);
+
+      alert("프로필이 성공적으로 업데이트되었습니다!");
+      navigate("/mypage");
     } catch (error) {
       console.error("Failed to update profile:", error);
-      // setMessage("프로필 수정에 실패하였습니다.");
+      alert("프로필 업데이트에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
-
-  const ChangePw = () => {
-    const handleChangePassword = async () => {
-      try {
-        const response = await AxiosApi.updatePassword(
-          userId,
-          currentPassword,
-          newPassword
-        );
-        setMessage("비밀번호가 성공적으로 수정되었습니다.");
-      } catch (error) {
-        console.error("Failed to update password:", error);
-        setMessage("비밀번호 수정에 실패하였습니다.");
-      }
-    };
-  };
+  useEffect(() => {
+    console.log("Updated userPassword:", userPassword);
+  }, [userPassword]);  // userPassword가 변경될 때마다 실행됨
 
   return (
     <Container>
       <Div className="phone-container">
         <div className="profile-header">
-          <button onClick={()=>navigate("/")} className="backBtn">
-            <PrevPageButton />
+          <button onClick={()=>navigate("/mypage")} className="backBtn">
+            <img src={leftArrowIcon} alt="뒤로가기" />
           </button>
           <h1>Profile</h1>
           <div className="header-blank"></div>
@@ -294,7 +298,7 @@ const Profile = () => {
             )}
           </div>
           
-          <button onClick={handleUpdateProfile} className="submitBtn" disabled={isDisabled}>프로필 수정</button>
+          <button className="submitBtn" onClick={handleUpdateProfile} disabled={isDisabled}>프로필 수정</button>
         </form>
       </Div>
     </Container>
