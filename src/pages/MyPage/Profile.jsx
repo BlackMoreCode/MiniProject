@@ -2,14 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
 
 import { LoginContext } from "../../contexts/LoginContext";
-import { UserContext } from "../../contexts/UserContext";
 import { Container, Div } from "./MyPageStyles";
 import { PrevPageButton } from "../../components/PrevPageButton";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-  const { userId } = useContext(UserContext);
-  const { userPassword } = useContext(UserContext);
+  const { userId } = useContext(LoginContext);
+  const { userPassword } = useContext(LoginContext);
   const [userDetails, setUserDetails] = useState(null);
   const [email, setEmail] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -27,24 +26,24 @@ const Profile = () => {
   const [newPasswordMessage2, setNewPasswordMessage2] = useState("");
   const [newPasswordCheck2, setNewPasswordCheck2] = useState("");
   const [message, setMessage] = useState("");
-  
+
   const navigate = useNavigate();
 
   // 이메일 체크
   const onChangeEmail = (e) => {
     setEmail(e.target.value);
     const emailRgx = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if(!emailRgx.test(e.target.value)) {
+    if (!emailRgx.test(e.target.value)) {
       setEmailMessage("올바른 이메일 형식이 아닙니다.");
       setEmailCheck(false);
     } else {
-      setEmailMessage("올바른 형식입니다.")
+      setEmailMessage("올바른 형식입니다.");
       setEmailCheck(true);
       // emailRegCheck(e.target.value);
       emailUniqueCheck(e.target.value);
     }
-  }
-  
+  };
+
   // 이메일 중복 확인
   const emailUniqueCheck = async (emailValue) => {
     if (!emailValue) {
@@ -63,23 +62,23 @@ const Profile = () => {
         setEmailMessage("중복된 이메일 입니다.");
       }
     }
-  }
+  };
 
   // 닉네임 체크
   const onChangeNickname = (e) => {
     setNickname(e.target.value);
-    if(e.target.value.length <= 20) {
+    if (e.target.value.length <= 20) {
       setNicknameCheck(true);
       nicknameUniqueCheck(e.target.value);
     } else {
       setNicknameMessage("닉네임은 20자 이하여야 합니다.");
       setNicknameCheck(false);
     }
-  }
+  };
 
   // 닉네임 중복 확인
   const nicknameUniqueCheck = async (nicknameValue) => {
-    if(!nicknameValue) {
+    if (!nicknameValue) {
       setNicknameMessage("");
       return;
     }
@@ -95,48 +94,48 @@ const Profile = () => {
         setNicknameCheck(false);
       }
     }
-  }
+  };
 
   // 현재 비밀번호 확인
   const onChangeCurrentPw = (e) => {
     const inputPw = e.target.value;
     setCurrentPassword(inputPw);
     // currentPasswordCheck(e.target.value);
-    if(inputPw === userPassword) {
+    if (inputPw === userPassword) {
       setCurrentPwMessage("비밀번호가 일치합니다.");
       setCurrentPwCheck(true);
     } else {
       setCurrentPwMessage("비밀번호가 일치하지 않습니다.");
       setCurrentPwCheck(false);
     }
-  }
+  };
 
   // 새 비밀번호 유효성 체크
   const onChangeNewPassword = (e) => {
     setNewPassword(e.target.value);
     const pwRgx = /^[A-Za-z0-9!@#$%^&*()]+$/;
-    if(e.target.value.length < 8) {
+    if (e.target.value.length < 8) {
       setNewPasswordMessage("비밀번호는 8자 이상이어야 합니다.");
       setNewPasswordCheck(false);
-    } else if(!pwRgx.test(e.target.value)) {
-      setNewPasswordMessage("올바르지 않은 형식입니다.")
+    } else if (!pwRgx.test(e.target.value)) {
+      setNewPasswordMessage("올바르지 않은 형식입니다.");
       setNewPasswordCheck(false);
     } else {
       setNewPasswordMessage("올바른 형식입니다.");
       setNewPasswordCheck(true);
     }
-  }
+  };
   // 새 비밀번호 같은지 확인
   const onChangeNewPassword2 = (e) => {
     setNewPassword2(e.target.value);
-    if(e.target.value === newPassword){
+    if (e.target.value === newPassword) {
       setNewPasswordMessage2("비밀번호가 같습니다.");
       setNewPasswordCheck2(true);
     } else {
       setNewPasswordMessage2("비밀번호가 같지 않습니다.");
       setNewPasswordCheck2(false);
     }
-  }
+  };
 
   //백엔드로서부터 데이터 받기 위한 프로토타입.
   useEffect(() => {
@@ -157,17 +156,18 @@ const Profile = () => {
   const handleUpdateProfile = async () => {
     try {
       await AxiosApi.updateProfile(userId, { email, nickname });
-      if(userPassword === currentPassword && 
-        newPassword === newPasswordCheck ){
-          ChangePw();
-        }
+      if (
+        userPassword === currentPassword &&
+        newPassword === newPasswordCheck
+      ) {
+        ChangePw();
+      }
       setMessage("프로필이 성공적으로 수정되었습니다");
     } catch (error) {
       console.error("Failed to update profile:", error);
       setMessage("프로필 수정에 실패하였습니다.");
     }
   };
-
 
   const ChangePw = () => {
     const handleChangePassword = async () => {
@@ -189,18 +189,18 @@ const Profile = () => {
     <Container>
       <Div className="phone-container">
         <div className="profile-header">
-          <button onClick={()=>navigate("/")} className="backBtn">
+          <button onClick={() => navigate("/")} className="backBtn">
             <PrevPageButton />
           </button>
           <h1>Profile</h1>
           <div className="header-blank"></div>
         </div>
-        
+
         <form className="profile-form">
           <input
             type="text"
-            value={userId} 
-            className="profile-inputRqd" 
+            value={userId}
+            className="profile-inputRqd"
             required
           />
           <div className="inputBox">
@@ -208,11 +208,13 @@ const Profile = () => {
               type="email"
               placeholder="변경할 이메일"
               value={email}
-              onChange={onChangeEmail} 
+              onChange={onChangeEmail}
               className="profile-input"
             />
             {email.length > 0 && (
-              <p className={`message${emailCheck ? "On" : "Off"}`}>{emailMessage}</p>
+              <p className={`message${emailCheck ? "On" : "Off"}`}>
+                {emailMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -220,11 +222,13 @@ const Profile = () => {
               type="text"
               placeholder="변경할 닉네임"
               value={nickname}
-              onChange={onChangeNickname} 
+              onChange={onChangeNickname}
               className="profile-input"
             />
             {nickname.length > 0 && (
-              <p className={`message${nicknameCheck ? "On" : "Off"}`}>{nicknameMessage}</p>
+              <p className={`message${nicknameCheck ? "On" : "Off"}`}>
+                {nicknameMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -232,11 +236,13 @@ const Profile = () => {
               type="password"
               placeholder="현재 비밀번호를 입력하세요."
               value={currentPassword}
-              onChange={onChangeCurrentPw} 
+              onChange={onChangeCurrentPw}
               className="profile-input"
             />
             {currentPassword.length > 0 && (
-              <p className={`message${currentPwCheck ? "On" : "Off"}`}>{currentPwMessage}</p>
+              <p className={`message${currentPwCheck ? "On" : "Off"}`}>
+                {currentPwMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -244,11 +250,13 @@ const Profile = () => {
               type="password"
               placeholder="새로운 비밀번호를 입력하세요."
               value={newPassword}
-              onChange={onChangeNewPassword} 
+              onChange={onChangeNewPassword}
               className="profile-input"
             />
             {newPassword.length > 0 && (
-              <p className={`message${newPasswordCheck ? "On" : "Off"}`}>{newPasswordMessage}</p>
+              <p className={`message${newPasswordCheck ? "On" : "Off"}`}>
+                {newPasswordMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -256,16 +264,19 @@ const Profile = () => {
               type="password"
               placeholder="비밀번호 확인."
               value={newPassword2}
-              onChange={onChangeNewPassword2} 
+              onChange={onChangeNewPassword2}
               className="profile-input"
             />
             {newPassword2.length > 0 && (
-              <p className={`message${newPasswordCheck2 ? "On" : "Off"}`}>{newPasswordMessage2}</p>
+              <p className={`message${newPasswordCheck2 ? "On" : "Off"}`}>
+                {newPasswordMessage2}
+              </p>
             )}
           </div>
-          
 
-          <button onClick={handleUpdateProfile} className="submitBtn">프로필 수정</button>
+          <button onClick={handleUpdateProfile} className="submitBtn">
+            프로필 수정
+          </button>
         </form>
       </Div>
     </Container>
