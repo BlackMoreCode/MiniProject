@@ -19,8 +19,8 @@ import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 
 const Home = () => {
-  const { logout, diaries, loggedInMember } = useContext(LoginContext);
-  const { fetchDiaries } = useContext(DiaryContext);
+  const { logout, loggedInMember } = useContext(LoginContext);
+  const { diaries, fetchDiaries } = useContext(DiaryContext);
 
   const { bannerImage } = useContext(BannerImageContext);
 
@@ -56,7 +56,7 @@ const Home = () => {
 
   useEffect(() => {
     // Synchronize sortedDiaries with diaries when diaries change
-    if (diaries === null) return;
+    if (diaries === null || undefined) return;
     const filteredDiaries = diaries.filter((diary) => {
       const diaryDate = new Date(diary.writtenDate);
       return (
