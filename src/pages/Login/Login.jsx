@@ -10,11 +10,11 @@ import signUpIcon from "../../assets/icons/signup-icon.png";
 import AxiosApi from "../../api/AxiosApi";
 import MessageModal from "../../components/MessageModal";
 import { login, logout } from "../../util/loginUtils";
-import { UserContext } from "../../contexts/UserContext";
+import { LoginContext } from "../../contexts/LoginContext";
 import { PrevPageButton } from "../../components/PrevPageButton";
 
 export const Login = () => {
-  const context = useContext(UserContext);
+  const context = useContext(LoginContext);
   const { userId, userPassword, setUserId, setUserPassword } = context;
   const navigate = useNavigate();
 

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext";
+import { LoginContext } from "../../contexts/LoginContext";
 import "../../styles/Font/fonts.css";
 import styled from "styled-components";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
-  const { selectedFont, setSelectedFont } = useContext(UserContext); // UserContext 사용
+  const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
   const [currentFont, setCurrentFont] = useState(selectedFont); // 로컬 상태 추가
 
   const fontOptions = [
@@ -39,7 +39,8 @@ const ChangeFont = () => {
           </button>
         ))}
       </div>
-      <button onClick={() => navigate("/")}>폰트 변경</button> {/* 버튼 텍스트 변경 */}
+      <button onClick={() => navigate("/")}>폰트 변경</button>{" "}
+      {/* 버튼 텍스트 변경 */}
     </div>
   );
 };

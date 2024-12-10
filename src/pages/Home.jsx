@@ -7,7 +7,8 @@ import {
   AddButton,
   RedirectButton,
 } from "../components/homeComponent";
-import { UserContext } from "../contexts/UserContext";
+import { LoginContext } from "../contexts/LoginContext";
+import { DiaryContext } from "../contexts/DiaryContext";
 import { BannerImageContext } from "../contexts/BannerImageContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
@@ -18,8 +19,8 @@ import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 
 const Home = () => {
-  const { logout, diaries, loggedInMember, fetchDiaries } =
-    useContext(UserContext);
+  const { logout, diaries, loggedInMember } = useContext(LoginContext);
+  const { fetchDiaries } = useContext(DiaryContext);
 
   const { bannerImage } = useContext(BannerImageContext);
 

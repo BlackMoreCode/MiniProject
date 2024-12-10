@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext";
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiaryContext } from "../../contexts/DiaryContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -13,7 +14,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
-  const { fetchDiaries } = useContext(UserContext);
+  const { fetchDiaries } = useContext(LoginContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -30,7 +31,8 @@ const DiaryUpdate = () => {
 
   const { diaryNum } = useParams();
   const navigate = useNavigate();
-  const { loggedInMember, removeDiary } = useContext(UserContext);
+  const { loggedInMember } = useContext(LoginContext);
+  const { removeDiary } = useContext(DiaryContext);
 
   useEffect(() => {
     const fetchDiary = async () => {

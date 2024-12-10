@@ -1,7 +1,8 @@
 import React, { useContext, useState, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../contexts/UserContext"; // Correct import
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiaryContext } from "../../contexts/DiaryContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -13,7 +14,8 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 const DiaryInsert = () => {
   const navigate = useNavigate();
   const textarea = useRef(null);
-  const { loggedInMember, addDiary } = useContext(UserContext);
+  const { loggedInMember } = useContext(LoginContext);
+  const { addDiary } = useContext(DiaryContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

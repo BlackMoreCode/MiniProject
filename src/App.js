@@ -1,15 +1,18 @@
 import "./styles/Global.css";
-import { UserProfile } from "./contexts/UserContext";
+import { LoginProvider } from "./contexts/LoginContext.jsx";
+import { DiaryProvider } from "./contexts/DiaryContext.jsx";
 import { MobileDeviceContainer } from "./components/MobileDeviceContainer";
 import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
-    <UserProfile>
-      <MobileDeviceContainer>
-        <AppRoutes />
-      </MobileDeviceContainer>
-    </UserProfile>
+    <LoginProvider>
+      <DiaryProvider>
+        <MobileDeviceContainer>
+          <AppRoutes />
+        </MobileDeviceContainer>
+      </DiaryProvider>
+    </LoginProvider>
   );
 }
 

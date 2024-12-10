@@ -66,10 +66,10 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
-import { UserContext } from "../../contexts/UserContext";
+import { LoginContext } from "../../contexts/LoginContext";
 
 const Profile = () => {
-  const { userId } = useContext(UserContext);
+  const { userId } = useContext(LoginContext);
   const [userDetails, setUserDetails] = useState(null);
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
@@ -103,7 +103,7 @@ const Profile = () => {
     }
   };
 
-  const ChangePw =() => {
+  const ChangePw = () => {
     const handleChangePassword = async () => {
       try {
         const response = await AxiosApi.updatePassword(
