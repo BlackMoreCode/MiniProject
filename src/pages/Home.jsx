@@ -236,7 +236,12 @@ const Home = () => {
         </Div>
 
         {showCalendarModal && (
-          <Div className="modal-container">
+          <Div
+            className={`modal-container ${
+              showCalendarModal ? "open" : "close"
+            }`}
+            onClick={() => setShowCalendarModal(false)}
+          >
             <Div className="modal-content">
               <button
                 className="modal-close"
