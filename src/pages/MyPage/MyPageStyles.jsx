@@ -16,13 +16,13 @@ export const Div = styled.div`
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background-color: rgb(225, 235, 255);
+    background-color: white;
   }
   
   // MyPage.jsx 관련
   &.menuBox {
     .linkBox button {
-      background-color: white;
+      background-color: rgb(244,244,246);
       border: none;
       border-radius: 10px;
       width: 100%;
@@ -34,7 +34,7 @@ export const Div = styled.div`
       font-weight: 500;
       &:hover {
         padding: 10px;
-        border: 5px solid skyblue;
+        border: 5px solid #ccc;
       }
     }
   }
@@ -142,14 +142,21 @@ export const Div = styled.div`
     width: 100%;
     height: 100%;
     padding: 20px;
-    background-color: rgb(225, 235, 255);
+    padding-top: 0;
+    background-color: white;
     overflow: auto;
+    position: relative;
   }
 
   .font-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed;
+    width: 90%;
+    z-index: 1;
+    padding-top: 20px;
+    background-color: white;
   }
 
   .font-body {
@@ -157,15 +164,17 @@ export const Div = styled.div`
     display: flex;
     flex-direction: column;
     padding-bottom: 20px;
+    position: absolute;
+    top: 63px;
   }
 
   .font-box {
-    background-color: white;
+    background-color: rgb(244,244,246);
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
     &:hover {
-      border: 5px solid skyblue;
+      border: 5px solid #ccc;
       padding: 5px;
       p {
         scale: 1.02;
@@ -211,23 +220,22 @@ export const Div = styled.div`
     width: 100%;
     height: 100%;
     padding: 20px;
-    background-color: rgb(225, 235, 255);
+    padding-top: 0;
+    background-color: white;
     overflow: auto;
+    position: relative;
   }
-
-  .font-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
+  
   .banner-body {
+    width: 90%;
     margin-top: 25px;
     display: flex;
     flex-direction: column;
     padding-bottom: 20px;
+    position: absolute;
+    top: 63px;
   }
-
+  
   .banner-box {
     width: 100%;
     height: 200px;
@@ -239,7 +247,10 @@ export const Div = styled.div`
       height: 100%;
     }
     &:hover {
-      border: 5px solid skyblue;
+      border: 5px solid #aaa;
+      img {
+        scale: 1.2;
+      }
     }
   }
 `;
