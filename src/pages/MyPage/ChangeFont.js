@@ -5,6 +5,7 @@ import "../../styles/Font/fonts.css";
 import styled from "styled-components";
 import { Container, Div } from "./MyPageStyles";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
+import { IoIosArrowBack } from "react-icons/io";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
@@ -43,31 +44,18 @@ const ChangeFont = () => {
     'Nanum Gothic',
   ];
 
-  const fontKor = [
-    '기본',
-    '도현',
-    '고운 돋움',
-    '하이멜로디',
-    '주아',
-    '나눔 고딕',
-  ];
-  
-  const fontEng = [
-    'basic',
-    'do-hyeon',
-    'gowun-dodum',
-    'hi-melody',
-    'jua',
-    'nanum-gothic',
-  ];
-
   const fontData = [
-    { class: fontClass[0], title: fontTitle[0], kor: fontKor[0], eng: fontEng[0] },
-    { class: fontClass[1], title: fontTitle[1], kor: fontKor[1], eng: fontEng[1] },
-    { class: fontClass[2], title: fontTitle[2], kor: fontKor[2], eng: fontEng[2] },
-    { class: fontClass[3], title: fontTitle[3], kor: fontKor[3], eng: fontEng[3] },
-    { class: fontClass[4], title: fontTitle[4], kor: fontKor[4], eng: fontEng[4] },
-    { class: fontClass[5], title: fontTitle[5], kor: fontKor[5], eng: fontEng[5] },
+    { class: fontClass[0], title: fontTitle[0] },
+    { class: fontClass[1], title: fontTitle[1] },
+    { class: fontClass[2], title: fontTitle[2] },
+    { class: fontClass[3], title: fontTitle[3] },
+    { class: fontClass[4], title: fontTitle[4] },
+    { class: fontClass[5], title: fontTitle[5] },
+    { class: fontClass[5], title: fontTitle[5] },
+    { class: fontClass[5], title: fontTitle[5] },
+    { class: fontClass[5], title: fontTitle[5] },
+    { class: fontClass[5], title: fontTitle[5] },
+    { class: fontClass[5], title: fontTitle[5] },
   ];
 
   return (
@@ -75,10 +63,9 @@ const ChangeFont = () => {
       <Div className="font-container">
         <div className="font-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
-            <img src={leftArrowIcon} alt="뒤로가기" />
+            <IoIosArrowBack />
           </button>
-          <h1>Font</h1>
-          <div className="header-blank"></div>
+          <p onClick={()=>navigate("/mypage")} className="mypage-title">폰트</p>
         </div>
 
         <div className="font-body">
@@ -97,10 +84,8 @@ const ChangeFont = () => {
           {fontData.map((font, index) => (
             <div key={index} className={`font-box ${font.class}`}>
               <p>&lt;&lt; {font.title} &gt;&gt;</p>
-              <p>{font.kor} 폰트입니다. {font.eng} font.</p>
-              <p>那就得看你舍不舍得。</p>
-              <p>0 1 2 3 4 + - × ÷ = / ! ? ~ , . : “ ” ‘ ’</p>
-              <p>♡ ☆ ※ & % @ $ ￦ ♬ * ( ) &lt; &gt; #</p>
+              <p>내일은 내일의 태양이 뜬다.</p>
+              <p>Manners, Maketh, Man.</p>
             </div>
           ))}
         </div>

@@ -6,6 +6,7 @@ import { Container, Div } from "./MyPageStyles";
 import { PrevPageButton } from "../../components/PrevPageButton";
 import { useNavigate } from "react-router-dom";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
+import { IoIosArrowBack } from "react-icons/io";
 
 const Profile = () => {
   const { userId, userPassword, setUserPassword } = useContext(LoginContext);
@@ -224,10 +225,9 @@ const Profile = () => {
       <Div className="phone-container">
         <div className="profile-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
-            <img src={leftArrowIcon} alt="뒤로가기" />
+            <IoIosArrowBack />
           </button>
-          <h1>Profile</h1>
-          <div className="header-blank"></div>
+          <p onClick={()=>navigate("/mypage")} className="mypage-title">회원 정보</p>
         </div>
         
         <form className="profile-form">

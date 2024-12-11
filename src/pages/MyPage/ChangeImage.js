@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { BannerImageContext } from "../../contexts/BannerImageContext";
 import { Container, Div } from "./MyPageStyles";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
+import { IoIosArrowBack } from "react-icons/io";
 
 import image1 from "../../assets/bannerimages/image1.jpg";
 import image2 from "../../assets/bannerimages/image2.jpg";
@@ -16,6 +17,10 @@ const images = [
   { src: image2, alt: "Image 2" },
   { src: image3, alt: "Image 3" },
   { src: image4, alt: "Image 4" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
   { src: image5, alt: "Image 5" },
 ];
 
@@ -38,12 +43,11 @@ const ChangeImage = () => {
   return (
     <Container>
       <Div className="banner-container">
-        <div className="font-header">
+        <div className="banner-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
-            <img src={leftArrowIcon} alt="뒤로가기" />
+            <IoIosArrowBack />
           </button>
-          <h1>Banner</h1>
-          <div className="header-blank"></div>
+          <p onClick={()=>navigate("/mypage")} className="mypage-title">배너</p>
         </div>
 
         <div className="banner-body">
@@ -53,10 +57,6 @@ const ChangeImage = () => {
                 src={image.src}
                 alt={image.alt}
                 className="banner-image"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = image5; // Use a fallback image
-                }}
               />
             </div>
           ))}

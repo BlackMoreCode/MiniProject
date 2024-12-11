@@ -4,7 +4,6 @@ import styled from "styled-components";
 export const Container = styled.div`
   display: flex;
   justify-content: center;
-  position: relative;
   width: 100%;
   height: 100%;
 `;
@@ -15,34 +14,83 @@ export const Div = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 20px;
     background-color: white;
-  }
-  
-  // MyPage.jsx 관련
-  &.menuBox {
-    .linkBox button {
-      background-color: rgb(244,244,246);
-      border: none;
-      border-radius: 10px;
-      width: 100%;
-      /* height: 50px; */
-      margin: 15px 0;
-      text-align: left;
-      padding: 15px;
-      font-size: 20px;
-      font-weight: 500;
-      &:hover {
-        padding: 10px;
-        border: 5px solid #ccc;
-      }
-    }
   }
 
   .backBtn {
-    background-color: white;
+    background-color: transparent;
     border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    svg {
+      width: 30px;
+      height: 30px;
+      path {
+        fill: #777;
+      }
+    }
   }
+  
+  // MyPage.jsx 관련
+  .mypage-header {
+    display: flex;
+    background-color: #eee;
+    padding: 20px;
+    padding-bottom: 5px;
+  }
+  .mypage-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #777;
+    cursor: pointer;
+  }
+  .link-container {
+    margin-top: 40px;
+    margin: 40px 20px 0 20px;
+    box-sizing: border-box;
+    color: #777;
+    border-top: 1px solid #777;
+  }
+  .linkBox {
+    display: flex;
+    justify-content: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #777;
+    cursor: pointer;
+    &:hover {
+      color: #333;
+    }
+    &:hover .link-button {
+      color: #333;
+    }
+    .link-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+    .link-button {
+      background-color: white;
+      background-color: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 15px 0;
+      margin-left: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #777;
+      cursor: pointer;
+    }
+    .link-button-last {
+      border: none;
+    }
+  }
+  
 
   // profile 관련
   &.phone-container {
@@ -50,32 +98,17 @@ export const Div = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 20px;
   }
 
   .profile-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .backBtn {
-    width: 30px;
-    height: 30px;
-    border: 2px solid black;
-    border-radius: 50%;
-    cursor: pointer;
-    img {
-      width: 100%;
-    }
-  }
-
-  .header-blank {
-    width: 30px;
+    padding: 20px;
+    padding-bottom: 5px;
+    background-color: #eee;
   }
 
   .profile-form {
-    margin-top: 40px;
+    margin: 40px 20px 0 20px;
     height: 100%;
   }
 
@@ -140,32 +173,29 @@ export const Div = styled.div`
   // font 관련
   &.font-container {
     width: 100%;
-    height: 100%;
-    padding: 20px;
-    padding-top: 0;
     background-color: white;
-    overflow: auto;
     position: relative;
+    overflow: hidden;
   }
 
   .font-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100%;
+    padding: 20px 20px 5px 20px;
+    background-color: #eee;
     position: fixed;
-    width: 90%;
+    top: 0;
     z-index: 1;
-    padding-top: 20px;
-    background-color: white;
   }
 
   .font-body {
-    margin-top: 25px;
+    width: 100%;
+    height: calc(100% - 55px);
+    margin-top: 55px;
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px;
-    position: absolute;
-    top: 63px;
+    padding: 40px 20px 20px 20px;
+    overflow: auto;
   }
 
   .font-box {
@@ -218,38 +248,47 @@ export const Div = styled.div`
   // banner 관련
   &.banner-container {
     width: 100%;
-    height: 100%;
-    padding: 20px;
-    padding-top: 0;
     background-color: white;
-    overflow: auto;
     position: relative;
+    overflow: hidden;
+  }
+
+  .banner-header {
+    display: flex;
+    width: 100%;
+    padding: 20px 20px 5px 20px;
+    background-color: #eee;
+    position: fixed;
+    top: 0;
+    z-index: 1;
   }
   
   .banner-body {
-    width: 90%;
-    margin-top: 25px;
+    width: 100%;
+    height: calc(100% - 55px);
+    margin-top: 55px;
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px;
-    position: absolute;
-    top: 63px;
+    padding: 40px 20px 20px 20px;
+    overflow: auto;
   }
   
   .banner-box {
     width: 100%;
-    height: 200px;
-    overflow: hidden;
+    height: 150px;
     margin: 10px 0;
     border-radius: 10px;
+    box-sizing: border-box;
     img {
+      border-radius: 10px;
       width: 100%;
       height: 100%;
     }
     &:hover {
       border: 5px solid #aaa;
       img {
-        scale: 1.2;
+        border-radius: 0;
+        /* scale: 1.2; */
       }
     }
   }

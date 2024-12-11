@@ -7,6 +7,13 @@ import { useContext } from "react";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
 import { Container, Div } from "./MyPageStyles";
 
+import { IoPersonCircleOutline } from "react-icons/io5";
+import { BsFileFont } from "react-icons/bs";
+import { TbSunMoon } from "react-icons/tb";
+import { PiImageLight, PiSignOut } from "react-icons/pi";
+import { FaRegBell } from "react-icons/fa";
+import { IoIosArrowBack } from "react-icons/io";
+
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
@@ -17,26 +24,50 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
     <Container>
       <Div className="mypage-container">
         <Div className="menuBox">
-          <button onClick={()=>navigate("/")} className="backBtn">
-            <img src={leftArrowIcon} alt="뒤로가기" />
-          </button>
-          <div className="linkBox">
-            <button onClick={()=>navigate("/profile")}>회원 정보 수정</button>  
+          <div className="mypage-header" onClick={()=>navigate("/")}>
+            <button onClick={()=>navigate("/")} className="backBtn">
+              <IoIosArrowBack />
+            </button>
+            <p className="mypage-title">설정</p>
           </div>
-          <div className="linkBox">
-            <button onClick={()=>navigate("/font")}>폰트 변경</button>
-          </div>
-          <div className="linkBox">
-            <button>테마 변경</button>
-          </div>
-          <div className="linkBox">
-            <button onClick={()=>navigate("/banner")}>배너 이미지 변경</button>
-          </div>
-          <div className="linkBox">
-            <button>알림 사운드 변경</button>
-          </div>
-          <div className="linkBox">
-            <button>회원 탈퇴</button>
+          
+          <div className="link-container">
+            <div onClick={()=>navigate("/profile")} className="linkBox">
+              <div className="link-icon">
+                <IoPersonCircleOutline />
+              </div>
+              <button className="link-button">회원 정보 수정</button>  
+            </div>
+            <div onClick={()=>navigate("/font")} className="linkBox">
+              <div className="link-icon">
+                <BsFileFont />
+              </div>
+              <button className="link-button">폰트 변경</button>
+            </div>
+            <div className="linkBox">
+              <div className="link-icon">
+                <TbSunMoon />
+              </div>
+              <button className="link-button">테마 변경</button>
+            </div>
+            <div onClick={()=>navigate("/banner")} className="linkBox">
+              <div className="link-icon">
+                <PiImageLight />
+              </div>
+              <button className="link-button">배너 이미지 변경</button>
+            </div>
+            <div className="linkBox">
+              <div className="link-icon">
+                <FaRegBell />
+              </div>
+              <button className="link-button">알림 사운드 변경</button>
+            </div>
+            <div className="linkBox">
+              <div className="link-icon">
+                <PiSignOut />
+              </div>
+              <button className="link-button link-button-last">회원 탈퇴</button>
+            </div>
           </div>
         </Div>
       </Div>
