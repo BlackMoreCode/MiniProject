@@ -172,20 +172,6 @@ export const Div = styled.div`
       }
     }
   }
-  .banner-box {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    margin: 10px 0;
-    border-radius: 10px;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-    &:hover {
-      border: 5px solid skyblue;
-    }
-  }
 
   .font-dohyun {
     font-family: "Do Hyeon", sans-serif;
