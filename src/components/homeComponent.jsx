@@ -1,5 +1,23 @@
 import styled from "styled-components";
 
+// 라이트 모드 기본 색상 : 하얀색 /  #ffffff
+//  박스 등등의 색상 : 옅은 회색 / RGB color (244, 244, 246) = #f0f0ff
+// 모달의 색상 : 짙은 회색 /  rgb(0 0 0 / 0.5) #808080
+// 다크 버튼 백그라운드 색상: rgb(41 42 45 / var(--tw-bg-opacity))
+// 다크 버튼 내부 텍스트 색상: rgb(244 244 246 / var(--tw-text-opacity))
+// 마일드 그레이 버튼 백그라운드 색상 : rgb(244 244 246 / var(--tw-bg-opacity))
+// 마일드 그레이 버튼 내부 색상 : rgb(102 102 110 / var(--tw-text-opacity))
+
+// :root {
+//   --light-background: #ffffff;
+//   --box-color: #f0f0ff;
+//   --modal-color: rgba(0, 0, 0, 0.5);
+//   --dark-button-bg: rgb(41, 42, 45);
+//   --dark-button-text: rgb(244, 244, 246);
+//   --mild-gray-bg: rgb(244, 244, 246);
+//   --mild-gray-text: rgb(102, 102, 110);
+// }
+
 export const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -34,7 +52,6 @@ export const Div = styled.div`
     background-color: white;
     border: none;
     border-radius: 100%;
-    box-sizing: border-box;
     display: flex;
     justify-content: center;
     padding: 5px;
@@ -73,12 +90,6 @@ export const Div = styled.div`
       svg {
         width: 25px;
         height: 25px;
-        path:nth-child(1) {
-          fill: rgb(220, 110, 50);
-        }
-        path:nth-child(2) {
-          fill: yellow;
-        }
       }
       &:hover {
         scale: 1.2;
@@ -88,22 +99,25 @@ export const Div = styled.div`
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: white;
-      /* border: 1px solid black; */
+      background-color: #494a50;
       padding: 0 3px;
       border-radius: 15px;
-      box-sizing: border-box;
+      &:hover {
+        scale: 1.2;
+        background-color: #292a2d;
+      }
       input {
+        color: rgb(244, 244, 246);
         width: 100px;
         height: 100%;
         border: none;
         outline: none;
         background-color: transparent;
-        /* color: white; */
         font-size: 1em;
         margin-left: 10px;
       }
       .searchBtn {
+        color: rgb(244, 244, 246);
         width: 30px;
         height: 30px;
         display: flex;
@@ -116,103 +130,201 @@ export const Div = styled.div`
           width: 70%;
           height: 70%;
         }
-        &:hover {
-          scale: 1.2;
-        }
       }
       .closeBtn {
-        width: 30px;
-        height: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* color: white; */
-        font-size: 1rem;
+        color: rgb(244, 244, 246);
+        font-size: 16px;
         padding-left: 5px;
         border: none;
         background-color: transparent;
         cursor: pointer;
         svg {
-          display: flex;
           width: 21px;
           height: 21px;
         }
         &:hover {
-          scale: 1.2;
+          scale: 1.1;
         }
       }
     }
+  }
+
+  &.date-sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    /* background-color: rgb(244, 244, 246); // 일기 색이랑 같음 */
+    background-color: rgb(255, 255, 255); // 일기 컨테이너 색이랑 같음
     .phone-sort {
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 2.5px;
+      background-color: #494a50;
+      color: rgb(244, 244, 246);
       border: none;
       border-radius: 50%;
-      background-color: white;
-      padding: 2.5px;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      &:hover {
+        background-color: #292a2d;
+        scale: 1.2;
+        transition: ease-in-out 0.3s;
+      }
       cursor: pointer;
       svg {
         width: 25px;
         height: 25px;
-      }
-      &:hover {
-        scale: 1.2;
       }
     }
   }
 
   &.phone-theme {
     display: flex;
-    height: 100%;
-    justify-content: center;
     align-items: center;
+    gap: 10px;
+    .date-calendar {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      padding: 2.5px;
+      background-color: #494a50;
+      color: rgb(244, 244, 246);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      &:hover {
+        background-color: #292a2d;
+        scale: 1.2;
+        transition: ease-in-out 0.3s;
+      }
+      cursor: pointer;
+      svg {
+        width: 25px;
+        height: 25px;
+      }
+    }
+    .hover-scale {
+      transition: transform 0.2s ease-in-out;
+      display: inline-block;
+    }
+
+    .hover-scale:hover {
+      transform: scale(1.15);
+    }
   }
 
-  &.phone-theme button {
-    font-size: 3rem;
+  &.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  &.modal-content {
+    background: white;
+    padding: 12px;
+    padding-top: 28px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 0px;
+    right: 12px;
+    background: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5px;
+    background-color: #494a50;
+    color: rgb(244, 244, 246);
     border: none;
-    background-color: transparent;
-    padding: 0;
-    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
     &:hover {
-      color: #555;
+      background-color: #292a2d;
+      transition: ease-in-out 0.3s;
     }
+    cursor: pointer;
   }
 
   &.diary-container {
-    background-color: rgb(225, 235, 255);
-    overflow-y: auto;
+    background-color: #ffffff;
+    overflow-y: scroll;
     height: 100%;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  }
+
+  &.diary-container::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
   }
 
   &.diary-box {
-    background-color: #fff;
+    display: flex;
+    flex-direction: row; /* Align date and content horizontally */
+    background-color: #f4f4f6;
     border-radius: 10px;
     margin: 10px;
     padding: 10px;
+    align-items: flex-start; /* Align items at the top */
+    gap: 10px; /* Space between date and content */
+
     &:hover {
-      padding: 5px;
-      border: 5px solid skyblue;
+      /* padding: 5px; */
+      /* border: 3px solid #ccc; */
+      background-color: #c9c9c9;
+      color: white;
+      transition: ease-in-out 0.3s;
     }
+
     .diary-date {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       margin: 0;
-      border-radius: 10px;
+      width: 110px; /* Set a fixed width for alignment */
+      flex-shrink: 0; /* Prevent shrinking */
+      text-align: left; /* Align text to the left */
     }
+
+    .diary-content {
+      display: flex;
+      flex-direction: column; /* Stack title and description */
+      flex: 1; /* Take the remaining space */
+      gap: 5px; /* Space between title and description */
+      margin-left: 10px; /* Add some margin for better alignment */
+    }
+
     .diary-title {
-      font-size: 20px;
-      font-weight: 500;
+      font-size: 16px;
+      font-weight: 700;
       margin: 0;
     }
+
     .diary-desc {
+      font-size: 16px;
       margin: 0;
       display: -webkit-box;
-      -webkit-line-clamp: 1; /* 최대 3줄로 제한 */
+      -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-height: calc(1.5em * 3); /* 3줄까지만 높이 제한 */
+      max-height: calc(1.5em * 3);
     }
   }
 
@@ -220,7 +332,7 @@ export const Div = styled.div`
     display: flex;
     justify-content: space-around;
     padding: 10px;
-    background-color: rgb(225, 235, 255);
+    background-color: #ffffff;
   }
 
   &.menuBox {
@@ -249,8 +361,9 @@ export const Img1 = styled.img`
 `;
 
 export const RedirectButton = styled.button`
-  background-color: #007bff;
-  color: white;
+  background-color: #494a50;
+  border: 3px solid black;
+  color: rgb(244, 244, 246);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -259,13 +372,14 @@ export const RedirectButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #292a2d;
+    transition: ease-in-out 0.3s;
   }
 `;
 
 export const AddButton = styled.button`
-  background-color: #007bff;
-  color: white;
+  background-color: #494a50;
+  color: rgb(244, 244, 246);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -274,7 +388,8 @@ export const AddButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #292a2d;
+    transition: ease-in-out 0.3s;
   }
 `;
 

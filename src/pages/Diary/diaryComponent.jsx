@@ -9,10 +9,11 @@ export const Div = styled.div`
   &.phone-container {
     width: 500px;
     height: 100%;
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     padding: 20px;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
   }
 
   &.diary-header {
@@ -35,6 +36,11 @@ export const Div = styled.div`
     height: 30px;
     background-color: #ddd;
     border-radius: 100%;
+  }
+
+  .buttonBox {
+    display: flex;
+    justify-content: space-between;
   }
 
   /* .code-section button {
@@ -114,10 +120,6 @@ export const Form = styled.form`
     resize: none;
     overflow: auto;
     scrollbar-width: none;
-  }
-  .buttonBox {
-    display: flex;
-    justify-content: space-between;
   }
 `;
 
@@ -213,19 +215,19 @@ export const ModalContent = styled.div`
 
 // 범용 버튼
 
-// 태그를 추가하는 버튼의 CSS --> 범용 추가로 변환?
-export const GeneralAddBtn = styled.button`
+// 태그를 추가하는 버튼의 CSS --> 범용 추가로 변환? --> 일반 디자인으로 전환?
+export const GeneralConfirmation = styled.button`
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
   border: none;
   border-radius: 10px;
   margin: 8px 0;
-  background-color: #4caf50;
-  color: white;
+  background-color: #f4f4f6;
+  color: #66666e;
   cursor: pointer;
   &:hover {
-    background-color: #45a049;
+    background-color: #dadadb;
     font-weight: bold;
   }
 `;
@@ -257,9 +259,9 @@ export const ConfirmBtn = styled.div`
   border: none;
   border-radius: 10px;
   margin: 10px 0;
-  background-color: #4caf50;
+  background-color: #494a50;
   &:hover {
-    background-color: #45a049;
+    background-color: #292a2d;
     font-weight: bold;
   }
 `;
@@ -281,7 +283,7 @@ export const RmvBtnS = styled.div`
   }
 `;
 
-// 범용 푸른 기타 버튼
+// 범용 푸른 기타 버튼 --> 그냥 일단 급하니까 회색처리 ㄱㄱ.
 export const EtcBtn = styled.div`
   align-content: center;
   text-align: center;
@@ -291,9 +293,9 @@ export const EtcBtn = styled.div`
   border: none;
   border-radius: 10px;
   margin: 10px 0;
-  background-color: #007bff;
+  background-color: #494a50;
   &:hover {
-    background-color: #0262c9;
+    background-color: #292a2d;
     font-weight: bold;
   }
 `;
