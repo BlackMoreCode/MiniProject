@@ -55,19 +55,35 @@ const DiaryUpdate = () => {
           );
           setTags(response.tags || []);
 
-          // Map codingDiaryEntries correctly
-          setCodeSnippets(
-            (response.codingDiaryEntries || []).map((entry) => ({
-              programmingLanguageName:
-                entry.entryType === "snippet"
-                  ? entry.programmingLanguageName
-                  : null,
-              content: entry.content || "",
-              commentary: entry.entryType === "comment" ? [entry.content] : [],
-              entryType: entry.entryType || "snippet",
-              sequence: entry.sequence || 1,
-            }))
-          );
+          // Correctly map codingDiaryEntries back to snippets and comments
+          const groupedSnippets = [];
+          response.codingDiaryEntries.forEach((entry) => {
+            if (entry.entryType === "snippet") {
+              groupedSnippets.push({
+                programmingLanguageName: entry.programmingLanguageName,
+                content: entry.content,
+                commentary: [],
+                entryType: "snippet",
+                sequence: entry.sequence,
+              });
+            } else if (entry.entryType === "comment") {
+              const lastSnippet = groupedSnippets[groupedSnippets.length - 1];
+              if (lastSnippet && lastSnippet.entryType === "snippet") {
+                lastSnippet.commentary.push(entry.content); // Append to the last snippet
+              } else {
+                // Handle orphaned comments (not associated with any snippet)
+                groupedSnippets.push({
+                  programmingLanguageName: null,
+                  content: "",
+                  commentary: [entry.content],
+                  entryType: "comment",
+                  sequence: entry.sequence,
+                });
+              }
+            }
+          });
+
+          setCodeSnippets(groupedSnippets);
         }
       } catch (error) {
         console.error("Error fetching diary:", error);
@@ -89,6 +105,8 @@ const DiaryUpdate = () => {
       return;
     }
 
+    let sequenceCounter = 1; // Ensure the sequence starts fresh for each update.
+
     const formatDate = (date) => {
       const d = new Date(date);
       const pad = (n) => (n < 10 ? "0" + n : n);
@@ -102,34 +120,28 @@ const DiaryUpdate = () => {
       content: description,
       tags,
       writtenDate: formatDate(date),
-      // codingDiaryEntries: codeSnippets.map((snippet, index) => ({
-      //   programmingLanguageName: snippet.programmingLanguageName, // No need for null check, default handled earlier
-      //   entryType: snippet.programmingLanguageName ? "snippet" : "comment",
-      //   content: snippet.content || "",
-      //   commentary: snippet.commentary || [""], // At least one empty commentary
-      //   sequence: index + 1,
-      // })),
-      codingDiaryEntries: codeSnippets.flatMap((snippet, snippetIndex) => {
+      codingDiaryEntries: codeSnippets.flatMap((snippet) => {
         const entries = [];
 
-        // Add the snippet entry
-        if (snippet.code) {
+        // Add the snippet if it exists
+        if (snippet.content && snippet.entryType === "snippet") {
           entries.push({
-            entryType: "snippet", // 스니펫 타입
-            programmingLanguageName: snippet.programmingLanguageName || null,
-            content: snippet.code, // 스니펫의 코드
-            sequence: snippetIndex * 2 + 1, // 순서 계산
+            entryType: "snippet",
+            programmingLanguageName:
+              snippet.programmingLanguageName || "javascript",
+            content: snippet.content, // Preserve the snippet content
+            sequence: sequenceCounter++, // Increment the sequence
           });
         }
 
-        // Add commentary entries
+        // Add associated comments
         if (Array.isArray(snippet.commentary)) {
-          snippet.commentary.forEach((comment, commentIndex) => {
+          snippet.commentary.forEach((comment) => {
             entries.push({
-              entryType: "comment", // 코멘트 타입
-              programmingLanguageName: null, // 코멘트에는 언어 없음
-              content: comment, // 코멘트 내용
-              sequence: snippetIndex * 2 + 2 + commentIndex, // 순서 계산
+              entryType: "comment",
+              programmingLanguageName: null,
+              content: comment, // Preserve the comment content
+              sequence: sequenceCounter++, // Increment the sequence
             });
           });
         }
@@ -138,9 +150,7 @@ const DiaryUpdate = () => {
       }),
     };
 
-    // console.log("codeSnippets 검사", codeSnippets);
-    // console.log("Tags to be sent:", tags);
-    console.log("Updated Diary Payload (Update):", updatedDiary); // updateDiary API 호출 직전에  콘솔로그 따보기
+    console.log("Updated Diary Payload:", updatedDiary);
 
     try {
       await AxiosApi.updateDiary({
@@ -154,8 +164,6 @@ const DiaryUpdate = () => {
       console.error("Failed to update diary:", error);
       setModalMessage("일기를 수정하는데 실패하였습니다.");
       setIsModalOpen(true);
-    } finally {
-      sequenceCounter = 1;
     }
   };
 
@@ -187,12 +195,18 @@ const DiaryUpdate = () => {
   const addTag = () => {
     const trimmedTag = tagInput.trim();
 
-    if (trimmedTag && !tags.includes(trimmedTag)) {
+    if (!trimmedTag) {
+      // Case 1: 빈 태그 허용 불가
+      setModalMessage("태그를 입력하세요!"); // "Please enter a tag!"
+      setIsModalOpen(true);
+    } else if (tags.includes(trimmedTag)) {
+      // Case 2: 중복 태그 막기
+      setModalMessage("중복된 태그는 추가할 수 없습니다."); // "Duplicate tags cannot be added."
+      setIsModalOpen(true);
+    } else {
+      // Case 3: 위의 2경우가 아닐경우
       setTags([...tags, trimmedTag]);
       setTagInput("");
-    } else {
-      setModalMessage("중복된 태그를 추가할 수 없습니다.");
-      setIsModalOpen(true);
     }
   };
 
@@ -200,9 +214,10 @@ const DiaryUpdate = () => {
     setCodeSnippets((prevSnippets) => [
       ...prevSnippets,
       {
-        programmingLanguageName: "javascript",
-        code: "",
-        commentary: ["기본 코멘터리"], //기본 코멘터리 일단 추가
+        programmingLanguageName: "javascript", // Default language
+        content: "", // New snippet starts empty
+        commentary: [], // No comments initially
+        entryType: "snippet", // Explicitly set the type
       },
     ]);
   };
@@ -211,7 +226,10 @@ const DiaryUpdate = () => {
     setCodeSnippets((prevSnippets) =>
       prevSnippets.map((snippet, index) =>
         index === snippetIndex
-          ? { ...snippet, code: newCode } // 해당 스니펫의 코드를 업데이트
+          ? {
+              ...snippet,
+              content: newCode, // Update the content field for the snippet
+            }
           : snippet
       )
     );
@@ -228,9 +246,18 @@ const DiaryUpdate = () => {
   };
 
   const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary[commentaryIndex] = newComment;
-    setCodeSnippets(updatedSnippets);
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? {
+              ...snippet,
+              commentary: snippet.commentary.map(
+                (comment, i) => (i === commentaryIndex ? newComment : comment) // Update only the targeted commentary
+              ),
+            }
+          : snippet
+      )
+    );
   };
 
   const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
@@ -297,90 +324,84 @@ const DiaryUpdate = () => {
             {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
           </St.GeneralAddBtn>
 
-          {showCodeSnippets && (
-            <St.Div className="code-section">
-              {codeSnippets.map((snippet, snippetIndex) => (
-                <div key={snippetIndex}>
-                  {/* Render the language dropdown */}
-                  <select
-                    value={snippet.programmingLanguageName}
-                    onChange={(e) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].programmingLanguageName =
-                        e.target.value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
-                  >
-                    <option value="javascript">JavaScript</option>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                  </select>
+          <St.Div className="code-section">
+            {codeSnippets.map((snippet, snippetIndex) => (
+              <div key={snippetIndex}>
+                {/* Language Dropdown */}
+                <select
+                  value={snippet.programmingLanguageName}
+                  onChange={(e) => {
+                    const updatedSnippets = [...codeSnippets];
+                    updatedSnippets[snippetIndex].programmingLanguageName =
+                      e.target.value;
+                    setCodeSnippets(updatedSnippets);
+                  }}
+                >
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                </select>
 
-                  {/* Render the code editor */}
-                  <CodeMirror
-                    value={snippet.content}
-                    height="auto"
-                    theme={dracula}
-                    extensions={[
-                      snippet.programmingLanguageName === "javascript"
-                        ? javascript()
-                        : snippet.programmingLanguageName === "python"
-                        ? python()
-                        : java(),
-                    ]}
-                    onChange={(value) => updateCodeSnippet(snippetIndex, value)}
-                    // onChange={(value) => {
-                    //   const updatedSnippets = [...codeSnippets];
-                    //   updatedSnippets[snippetIndex].content = value;
-                    //   setCodeSnippets(updatedSnippets);
-                    // }}
-                  />
+                {/* Code Editor */}
+                <CodeMirror
+                  value={snippet.content}
+                  height="auto"
+                  theme={dracula}
+                  extensions={[
+                    snippet.programmingLanguageName === "javascript"
+                      ? javascript()
+                      : snippet.programmingLanguageName === "python"
+                      ? python()
+                      : java(),
+                  ]}
+                  onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+                />
 
-                  <St.GeneralRmvBtn
-                    type="button"
-                    onClick={() => removeCodeSnippet(snippetIndex)}
-                  >
-                    코드 스니펫 삭제
-                  </St.GeneralRmvBtn>
+                <St.GeneralRmvBtn
+                  type="button"
+                  onClick={() => removeCodeSnippet(snippetIndex)}
+                >
+                  코드 스니펫 삭제
+                </St.GeneralRmvBtn>
 
-                  {/* Render commentary */}
-                  {snippet.commentary.map((comment, commentaryIndex) => (
-                    <div key={commentaryIndex}>
-                      <St.TextArea
-                        value={comment}
-                        onChange={(e) =>
-                          updateCodeCommentary(
-                            snippetIndex,
-                            commentaryIndex,
-                            e.target.value
-                          )
-                        }
-                      />
-                      <St.GeneralRmvBtn
-                        type="button"
-                        onClick={() =>
-                          removeCodeCommentary(snippetIndex, commentaryIndex)
-                        }
-                      >
-                        코멘트 삭제
-                      </St.GeneralRmvBtn>
-                    </div>
-                  ))}
+                {/* Commentary Section */}
+                {snippet.commentary.map((comment, commentaryIndex) => (
+                  <div key={commentaryIndex}>
+                    <St.TextArea
+                      value={comment}
+                      onChange={(e) =>
+                        updateCodeCommentary(
+                          snippetIndex,
+                          commentaryIndex,
+                          e.target.value
+                        )
+                      }
+                    />
+                    <St.GeneralRmvBtn
+                      type="button"
+                      onClick={() =>
+                        removeCodeCommentary(snippetIndex, commentaryIndex)
+                      }
+                    >
+                      코멘트 삭제
+                    </St.GeneralRmvBtn>
+                  </div>
+                ))}
 
-                  <St.GeneralAddBtn
-                    type="button"
-                    onClick={() => addCodeCommentary(snippetIndex)}
-                  >
-                    코드 코멘트 추가
-                  </St.GeneralAddBtn>
-                </div>
-              ))}
+                <St.GeneralAddBtn
+                  type="button"
+                  onClick={() => addCodeCommentary(snippetIndex)}
+                >
+                  코드 코멘트 추가
+                </St.GeneralAddBtn>
+              </div>
+            ))}
 
-              <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
-                코드 스니펫 추가
-              </St.GeneralAddBtn>
-            </St.Div>
-          )}
+            {/* Add Snippet Button */}
+            <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
+              코드 스니펫 추가
+            </St.GeneralAddBtn>
+          </St.Div>
 
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>

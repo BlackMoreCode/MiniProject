@@ -49,39 +49,34 @@ const DiaryInsert = () => {
         )}T00:00:00`;
       };
 
+      // In DiaryInsert.jsx, modify the payload logic to include sequential sequence numbers
+      let sequenceCounter = 1;
+
       const newDiary = {
         title,
         content: description,
         tags,
         writtenDate: formatDate(date),
-        // codingDiaryEntries: codeSnippets.map((snippet, index) => ({
-        //   programmingLanguageName: snippet.language || null,
-        //   entryType: snippet.language ? "snippet" : "comment",
-        //   content: snippet.code || "",
-        //   commentary: snippet.commentary?.length ? snippet.commentary : [""],
-        //   sequence: index + 1,
-        // })),
-        codingDiaryEntries: codeSnippets.flatMap((snippet, snippetIndex) => {
+        codingDiaryEntries: codeSnippets.flatMap((snippet) => {
           const entries = [];
 
-          // Add the snippet entry
           if (snippet.code) {
             entries.push({
-              entryType: "snippet", // 스니펫 타입
-              programmingLanguageName: snippet.language || "javascript",
-              content: snippet.code, // 스니펫의 코드
-              sequence: snippetIndex * 2 + 1, // 순서 계산
+              entryType: "snippet",
+              programmingLanguageName:
+                snippet.programmingLanguageName || "javascript",
+              content: snippet.code,
+              sequence: sequenceCounter++, // Increment sequenceCounter
             });
           }
 
-          // Add commentary entries
           if (Array.isArray(snippet.commentary)) {
-            snippet.commentary.forEach((comment, commentIndex) => {
+            snippet.commentary.forEach((comment) => {
               entries.push({
-                entryType: "comment", // 코멘트 타입
-                programmingLanguageName: null, // 코멘트에는 언어 없음
-                content: comment, // 코멘트 내용
-                sequence: snippetIndex * 2 + 2 + commentIndex, // 순서 계산
+                entryType: "comment",
+                programmingLanguageName: null,
+                content: comment,
+                sequence: sequenceCounter++, // Increment sequenceCounter
               });
             });
           }
@@ -119,12 +114,19 @@ const DiaryInsert = () => {
 
   const addTag = useCallback(() => {
     const trimmedTag = tagInput.trim();
-    if (trimmedTag && !tags.includes(trimmedTag)) {
+
+    if (!trimmedTag) {
+      // Case 1: 태그 입력이 비었을 경우
+      setModalMessage("태그를 입력하세요!");
+      setIsModalOpen(true);
+    } else if (tags.includes(trimmedTag)) {
+      // Case 2: 중복된 태그
+      setModalMessage("중복된 태그는 추가할 수 없습니다.");
+      setIsModalOpen(true);
+    } else {
+      // Case 3: 적합한 태그
       setTags((prevTags) => [...prevTags, trimmedTag]);
       setTagInput("");
-    } else {
-      setModalMessage("중복된 태그를 추가할 수 없습니다.");
-      setIsModalOpen(true);
     }
   }, [tagInput, tags]);
 
@@ -163,7 +165,7 @@ const DiaryInsert = () => {
         index === snippetIndex
           ? {
               ...snippet,
-              commentary: [...snippet.commentary, ""],
+              commentary: [...(snippet.commentary || []), ""], // Always add a new empty comment
             }
           : snippet
       )
@@ -274,11 +276,11 @@ const DiaryInsert = () => {
                 <div key={snippetIndex}>
                   {/* Code Snippet Section */}
                   <select
-                    value={snippet.language || ""}
+                    value={snippet.programmingLanguageName || "javascript"}
                     onChange={(e) =>
                       updateCodeSnippet(
                         snippetIndex,
-                        "language",
+                        "programmingLanguageName",
                         e.target.value
                       )
                     }
