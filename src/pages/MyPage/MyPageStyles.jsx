@@ -141,8 +141,6 @@ export const Div = styled.div`
   &.font-container {
     width: 100%;
     height: 100%;
-    /* display: flex;
-    flex-direction: column; */
     padding: 20px;
     background-color: rgb(225, 235, 255);
     overflow: auto;
@@ -156,7 +154,6 @@ export const Div = styled.div`
 
   .font-body {
     margin-top: 25px;
-    height: 100%;
     display: flex;
     flex-direction: column;
     padding-bottom: 20px;
@@ -170,6 +167,23 @@ export const Div = styled.div`
     &:hover {
       border: 5px solid skyblue;
       padding: 5px;
+      p {
+        scale: 1.02;
+      }
+    }
+  }
+  .banner-box {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    margin: 10px 0;
+    border-radius: 10px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    &:hover {
+      border: 5px solid skyblue;
     }
   }
 
@@ -203,17 +217,45 @@ export const Div = styled.div`
     font-style: normal;
   }
 
-  .font-box-blank {
-    width: 100%;
-    height: 10px;
-    background-color: transparent;
-  }
-
   // theme 관련
 
 
   // banner 관련
-  
+  &.banner-container {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background-color: rgb(225, 235, 255);
+    overflow: auto;
+  }
+
+  .font-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .banner-body {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+
+  .banner-box {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    margin: 10px 0;
+    border-radius: 10px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    &:hover {
+      border: 5px solid skyblue;
+    }
+  }
 `;
 
 // ModeChange 관련

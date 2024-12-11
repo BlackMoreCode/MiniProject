@@ -2,6 +2,8 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { BannerImageContext } from "../../contexts/BannerImageContext";
+import { Container, Div } from "./MyPageStyles";
+import leftArrowIcon from "../../assets/icons/left-arrow.png";
 
 import image1 from "../../assets/bannerimages/image1.jpg";
 import image2 from "../../assets/bannerimages/image2.jpg";
@@ -34,11 +36,34 @@ const ChangeImage = () => {
   };
 
   return (
-    <div className="change-image-container">
-      <h1>배너 이미지 변경</h1>
-      <div className="image-list">
-        {images.map((image) => (
-          <div key={image.src} className="image-item">
+    <Container>
+      <Div className="banner-container">
+        <div className="font-header">
+          <button onClick={()=>navigate("/mypage")} className="backBtn">
+            <img src={leftArrowIcon} alt="뒤로가기" />
+          </button>
+          <h1>Banner</h1>
+          <div className="header-blank"></div>
+        </div>
+
+        <div className="banner-body">
+          {images.map((image) => (
+            <div key={image.src} className="banner-box">
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="banner-image"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = image5; // Use a fallback image
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* {images.map((image) => (
+          <div key={image.src} className="banner-box">
             <img
               src={image.src}
               alt={image.alt}
@@ -48,17 +73,14 @@ const ChangeImage = () => {
                 e.target.src = image5; // Use a fallback image
               }}
             />
-            <input
-              type="radio"
-              name="banner-image"
-              checked={selectedImage === image.src}
-              onChange={() => handleImageSelect(image.src)}
-            />
           </div>
-        ))}
-      </div>
-      <button onClick={handleImageChange}>이미지 변경</button>
-    </div>
+        ))} */}
+
+
+        {/* <button onClick={handleImageChange}>이미지 변경</button> */}
+      </Div>
+    </Container>
+    
   );
 };
 
