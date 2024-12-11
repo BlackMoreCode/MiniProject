@@ -55,30 +55,28 @@ const DiaryUpdate = () => {
           );
           setTags(response.tags || []);
 
-          // Correctly map codingDiaryEntries back to snippets and comments
+          // Sort codingDiaryEntries by sequence
+          const sortedEntries = response.codingDiaryEntries.sort(
+            (a, b) => a.sequence - b.sequence
+          );
+
+          // Map sorted entries to snippets and comments
           const groupedSnippets = [];
-          response.codingDiaryEntries.forEach((entry) => {
+          let currentSnippet = null;
+
+          sortedEntries.forEach((entry) => {
             if (entry.entryType === "snippet") {
-              groupedSnippets.push({
+              currentSnippet = {
                 programmingLanguageName: entry.programmingLanguageName,
                 content: entry.content,
                 commentary: [],
                 entryType: "snippet",
                 sequence: entry.sequence,
-              });
+              };
+              groupedSnippets.push(currentSnippet);
             } else if (entry.entryType === "comment") {
-              const lastSnippet = groupedSnippets[groupedSnippets.length - 1];
-              if (lastSnippet && lastSnippet.entryType === "snippet") {
-                lastSnippet.commentary.push(entry.content); // Append to the last snippet
-              } else {
-                // Handle orphaned comments (not associated with any snippet)
-                groupedSnippets.push({
-                  programmingLanguageName: null,
-                  content: "",
-                  commentary: [entry.content],
-                  entryType: "comment",
-                  sequence: entry.sequence,
-                });
+              if (currentSnippet) {
+                currentSnippet.commentary.push(entry.content);
               }
             }
           });
