@@ -44,7 +44,7 @@ export const Div = styled.div`
     border: none;
   }
 
-  // Profile 관련
+  // profile 관련
   &.phone-container {
     width: 100%;
     height: 100%;
@@ -136,8 +136,84 @@ export const Div = styled.div`
       background-color: #ccc;
     }
   }
+
+  // font 관련
+  &.font-container {
+    width: 100%;
+    height: 100%;
+    /* display: flex;
+    flex-direction: column; */
+    padding: 20px;
+    background-color: rgb(225, 235, 255);
+    overflow: auto;
+  }
+
+  .font-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .font-body {
+    margin-top: 25px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+  }
+
+  .font-box {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    &:hover {
+      border: 5px solid skyblue;
+      padding: 5px;
+    }
+  }
+
+  .font-dohyun {
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-gowun-dodum {
+    font-family: "Gowun Dodum", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-hi-melody {
+    font-family: "Hi Melody", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-jua {
+    font-family: "Jua", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-nanum-gothic {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-box-blank {
+    width: 100%;
+    height: 10px;
+    background-color: transparent;
+  }
+
+  // theme 관련
+
+
+  // banner 관련
+  
 `;
-
-
 
 // ModeChange 관련
