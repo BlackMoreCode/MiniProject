@@ -10,6 +10,41 @@ export const Container = styled.div`
 `;
 
 export const Div = styled.div`
+  &.mypage-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: rgb(225, 235, 255);
+  }
+  
+  // MyPage.jsx 관련
+  &.menuBox {
+    .linkBox button {
+      background-color: white;
+      border: none;
+      border-radius: 10px;
+      width: 100%;
+      /* height: 50px; */
+      margin: 15px 0;
+      text-align: left;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: 500;
+      &:hover {
+        padding: 10px;
+        border: 5px solid skyblue;
+      }
+    }
+  }
+
+  .backBtn {
+    background-color: white;
+    border: none;
+  }
+
+  // Profile 관련
   &.phone-container {
     width: 100%;
     height: 100%;
@@ -17,26 +52,7 @@ export const Div = styled.div`
     flex-direction: column;
     padding: 20px;
   }
-  
-  // MyPage.jsx 관련
-  &.menuBox {
-    .linkBox button {
-      width: 100%;
-      height: 50px;
-      margin: 15px 0;
-      text-align: left;
-      padding-left: 15px;
-      font-size: 16px;
-      font-weight: 500;
-    }
-  }
 
-  .backBtn {
-    background-color: transparent;
-    border: none;
-  }
-
-  // Profile 관련
   .profile-header {
     display: flex;
     justify-content: space-between;

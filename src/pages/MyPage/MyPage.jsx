@@ -1,4 +1,4 @@
-import { Container } from "../../components/homeComponent";
+// import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
 
 import { useContext } from "react";
@@ -6,7 +6,7 @@ import { useContext } from "react";
 
 import { PrevPageButton } from "../../components/PrevPageButton";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
-import { Div } from "./MyPageStyles";
+import { Container, Div } from "./MyPageStyles";
 
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
@@ -30,7 +30,7 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
 
   return (
     <Container>
-      <Div className="phone-container">
+      <Div className="mypage-container">
         <Div className="menuBox">
           <button onClick={()=>navigate("/")} className="backBtn">
             <img src={leftArrowIcon} alt="뒤로가기" />
