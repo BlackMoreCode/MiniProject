@@ -68,7 +68,7 @@ const DiaryInsert = () => {
           if (snippet.code) {
             entries.push({
               entryType: "snippet", // 스니펫 타입
-              programmingLanguageName: snippet.programmingLanguageName || null,
+              programmingLanguageName: snippet.language || "javascript",
               content: snippet.code, // 스니펫의 코드
               sequence: snippetIndex * 2 + 1, // 순서 계산
             });
@@ -131,7 +131,11 @@ const DiaryInsert = () => {
   const addCodeSnippet = useCallback(() => {
     setCodeSnippets((prevSnippets) => [
       ...prevSnippets,
-      { language: "javascript", code: "", commentary: ["Default commentary"] },
+      {
+        programmingLanguageName: "javascript", // Default to JavaScript
+        code: "",
+        commentary: ["Default commentary"],
+      },
     ]);
   }, []);
 

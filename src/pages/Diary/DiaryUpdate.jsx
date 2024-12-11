@@ -55,18 +55,17 @@ const DiaryUpdate = () => {
           );
           setTags(response.tags || []);
 
-          // Set codingDiaryEntries with default commentary
+          // Map codingDiaryEntries correctly
           setCodeSnippets(
-            (response.codingDiaryEntries || []).map((snippet) => ({
+            (response.codingDiaryEntries || []).map((entry) => ({
               programmingLanguageName:
-                snippet.programmingLanguageName || "javascript",
-              content: snippet.content || "",
-              commentary:
-                Array.isArray(snippet.commentary) && snippet.commentary.length
-                  ? snippet.commentary
-                  : [""], // Ensure at least one empty commentary
-              entryType: snippet.entryType || "snippet",
-              sequence: snippet.sequence || 1,
+                entry.entryType === "snippet"
+                  ? entry.programmingLanguageName
+                  : null,
+              content: entry.content || "",
+              commentary: entry.entryType === "comment" ? [entry.content] : [],
+              entryType: entry.entryType || "snippet",
+              sequence: entry.sequence || 1,
             }))
           );
         }
