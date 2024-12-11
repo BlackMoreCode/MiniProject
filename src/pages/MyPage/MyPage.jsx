@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 // import { FontContext } from "../../contexts/FontContext";
 
-import { PrevPageButton } from "../../components/PrevPageButton";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
 import { Container, Div } from "./MyPageStyles";
 
@@ -14,20 +13,6 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
 
   // const { selectedFont } = useContext(FontContext);
 
-  const onClickBack = () => {
-    navigate("/");
-  };
-  const onClickProfile = () => {
-    navigate("/profile");
-  };
-  const onClickChangeFont = () => {
-    navigate("/font");
-  };
-  const onClickChangeBanner = () => {
-    navigate("/banner");
-  };
-  
-
   return (
     <Container>
       <Div className="mypage-container">
@@ -36,16 +21,16 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
             <img src={leftArrowIcon} alt="뒤로가기" />
           </button>
           <div className="linkBox">
-            <button onClick={onClickProfile}>회원 정보 수정</button>  
+            <button onClick={()=>navigate("/profile")}>회원 정보 수정</button>  
           </div>
           <div className="linkBox">
-            <button onClick={onClickChangeFont}>폰트 변경</button>
+            <button onClick={()=>navigate("/font")}>폰트 변경</button>
           </div>
           <div className="linkBox">
             <button>테마 변경</button>
           </div>
           <div className="linkBox">
-            <button onClick={onClickChangeBanner}>배너 이미지 변경</button>
+            <button onClick={()=>navigate("/banner")}>배너 이미지 변경</button>
           </div>
           <div className="linkBox">
             <button>알림 사운드 변경</button>
