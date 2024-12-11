@@ -55,7 +55,7 @@ export const Div = styled.div`
   .linkBox {
     display: flex;
     justify-content: center;
-    padding: 10px 20px;
+    padding: 10px 0;
     border-bottom: 1px solid #777;
     cursor: pointer;
     &:hover {
@@ -79,8 +79,7 @@ export const Div = styled.div`
       border: none;
       width: 100%;
       text-align: left;
-      padding: 15px 0;
-      margin-left: 10px;
+      padding: 15px 20px;
       font-size: 16px;
       font-weight: 600;
       color: #777;
@@ -243,7 +242,39 @@ export const Div = styled.div`
   }
 
   // theme 관련
+  .theme-box {
+    background-color: rgb(244,244,246);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    &:hover {
+      border: 5px solid #ccc;
+      padding: 5px;
+      p {
+        scale: 1.02;
+      }
+    }
+  }
 
+  .imageTitle {
+    padding-bottom: 5px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+  }
+  .imageBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 150px;
+    img {
+      width: 30%;
+    }
+  }
 
   // banner 관련
   &.banner-container {

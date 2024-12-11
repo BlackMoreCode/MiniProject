@@ -38,30 +38,35 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
               </div>
               <button className="link-button">회원 정보 수정</button>  
             </div>
+
             <div onClick={()=>navigate("/font")} className="linkBox">
               <div className="link-icon">
                 <BsFileFont />
               </div>
               <button className="link-button">폰트 변경</button>
             </div>
-            <div className="linkBox">
+
+            <div onClick={()=>navigate("/changeTheme")} className="linkBox">
               <div className="link-icon">
                 <TbSunMoon />
               </div>
               <button className="link-button">테마 변경</button>
             </div>
+
             <div onClick={()=>navigate("/banner")} className="linkBox">
               <div className="link-icon">
                 <PiImageLight />
               </div>
               <button className="link-button">배너 이미지 변경</button>
             </div>
+
             <div className="linkBox">
               <div className="link-icon">
                 <FaRegBell />
               </div>
               <button className="link-button">알림 사운드 변경</button>
             </div>
+
             <div className="linkBox">
               <div className="link-icon">
                 <PiSignOut />
