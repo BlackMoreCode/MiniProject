@@ -179,7 +179,38 @@ export const AxiosApi = {
       console.error(error);
       return null;
     }
-  }
+  },
+
+  getDiarySetting: async (loggedInMember) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/setting/get`,
+        loggedInMember
+      );
+      return response.data.diarySetting;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  updateDiarySetting: async (loggedInMember, font, theme, mainBannerImage) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/setting/update`,{
+        loggedInMember,
+        updatedDiarySetting: {
+          font,
+          theme,
+          mainBannerImage,
+          alertSound: "default"
+        }
+      });
+      return response.data.isUpdated;
+    } catch (error) {
+      return false;
+    }
+  },
 };
 
 export default AxiosApi;
