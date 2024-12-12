@@ -17,6 +17,44 @@ export const Div = styled.div`
     flex-direction: column;
     background-color: white;
   }
+  &.mypage-container-dark {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    .mypage-header {
+      background-color: #808080;
+      .backBtn {
+        svg {
+          path {
+            fill: #eee;
+          }
+        }
+      }
+      .mypage-title {
+        color: #eee;
+      }
+    }
+    .link-container {
+      color: #aaa;
+    }
+    .linkBox:nth-child(1) {
+      border-top: 1px solid #aaa;
+    }
+    .linkBox {
+      border-bottom: 1px solid #aaa;
+      .link-button {
+        color: #aaa;
+      }
+      &:hover {
+        color: #eee;
+      }
+      &:hover .link-button {
+        color: #eee;
+      }
+    }
+  }
 
   .backBtn {
     background-color: transparent;
@@ -126,20 +164,24 @@ export const Div = styled.div`
       border-radius: 50%;
     }
     input:checked + .slider {
-      background-color: #2196F3;
+      background-color: #aaa;
     }
 
     input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3;
+      box-shadow: 0 0 1px #aaa;
     }
     input:checked + .slider:before {
       -webkit-transform: translateX(26px);
       -ms-transform: translateX(26px);
       transform: translateX(26px);
     }
-
   }
-  
+  .box3 {
+    cursor: default;
+    .link-button {
+      cursor: default;
+    }
+  }
 
   // profile 관련
   &.phone-container {
@@ -147,6 +189,47 @@ export const Div = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+  }
+  &.phone-container-dark {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    .profile-header {
+      background-color: #808080;
+      .backBtn {
+        svg {
+          path {
+            fill: #eee;
+          }
+        }
+      }
+      .mypage-title {
+        color: #eee;
+      }
+    }
+    input {
+      background-color: black;
+      color: #eee;
+      border-bottom: 2px solid #aaa;
+    }
+    .profile-input:focus {
+      border-bottom: 2px solid #eee;
+    }
+    .messageOn {
+      color: #eee;
+    }
+    .submitBtn {
+      color: #333;
+      background-color: #eee;
+      &:hover {
+        background-color: #aaa;
+      }
+      &:disabled {
+        background-color: #aaa;
+      }
+    }
   }
 
   .profile-header {
@@ -210,8 +293,7 @@ export const Div = styled.div`
     position: absolute;
     left: 0;
     bottom: 20px;
-    &:hover,
-    &:active {
+    &:hover {
       background-color: #0a6dce;
     }
     &:disabled {
@@ -225,6 +307,41 @@ export const Div = styled.div`
     background-color: white;
     position: relative;
     overflow: hidden;
+  }
+  &.font-container-dark {
+    width: 100%;
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+    background-color: black;
+    .font-header {
+      background-color: #808080;
+      .backBtn {
+        svg {
+          path {
+            fill: #eee;
+          }
+        }
+      }
+      .mypage-title {
+        color: #eee;
+      }
+    }
+    .font-box {
+      background-color: #444;
+      color: #aaa;
+      &:hover {
+        border: 5px solid #aaa;
+        color: #eee;
+        p {
+          scale: 1.02;
+        }
+      }
+    }
+    // 스크롤바 보류
+    /* ::-webkit-scrollbar-track {
+      background-color: #444;
+    } */
   }
 
   .font-header {
@@ -332,6 +449,35 @@ export const Div = styled.div`
     background-color: white;
     position: relative;
     overflow: hidden;
+  }
+  &.banner-container-dark {
+    width: 100%;
+    background-color: black;
+    position: relative;
+    overflow: hidden;
+    .banner-header {
+      background-color: #808080;
+      .backBtn {
+        svg {
+          path {
+            fill: #eee;
+          }
+        }
+      }
+      .mypage-title {
+        color: #eee;
+      }
+    }
+    .banner-box {
+      border: 5px solid #808080;
+      img {
+        border-radius: 0;
+        /* scale: 1.2; */
+      }
+      &:hover {
+        border: 7px solid #eee;
+      }
+    }
   }
 
   .banner-header {

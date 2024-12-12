@@ -1,7 +1,7 @@
 // import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
 
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 // import { FontContext } from "../../contexts/FontContext";
 
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
@@ -21,9 +21,15 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
 
   // const { selectedFont } = useContext(FontContext);
 
+  // Dark 모드 전환
+  const [isDark, setIsDark] = useState(false);
+  const handleDarkChange = (e) => {
+    setIsDark(e.target.checked);
+  }
+
   return (
     <Container>
-      <Div className="mypage-container">
+      <Div className={isDark ? "mypage-container-dark" : "mypage-container"}>
         <Div className="menuBox">
           <div className="mypage-header" onClick={()=>navigate("/")}>
             <button onClick={()=>navigate("/")} className="backBtn">
@@ -47,13 +53,17 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
               <button className="link-button">폰트 변경</button>
             </div>
 
-            <div /* onClick={()=>navigate("/changeTheme")} */className="linkBox">
+            <div /* onClick={()=>navigate("/changeTheme")} */className="linkBox box3">
               <div className="link-icon">
                 <FiSun />
               </div>
               <button className="link-button">테마 변경</button>
               <label className="theme-toggle">
-                <input type="checkbox" />
+                <input 
+                  type="checkbox" 
+                  checked={isDark} 
+                  onChange={handleDarkChange} 
+                />
                 <span className="slider" />
               </label>
             </div>

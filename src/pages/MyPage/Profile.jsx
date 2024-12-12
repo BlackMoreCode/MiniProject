@@ -264,7 +264,7 @@ const Profile = () => {
           <div className="inputBox">
             <input
               type="password"
-              placeholder="현재 비밀번호를 입력하세요."
+              placeholder="현재 비밀번호를 입력하세요. (필수!)"
               value={currentPassword}
               onChange={onChangeCurrentPw} 
               className="profile-input"
