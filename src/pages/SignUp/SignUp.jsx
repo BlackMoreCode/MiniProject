@@ -81,7 +81,7 @@ export const SignUp = () => {
 
     if (isSignUpSuccess) {
       alert("회원 가입 성공");
-      navigate("/");
+      navigate("/intro");
     } else {
       alert("회원 가입 실패, 로그를 확인하세요.");
     }

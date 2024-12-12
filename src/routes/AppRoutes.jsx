@@ -15,6 +15,7 @@ import ChangePw from "../pages/MyPage/ChangePw";
 import ChangeFont from "../pages/MyPage/ChangeFont";
 import ChangeImage from "../pages/MyPage/ChangeImage";
 import ChangeTheme from "../pages/MyPage/ChangeTheme";
+import DeleteMember from "../pages/MyPage/DeleteMember";
 
 function AppRoutes() {
   return (
@@ -34,6 +35,7 @@ function AppRoutes() {
           <Route path="/changepw" element={<ChangePw />} />
           <Route path="/banner" element={<ChangeImage />} />
           <Route path="/changeTheme" element={<ChangeTheme />} />
+          <Route path="/deleteMember" element={<DeleteMember />} />
 
           <Route path="/intro" element={<Intro />} />
           <Route path="/signup" element={<SignUp />} />

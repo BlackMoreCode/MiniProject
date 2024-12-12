@@ -246,6 +246,12 @@ export const Div = styled.div`
 
   .inputBox {
     position: relative;
+    display: block;
+  }
+
+  .inputBox-invisible {
+    position: relative;
+    display: none;
   }
 
   .profile-inputRqd,
@@ -285,7 +291,7 @@ export const Div = styled.div`
     width: 90%;
     padding: 15px 0;
     margin: 0 20px;
-    background-color: #007bff;
+    background-color: #aaa;
     border: 0;
     border-radius: 10px;
     color: white;
@@ -294,7 +300,7 @@ export const Div = styled.div`
     left: 0;
     bottom: 20px;
     &:hover {
-      background-color: #0a6dce;
+      background-color: #777;
     }
     &:disabled {
       background-color: #ccc;
