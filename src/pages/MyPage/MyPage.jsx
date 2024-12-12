@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
 import { Container, Div } from "./MyPageStyles";
+import { LoginContext } from "../../contexts/LoginContext";
 
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { BsFileFont } from "react-icons/bs";
@@ -18,18 +19,18 @@ import { IoIosArrowBack } from "react-icons/io";
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
-
+  
   // const { selectedFont } = useContext(FontContext);
 
   // Dark 모드 전환
-  const [isDark, setIsDark] = useState(false);
+  const { isDarkMode, setIsDarkMode } = useContext(LoginContext);
   const handleDarkChange = (e) => {
-    setIsDark(e.target.checked);
+    setIsDarkMode(e.target.checked);
   }
 
   return (
     <Container>
-      <Div className={isDark ? "mypage-container-dark" : "mypage-container"}>
+      <Div className={isDarkMode ? "mypage-container-dark" : "mypage-container"}>
         <Div className="menuBox">
           <div className="mypage-header" onClick={()=>navigate("/")}>
             <button onClick={()=>navigate("/")} className="backBtn">
@@ -55,13 +56,13 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
 
             <div /* onClick={()=>navigate("/changeTheme")} */className="linkBox box3">
               <div className="link-icon">
-                <FiSun />
+                {isDarkMode ? <IoMoonOutline /> : <FiSun />}
               </div>
               <button className="link-button">테마 변경</button>
               <label className="theme-toggle">
                 <input 
                   type="checkbox" 
-                  checked={isDark} 
+                  checked={isDarkMode} 
                   onChange={handleDarkChange} 
                 />
                 <span className="slider" />

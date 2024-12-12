@@ -30,8 +30,9 @@ const Profile = () => {
   const [newPasswordMessage2, setNewPasswordMessage2] = useState("");
   const [newPasswordCheck2, setNewPasswordCheck2] = useState("");
   const [message, setMessage] = useState("");
-  const [isDisabled, setIsDisabled] = useState(true);
-  
+  const [isDisabled, setIsDisabled] = useState(true); // Dark 모드
+  const { isDarkMode } = useContext(LoginContext);
+
   const navigate = useNavigate();
 
   // setInputEmail(email);
@@ -222,7 +223,7 @@ const Profile = () => {
 
   return (
     <Container>
-      <Div className="phone-container">
+      <Div className={isDarkMode ? "phone-container-dark" : "phone-container" }>
         <div className="profile-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />

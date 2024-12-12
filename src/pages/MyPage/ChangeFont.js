@@ -11,6 +11,7 @@ const ChangeFont = () => {
   const navigate = useNavigate();
   const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
   const [currentFont, setCurrentFont] = useState(selectedFont); // 로컬 상태 추가
+  const { isDarkMode } = useContext(LoginContext); // Dark 모드
 
   const fontOptions = [
     { label: "Do Hyeon", class: "font-dohyeon" },
@@ -60,7 +61,7 @@ const ChangeFont = () => {
 
   return (
     <Container>
-      <Div className="font-container">
+      <Div className={isDarkMode ? "font-container-dark" : "font-container"}>
         <div className="font-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />

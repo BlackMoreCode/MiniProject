@@ -5,6 +5,7 @@ import { BannerImageContext } from "../../contexts/BannerImageContext";
 import { Container, Div } from "./MyPageStyles";
 import leftArrowIcon from "../../assets/icons/left-arrow.png";
 import { IoIosArrowBack } from "react-icons/io";
+import { LoginContext } from "../../contexts/LoginContext";
 
 import image1 from "../../assets/bannerimages/image1.jpg";
 import image2 from "../../assets/bannerimages/image2.jpg";
@@ -27,6 +28,8 @@ const images = [
 const ChangeImage = () => {
   const { bannerImage, setBannerImage } = useContext(BannerImageContext);
   const [selectedImage, setSelectedImage] = useState(image5); // 기본 이미지로 초기화
+  const { isDarkMode } = useContext(LoginContext); // Dark 모드
+
   const navigate = useNavigate();
 
   const handleImageSelect = (src) => {
@@ -42,7 +45,7 @@ const ChangeImage = () => {
 
   return (
     <Container>
-      <Div className="banner-container">
+      <Div className={isDarkMode ? "banner-container-dark" : "banner-container"}>
         <div className="banner-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
