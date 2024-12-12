@@ -7,7 +7,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { FiSun } from "react-icons/fi";
 import { IoMoonOutline } from "react-icons/io5";
 
-import image1 from "../../assets/bannerimages/image1.jpg";
+import image1 from "../../assets/bannerimages/banner1.jpg";
 
 const ChangeTheme = () => {
   const navigate = useNavigate();
