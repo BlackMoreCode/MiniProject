@@ -16,10 +16,12 @@ const ChangeTheme = () => {
     <Container>
       <Div className="font-container">
         <div className="font-header">
-          <button onClick={()=>navigate("/mypage")} className="backBtn">
+          <button onClick={() => navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
           </button>
-          <p onClick={()=>navigate("/mypage")} className="mypage-title">테마</p>
+          <p onClick={() => navigate("/mypage")} className="mypage-title">
+            테마
+          </p>
         </div>
 
         <div className="font-body">
@@ -47,10 +49,8 @@ const ChangeTheme = () => {
             </div>
           </div>
         </div>
-
       </Div>
     </Container>
-    
   );
 };
 
