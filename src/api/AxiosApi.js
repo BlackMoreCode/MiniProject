@@ -179,6 +179,27 @@ export const AxiosApi = {
       console.error(error);
       return null;
     }
+  },
+
+  updateDiarySetting: async (loggedInMember, font, theme, mainBannerImage) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/setting/update`, {
+        loggedInMember,
+        updatedDiarySetting: {
+          font,
+          theme,
+          mainBannerImage,
+          alertSound: "default", // 고정값
+        },
+      });
+  
+      // 응답에서 상태 확인
+      console.log("API Response:", response.data);
+      return response.data.isUpdated; // 성공 여부 반환
+    } catch (error) {
+      console.error("Error updating diary setting:", error);
+      return false; // 실패 시 false 반환
+    }
   }
 };
 
