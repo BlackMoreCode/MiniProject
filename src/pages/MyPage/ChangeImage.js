@@ -2,6 +2,10 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { BannerImageContext } from "../../contexts/BannerImageContext";
+import { Container, Div } from "./MyPageStyles";
+import leftArrowIcon from "../../assets/icons/left-arrow.png";
+import { IoIosArrowBack } from "react-icons/io";
+import { LoginContext } from "../../contexts/LoginContext";
 
 import image1 from "../../assets/bannerimages/banner1.jpg";
 import image2 from "../../assets/bannerimages/banner2.jpg";
@@ -15,11 +19,17 @@ const images = [
   { src: image3, alt: "Image 3" },
   { src: image4, alt: "Image 4" },
   { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
+  { src: image5, alt: "Image 5" },
 ];
 
 const ChangeImage = () => {
   const { bannerImage, setBannerImage } = useContext(BannerImageContext);
   const [selectedImage, setSelectedImage] = useState(image5); // 기본 이미지로 초기화
+  const { isDarkMode } = useContext(LoginContext); // Dark 모드
+
   const navigate = useNavigate();
 
   const handleImageSelect = (src) => {
@@ -34,11 +44,29 @@ const ChangeImage = () => {
   };
 
   return (
-    <div className="change-image-container">
-      <h1>배너 이미지 변경</h1>
-      <div className="image-list">
-        {images.map((image) => (
-          <div key={image.src} className="image-item">
+    <Container>
+      <Div className={isDarkMode ? "banner-container-dark" : "banner-container"}>
+        <div className="banner-header">
+          <button onClick={()=>navigate("/mypage")} className="backBtn">
+            <IoIosArrowBack />
+          </button>
+          <p onClick={()=>navigate("/mypage")} className="mypage-title">배너</p>
+        </div>
+
+        <div className="banner-body">
+          {images.map((image) => (
+            <div key={image.src} className="banner-box">
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="banner-image"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* {images.map((image) => (
+          <div key={image.src} className="banner-box">
             <img
               src={image.src}
               alt={image.alt}
@@ -48,17 +76,14 @@ const ChangeImage = () => {
                 e.target.src = image5; // Use a fallback image
               }}
             />
-            <input
-              type="radio"
-              name="banner-image"
-              checked={selectedImage === image.src}
-              onChange={() => handleImageSelect(image.src)}
-            />
           </div>
-        ))}
-      </div>
-      <button onClick={handleImageChange}>이미지 변경</button>
-    </div>
+        ))} */}
+
+
+        {/* <button onClick={handleImageChange}>이미지 변경</button> */}
+      </Div>
+    </Container>
+    
   );
 };
 
