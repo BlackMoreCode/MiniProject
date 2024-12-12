@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { BannerImageContext } from "../../contexts/BannerImageContext";
 
-import image1 from "../../assets/bannerimages/image1.jpg";
-import image2 from "../../assets/bannerimages/image2.jpg";
-import image3 from "../../assets/bannerimages/image3.jpg";
-import image4 from "../../assets/bannerimages/image4.jpg";
-import image5 from "../../assets/bannerimages/image5.jpg";
+import image1 from "../../assets/bannerimages/banner1.jpg";
+import image2 from "../../assets/bannerimages/banner2.jpg";
+import image3 from "../../assets/bannerimages/banner3.jpg";
+import image4 from "../../assets/bannerimages/banner4.jpg";
+import image5 from "../../assets/bannerimages/banner5.jpg";
 
 const images = [
   { src: image1, alt: "Image 1" },

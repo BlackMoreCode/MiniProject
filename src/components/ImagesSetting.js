@@ -3,11 +3,11 @@ import styled from "styled-components";
 
 // 이미지 데이터
 const images = [
-  { id: 1, src: "/bannerimages/image1.jpg", alt: "Banner 1" },
-  { id: 2, src: "/bannerimages/image2.jpg", alt: "Banner 2" },
-  { id: 3, src: "/bannerimages/image3.jpg", alt: "Banner 3" },
-  { id: 4, src: "/bannerimages/image4.jpg", alt: "Banner 4" },
-  { id: 5, src: "/bannerimages/image5.jpg", alt: "Default Banner" },
+  { id: 1, src: "/bannerimages/banner1.jpg", alt: "Banner 1" },
+  { id: 2, src: "/bannerimages/banner2.jpg", alt: "Banner 2" },
+  { id: 3, src: "/bannerimages/banner3.jpg", alt: "Banner 3" },
+  { id: 4, src: "/bannerimages/banner4.jpg", alt: "Banner 4" },
+  { id: 5, src: "/bannerimages/banner5.jpg", alt: "Default Banner" },
 ];
 
 const Container = styled.div`
