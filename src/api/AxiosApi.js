@@ -151,10 +151,10 @@ export const AxiosApi = {
   updateProfile: async (id, email, nickname, password) => {
     try {
       const response = await axios.post(`${BACKEND_DOMAIN}/members/update`, {
-        id, 
-        email, 
-        nickname, 
-        password
+        id,
+        email,
+        nickname,
+        password,
       });
       if (response.status === 200 && response.data.success) {
         return true;
@@ -174,7 +174,7 @@ export const AxiosApi = {
     try {
       const response = await axios.post(`${BACKEND_DOMAIN}/members/delete`, {
         id,
-        password
+        password,
       });
       if (response.status === 200 && response.data.success) {
         return true;
@@ -192,7 +192,7 @@ export const AxiosApi = {
   getUserDetails: async (id) => {
     try {
       const response = await axios.post(`${BACKEND_DOMAIN}/members/get`, {
-        id
+        id,
       });
       return response.data.memberInfo;
     } catch (error) {
@@ -216,20 +216,70 @@ export const AxiosApi = {
 
   updateDiarySetting: async (loggedInMember, font, theme, mainBannerImage) => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/setting/update`,{
+      const response = await axios.post(`${API_BASE_URL}/setting/update`, {
         loggedInMember,
         updatedDiarySetting: {
           font,
           theme,
           mainBannerImage,
-          alertSound: "default"
-        }
+          alertSound: "default",
+        },
       });
       return response.data.isUpdated;
     } catch (error) {
       return false;
     }
+  },
+
+  // 플래너 / 스케쥴 관련 API
+  getMonthlySchedules: async ({ loggedInMember, year, month }) => {
+    // { loggedInMember: {id,password}, date:{year,month} }
+    // 이하는 테스트용 로그
+    console.log("Requesting monthly schedules with:", {
+      loggedInMember,
+      year,
+      month,
+    });
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/schedule/get-monthly-list`,
+        {
+          loggedInMember,
+          date: { year, month },
+        }
+      );
+      console.log("Received monthly schedules response:", response.data); // 백으로서부터 받은 데이터
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching monthly schedules:", error);
+      throw error;
+    }
+  },
+
+  saveSchedule: async ({ loggedInMember, newSchedule }) => {
+    // { loggedInMember, newSchedule }
+    const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
+      loggedInMember,
+      newSchedule,
+    });
+    return response.data;
+  },
+
+  updateSchedule: async ({ loggedInMember, scheduleNum, updatedSchedule }) => {
+    const response = await axios.post(`${API_BASE_URL}/schedule/update`, {
+      loggedInMember,
+      scheduleNum,
+      updatedSchedule,
+    });
+    return response.data;
+  },
+
+  deleteSchedule: async ({ loggedInMember, scheduleNum }) => {
+    const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
+      loggedInMember,
+      scheduleNum,
+    });
+    return response.data;
   },
 };
 

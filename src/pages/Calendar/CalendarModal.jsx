@@ -79,16 +79,16 @@ const TimerWrapper = styled.div`
 const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState({ start: "", end: "" });
-  const [isAllDay, setIsAllDay] = useState(false); // all-day toggle state
+  const [isAllDay, setIsAllDay] = useState(false);
   const [alarms, setAlarms] = useState([]);
   const [notes, setNotes] = useState("");
-  const [importance, setImportance] = useState(false); // Default importance: false
+  const [importance, setImportance] = useState(false);
 
   useEffect(() => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
-      setIsAllDay(data.event.isAllDay || false); // Load all-day state
+      setIsAllDay(data.event.isAllDay || false);
       setAlarms(data.event.alarmTimes || []);
       setNotes(data.event.notes || "");
       setImportance(data.event.importance || false);
@@ -112,7 +112,11 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
       toast.error("시작 및 종료 시간을 선택해주세요.");
       return false;
     }
-    if (!isAllDay && time.start >= time.end) {
+    if (
+      !isAllDay &&
+      time.start >= time.end &&
+      data.start.toDateString() === data.end.toDateString()
+    ) {
       toast.error("시작 시간은 종료 시간보다 빨라야 합니다.");
       return false;
     }
@@ -122,9 +126,27 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const handleSave = () => {
     if (!validateFields()) return;
 
+    const startDate = new Date(data.start);
+    const endDate = new Date(data.end);
+
+    if (!isAllDay && time.start) {
+      const [sh, sm] = time.start.split(":");
+      startDate.setHours(parseInt(sh, 10), parseInt(sm, 10), 0, 0);
+    } else {
+      startDate.setHours(0, 0, 0, 0);
+    }
+
+    if (!isAllDay && time.end) {
+      const [eh, em] = time.end.split(":");
+      endDate.setHours(parseInt(eh, 10), parseInt(em, 10), 0, 0);
+    } else {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
     const event = {
-      id: data.event?.id || new Date().getTime(),
-      date: data.date,
+      id: data.event?.id || null,
+      startDate,
+      endDate,
       title,
       time: isAllDay ? null : time,
       isAllDay,
@@ -195,9 +217,7 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
                     checked={alarms.includes(value)}
                     onChange={() => toggleAlarm(value)}
                   />
-                  {value === 0
-                    ? "당일"
-                    : `${value} 일 ${value > 1 ? "" : ""} 전`}
+                  {value === 0 ? "당일" : `${value} 일 전`}
                 </label>
               ))
             : [15, 30, 45, 60, 120].map((value) => (

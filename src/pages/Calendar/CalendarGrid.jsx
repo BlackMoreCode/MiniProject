@@ -1,28 +1,29 @@
-import React, { useContext } from "react";
-import * as Styles from "./CalendarGridStyles";
+import React, { useContext, useState } from "react";
 import { LoginContext } from "../../contexts/LoginContext";
+import * as Styles from "./CalendarGridStyles";
 
-const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
+const CalendarGrid = ({ date, onDateRangeSelect, selectedRange, events }) => {
   const { isDarkMode } = useContext(LoginContext);
+
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState(null);
+  const [selectionEnd, setSelectionEnd] = useState(null);
 
   const year = date.getFullYear();
   const month = date.getMonth();
   const today = new Date();
 
-  // 달의 시작 요일 구하기
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // 날짜 배열 만들기
   const days = [];
   for (let i = 0; i < firstDay; i++) {
-    days.push(null); // 1일 이전은 빈 칸
+    days.push(null);
   }
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
   }
 
-  // Choose styles based on isDarkMode
   const WeekdaysHeader = isDarkMode
     ? Styles.WeekdaysHeaderDark
     : Styles.WeekdaysHeader;
@@ -32,6 +33,42 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
   const DayCell = isDarkMode ? Styles.DayCellDark : Styles.DayCell;
   const DayNumber = isDarkMode ? Styles.DayNumberDark : Styles.DayNumber;
 
+  const handleMouseDown = (cellDate) => {
+    if (!cellDate) return;
+    setIsSelecting(true);
+    setSelectionStart(cellDate);
+    setSelectionEnd(cellDate);
+  };
+
+  const handleMouseEnter = (cellDate) => {
+    if (isSelecting && cellDate) {
+      setSelectionEnd(cellDate);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsSelecting(false);
+    if (selectionStart && selectionEnd) {
+      const start =
+        selectionStart < selectionEnd ? selectionStart : selectionEnd;
+      const end = selectionStart < selectionEnd ? selectionEnd : selectionStart;
+      onDateRangeSelect({ start, end });
+    }
+  };
+
+  const isInSelectedRange = (cellDate) => {
+    if (!selectedRange || !cellDate) return false;
+    return cellDate >= selectedRange.start && cellDate <= selectedRange.end;
+  };
+
+  const isInDragSelection = (cellDate) => {
+    if (!isSelecting || !selectionStart || !selectionEnd || !cellDate)
+      return false;
+    const start = selectionStart < selectionEnd ? selectionStart : selectionEnd;
+    const end = selectionStart < selectionEnd ? selectionEnd : selectionStart;
+    return cellDate >= start && cellDate <= end;
+  };
+
   return (
     <>
       <WeekdaysHeader>
@@ -39,15 +76,14 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
           <div key={day}>{day}</div>
         ))}
       </WeekdaysHeader>
-      <GridContainer>
+      <GridContainer
+        onMouseUp={handleMouseUp}
+        onMouseLeave={() => isSelecting && handleMouseUp()}
+      >
         {days.map((day, index) => {
           const cellDate = day ? new Date(year, month, day) : null;
           const isToday =
             cellDate && cellDate.toDateString() === today.toDateString();
-          const isSelected =
-            cellDate &&
-            selectedDate &&
-            cellDate.toDateString() === selectedDate.toDateString();
 
           const eventsForDay =
             cellDate && events[cellDate.toDateString()]
@@ -55,18 +91,20 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
               : [];
 
           const eventCount = eventsForDay.length;
-
-          // Check if this day has any important events
           const hasImportantEvent = eventsForDay.some(
             (event) => event.importance
           );
 
+          const isInSelection =
+            isInSelectedRange(cellDate) || isInDragSelection(cellDate);
+
           return (
             <DayCell
               key={index}
-              isSelected={isSelected}
               isToday={isToday}
-              onClick={() => day && onDateClick(cellDate)}
+              isSelected={isInSelection}
+              onMouseDown={() => handleMouseDown(cellDate)}
+              onMouseEnter={() => handleMouseEnter(cellDate)}
             >
               {day && (
                 <>

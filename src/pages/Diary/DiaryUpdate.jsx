@@ -265,160 +265,164 @@ const DiaryUpdate = () => {
   };
 
   return (
-    <St.Container>
-      <St.Div className="phone-container" onSubmit={handleSubmit}>
-        <p>제목</p>
-        <St.InputGeneral
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목 입력"
-        />
-        <p>날짜</p>
-        <St.InputGeneral
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-        <label htmlFor="description">내용:</label>
-        <St.TextArea
-          id="description"
-          ref={textarea}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-          placeholder="내용 입력"
-        />
-
-        <St.Div className="tag-section">
-          <St.TagInput
+    <div style={{ height: "100%", overflowY: "auto" }}>
+      <St.Container>
+        <St.Div className="phone-container" onSubmit={handleSubmit}>
+          <p>제목</p>
+          <St.InputGeneral
             type="text"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            placeholder="태그를 입력하세요"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="제목 입력"
           />
-          <St.GeneralConfirmation type="button" onClick={addTag}>
-            태그 추가
-          </St.GeneralConfirmation>
-          <St.TagList>
-            {tags.map((tag, index) => (
-              <St.TagItem key={index}>
-                {tag}
-                <button onClick={() => setTags(tags.filter((t) => t !== tag))}>
-                  x
-                </button>
-              </St.TagItem>
-            ))}
-          </St.TagList>
-        </St.Div>
+          <p>날짜</p>
+          <St.InputGeneral
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          <label htmlFor="description">내용:</label>
+          <St.TextArea
+            id="description"
+            ref={textarea}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            placeholder="내용 입력"
+          />
 
-        <St.GeneralConfirmation
-          type="button"
-          onClick={() => setShowCodeSnippets((prev) => !prev)}
-        >
-          {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
-        </St.GeneralConfirmation>
-
-        <St.Div className="code-section">
-          {codeSnippets.map((snippet, snippetIndex) => (
-            <div key={snippetIndex}>
-              {/* Language Dropdown */}
-              <select
-                value={snippet.programmingLanguageName}
-                onChange={(e) => {
-                  const updatedSnippets = [...codeSnippets];
-                  updatedSnippets[snippetIndex].programmingLanguageName =
-                    e.target.value;
-                  setCodeSnippets(updatedSnippets);
-                }}
-              >
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-              </select>
-
-              {/* Code Editor */}
-              <CodeMirror
-                value={snippet.content}
-                height="auto"
-                theme={dracula}
-                extensions={[
-                  snippet.programmingLanguageName === "javascript"
-                    ? javascript()
-                    : snippet.programmingLanguageName === "python"
-                    ? python()
-                    : java(),
-                ]}
-                onChange={(value) => updateCodeSnippet(snippetIndex, value)}
-              />
-
-              <St.GeneralConfirmation
-                type="button"
-                onClick={() => removeCodeSnippet(snippetIndex)}
-              >
-                코드 스니펫 삭제
-              </St.GeneralConfirmation>
-
-              {/* Commentary Section */}
-              {snippet.commentary.map((comment, commentaryIndex) => (
-                <div key={commentaryIndex}>
-                  <St.TextArea
-                    value={comment}
-                    onChange={(e) =>
-                      updateCodeCommentary(
-                        snippetIndex,
-                        commentaryIndex,
-                        e.target.value
-                      )
-                    }
-                  />
-                  <St.GeneralConfirmation
-                    type="button"
-                    onClick={() =>
-                      removeCodeCommentary(snippetIndex, commentaryIndex)
-                    }
+          <St.Div className="tag-section">
+            <St.TagInput
+              type="text"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              placeholder="태그를 입력하세요"
+            />
+            <St.GeneralConfirmation type="button" onClick={addTag}>
+              태그 추가
+            </St.GeneralConfirmation>
+            <St.TagList>
+              {tags.map((tag, index) => (
+                <St.TagItem key={index}>
+                  {tag}
+                  <button
+                    onClick={() => setTags(tags.filter((t) => t !== tag))}
                   >
-                    코멘트 삭제
-                  </St.GeneralConfirmation>
-                </div>
+                    x
+                  </button>
+                </St.TagItem>
               ))}
+            </St.TagList>
+          </St.Div>
 
-              <St.GeneralConfirmation
-                type="button"
-                onClick={() => addCodeCommentary(snippetIndex)}
-              >
-                코드 코멘트 추가
-              </St.GeneralConfirmation>
-            </div>
-          ))}
-
-          {/* Add Snippet Button */}
-          <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
-            코드 스니펫 추가
+          <St.GeneralConfirmation
+            type="button"
+            onClick={() => setShowCodeSnippets((prev) => !prev)}
+          >
+            {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
           </St.GeneralConfirmation>
+
+          <St.Div className="code-section">
+            {codeSnippets.map((snippet, snippetIndex) => (
+              <div key={snippetIndex}>
+                {/* Language Dropdown */}
+                <select
+                  value={snippet.programmingLanguageName}
+                  onChange={(e) => {
+                    const updatedSnippets = [...codeSnippets];
+                    updatedSnippets[snippetIndex].programmingLanguageName =
+                      e.target.value;
+                    setCodeSnippets(updatedSnippets);
+                  }}
+                >
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                </select>
+
+                {/* Code Editor */}
+                <CodeMirror
+                  value={snippet.content}
+                  height="auto"
+                  theme={dracula}
+                  extensions={[
+                    snippet.programmingLanguageName === "javascript"
+                      ? javascript()
+                      : snippet.programmingLanguageName === "python"
+                      ? python()
+                      : java(),
+                  ]}
+                  onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+                />
+
+                <St.GeneralConfirmation
+                  type="button"
+                  onClick={() => removeCodeSnippet(snippetIndex)}
+                >
+                  코드 스니펫 삭제
+                </St.GeneralConfirmation>
+
+                {/* Commentary Section */}
+                {snippet.commentary.map((comment, commentaryIndex) => (
+                  <div key={commentaryIndex}>
+                    <St.TextArea
+                      value={comment}
+                      onChange={(e) =>
+                        updateCodeCommentary(
+                          snippetIndex,
+                          commentaryIndex,
+                          e.target.value
+                        )
+                      }
+                    />
+                    <St.GeneralConfirmation
+                      type="button"
+                      onClick={() =>
+                        removeCodeCommentary(snippetIndex, commentaryIndex)
+                      }
+                    >
+                      코멘트 삭제
+                    </St.GeneralConfirmation>
+                  </div>
+                ))}
+
+                <St.GeneralConfirmation
+                  type="button"
+                  onClick={() => addCodeCommentary(snippetIndex)}
+                >
+                  코드 코멘트 추가
+                </St.GeneralConfirmation>
+              </div>
+            ))}
+
+            {/* Add Snippet Button */}
+            <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
+              코드 스니펫 추가
+            </St.GeneralConfirmation>
+          </St.Div>
+
+          <div className="buttonBox">
+            <St.ConfirmBtn type="submit" onClick={handleSubmit}>
+              수정
+            </St.ConfirmBtn>
+            <St.ConfirmBtn type="button" onClick={handleDelete}>
+              삭제
+            </St.ConfirmBtn>
+            <St.EtcBtn type="button" onClick={() => navigate("/")}>
+              취소
+            </St.EtcBtn>
+          </div>
         </St.Div>
 
-        <div className="buttonBox">
-          <St.ConfirmBtn type="submit" onClick={handleSubmit}>
-            수정
-          </St.ConfirmBtn>
-          <St.ConfirmBtn type="button" onClick={handleDelete}>
-            삭제
-          </St.ConfirmBtn>
-          <St.EtcBtn type="button" onClick={() => navigate("/")}>
-            취소
-          </St.EtcBtn>
-        </div>
-      </St.Div>
-
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        message={modalMessage}
-        confirmText="확인"
-        onConfirm={() => setIsModalOpen(false)}
-        singleButton
-      />
-    </St.Container>
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          message={modalMessage}
+          confirmText="확인"
+          onConfirm={() => setIsModalOpen(false)}
+          singleButton
+        />
+      </St.Container>
+    </div>
   );
 };
 
