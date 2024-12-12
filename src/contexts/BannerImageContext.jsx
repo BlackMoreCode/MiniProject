@@ -6,7 +6,7 @@ export const BannerImageContext = createContext();
 export const BannerImageProvider = ({ children }) => {
   // 처음 이미지 세팅을 5번 이미지로
   const [bannerImage, setBannerImage] = useState(
-    "/assets/bannerimages/image5.jpg"
+    "/banner5.jpg"
   );
 
   return (

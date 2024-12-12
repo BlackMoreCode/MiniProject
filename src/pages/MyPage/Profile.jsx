@@ -301,7 +301,9 @@ const Profile = () => {
             )}
           </div>
           
-          <button className="submitBtn" onClick={handleUpdateProfile} disabled={isDisabled}>프로필 수정</button>
+          <button className="submitBtn" onClick={handleUpdateProfile} disabled={isDisabled}>
+            {isDisabled ? "비활성화" : "프로필 수정"}
+          </button>
         </form>
       </Div>
     </Container>
