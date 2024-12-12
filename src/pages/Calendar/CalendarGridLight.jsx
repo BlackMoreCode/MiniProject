@@ -5,21 +5,29 @@ const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #333;
+  /* background: #494a50; */
   padding: 10px;
 `;
 
 const DayCell = styled.div`
   position: relative;
-  padding: 20px;
-  background: ${(props) => (props.isSelected ? "#555" : "#222")};
+  padding: 12px;
+  padding-top: 24px;
+  background: ${(props) =>
+    props.isToday ? "##bdbdbd" : props.isSelected ? "#dadadb" : "#f4f4f6"};
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
-  border: ${(props) => (props.isSelected ? "2px solid white" : "none")};
+  border: ${(props) =>
+    props.isToday
+      ? "2px solid black"
+      : props.isSelected
+      ? "2px solid black"
+      : "none"};
 
   &:hover {
-    background: #444;
+    background: #dadadb;
+    transition: ease-in-out 0.1s;
   }
 `;
 
@@ -32,9 +40,9 @@ const DayNumber = styled.span`
       ? "red"
       : props.isSaturday
       ? "blue"
-      : "white"};
-  background: ${(props) => (props.isToday ? "white" : "none")};
-  padding: ${(props) => (props.isToday ? "5px" : "0")};
+      : "black"};
+  /* background: ${(props) => (props.isToday ? "white" : "none")};
+  padding: ${(props) => (props.isToday ? "5px" : "0")}; */
   border-radius: ${(props) => (props.isToday ? "20%" : "0")};
 `;
 
@@ -42,12 +50,12 @@ const EventCount = styled.div`
   position: absolute;
   top: 5px;
   right: 5px;
-  background: #007bff;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 12px;
+  background: #dadadb;
+  color: #66666e;
+  border-radius: 25%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,16 +66,17 @@ const StarIndicator = styled.div`
   top: 5px;
   left: 5px;
   color: gold;
-  font-size: 16px;
+  font-size: 10px;
 `;
 
 const WeekdaysHeader = styled.div`
   display: grid;
+  position: relative;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  padding: 10px 0;
+  padding: 12px 10px;
   text-align: center;
-  color: white;
+  color: black;
   font-weight: bold;
 `;
 
@@ -122,6 +131,7 @@ const CalendarGrid = ({ date, onDateClick, selectedDate, events }) => {
             <DayCell
               key={index}
               isSelected={isSelected}
+              isToday={isToday}
               onClick={() => day && onDateClick(cellDate)}
             >
               {day && (

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import * as Styles from "../Calendar/CalendarStyles";
+// import * as Styles from "../Calendar/CalendarStylesDark"; // 임시처리; 기존 CSS 는 다크모드 취급
+import * as Styles from "../Calendar/CalendarStylesLight"; // 새로 작업할 것을 라이트모드고, 디폴트 설정.
 
-import CalendarGrid from "../../components/CalendarGrid";
+// import CalendarGrid from "./CalendarGridDark"; // 임시 처리; 달력을 만들기 위한 Grid 컴포넌트; 다크 모드 취급
+import CalendarGrid from "./CalendarGridLight"; // 새로 CSS  처리할 디폴트 라이트 모드 (CSS 제외한 로직은 다크모드랑 일치)
+
 import Modal from "./CalendarModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -202,7 +205,13 @@ const Calendar = () => {
       />
       {selectedDate && (
         <Styles.EventListWrapper>
-          <h3>{selectedDate.toDateString()} 이벤트 목록</h3>
+          <h3>
+            {`${selectedDate.getDate()}일`}{" "}
+            {selectedDate.toLocaleDateString("ko-kr", {
+              weekday: "long",
+            })}{" "}
+            이벤트 목록
+          </h3>
           {selectedDateEvents.map((event, index) => (
             <Styles.EventItem
               key={index}
@@ -212,8 +221,9 @@ const Calendar = () => {
                 {event.isAllDay
                   ? "All Day"
                   : `${event.time.start} - ${event.time.end}`}{" "}
-                | {event.title} {event.importance && "⭐"}
+                | {event.title}
               </span>
+              {event.importance && "⭐"}
               {event.checked && (
                 <Styles.CheckIndicator>✔</Styles.CheckIndicator>
               )}

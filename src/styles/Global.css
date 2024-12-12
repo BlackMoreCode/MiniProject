@@ -39,6 +39,8 @@ body,
   overflow-y: auto;
 
   transform: translate(-3px, -1px);
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
 }
 
 a {

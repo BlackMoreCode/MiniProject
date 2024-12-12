@@ -1,5 +1,8 @@
 import { useEffect, useContext, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import AxiosApi from "../api/AxiosApi";
+
+//CSS
 import {
   Container,
   Div,
@@ -7,9 +10,13 @@ import {
   AddButton,
   RedirectButton,
 } from "../components/homeComponent";
+
+//Context
 import { LoginContext } from "../contexts/LoginContext";
 import { DiaryContext } from "../contexts/DiaryContext";
 import { BannerImageContext } from "../contexts/BannerImageContext";
+
+//Font and Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -18,58 +25,68 @@ import { FiLogOut } from "react-icons/fi";
 import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 
+// Calendar
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
-  const { diaries, fetchDiaries } = useContext(DiaryContext);
-
+  const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
   const { bannerImage } = useContext(BannerImageContext);
 
-  // 리액트 문맥 값 (context value) 는 디자인상 불변성이 유지되어야하므로 ("immutable")
-  // 컨텍스트에서 직접적으로 정렬을 실행하는 것은 이상적이지 못하다.
-  // 그러므로 Home.jsx에서 diaries의 로컬 복사본을 생성한다.
   const [sortedDiaries, setSortedDiaries] = useState([]);
-  // 검색
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  // 정렬 상태
   const [isSort, setIsSort] = useState("asc");
+
   const [diaryYear, setDiaryYear] = useState(new Date().getFullYear());
   const [diaryMonth, setDiaryMonth] = useState(new Date().getMonth() + 1);
+  const [showCalendarModal, setShowCalendarModal] = useState(false); // 모달 상태
+  const [allDiaries, setAllDiaries] = useState([]); // 모든 일기 표시  상태?
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!diaries) {
-      fetchDiaries();
+  const fetchAllDiaries = async () => {
+    try {
+      const response = await AxiosApi.getDiaries({ loggedInMember });
+      setAllDiaries(response.diaries || []);
+    } catch (error) {
+      console.error("Failed to fetch all diaries:", error);
     }
-  }, []);
+  };
+
+  // 검색용 useEffect
+  useEffect(() => {
+    if (searchValue.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
+    if (allDiaries.length === 0) {
+      fetchAllDiaries(); // 검색이 시작될 시에만 모든 일기를 fetch 처리
+    } else {
+      const results = allDiaries.filter((diary) =>
+        diary.title.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setSearchResults(results);
+    }
+  }, [searchValue, allDiaries]);
+
+  // 성능 이슈를 위해 일단 유저 로그인 될시 / 컴포넌트 마운트시 allDiaries에 캐시되게 한다
+  useEffect(() => {
+    if (loggedInMember) {
+      fetchAllDiaries();
+    }
+  }, [loggedInMember]);
 
   useEffect(() => {
     if (loggedInMember) {
-      console.log("Home Update by loggedInMember");
-      fetchDiaries();
-    } else if (loggedInMember === null) {
-      console.log("go to intro page");
-      navigate("/intro");
+      fetchDiariesForMonth(diaryYear, diaryMonth, loggedInMember);
     }
-  }, []);
+  }, [loggedInMember, diaryYear, diaryMonth]);
 
+  // 검색 필터 적용
   useEffect(() => {
-    // Synchronize sortedDiaries with diaries when diaries change
-    if (diaries === null || undefined) return;
-    const filteredDiaries = diaries.filter((diary) => {
-      const diaryDate = new Date(diary.writtenDate);
-      return (
-        diaryDate.getFullYear() === diaryYear &&
-        diaryDate.getMonth() + 1 === diaryMonth
-      );
-    });
-
-    setSortedDiaries(filteredDiaries);
-  }, [diaries, diaryYear, diaryMonth]);
-
-  useEffect(() => {
-    // Apply search filter when searchValue changes
     if (searchValue.trim() === "") {
       setSearchResults([]);
     } else {
@@ -80,10 +97,10 @@ const Home = () => {
     }
   }, [searchValue, sortedDiaries]);
 
-  // 검색창 열고 닫기
   const inputRef = useRef(null);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchCloseVisible, setSearchCloseVisible] = useState(false);
+
   const searchVisibleOn = () => {
     setSearchVisible(true);
     setSearchCloseVisible(true);
@@ -96,25 +113,45 @@ const Home = () => {
     setSearchResults([]);
   };
 
-  // 검색에 따른 상태 변화
   const inputChange = (e) => {
     setSearchValue(e.target.value);
   };
 
-  // 커서 포커싱
   useEffect(() => {
     if (searchVisible) {
       inputRef.current.focus();
     }
   }, [searchVisible]);
 
-  //기존 로직이 완료되지 않아서 추가.
+  useEffect(() => {
+    if (!diaries || diaries.length === 0) {
+      setSortedDiaries([]);
+      return;
+    }
+    const filteredDiaries = diaries.filter((diary) => {
+      const diaryDate = new Date(diary.writtenDate);
+      return (
+        diaryDate.getFullYear() === diaryYear &&
+        diaryDate.getMonth() + 1 === diaryMonth
+      );
+    });
+    setSortedDiaries(filteredDiaries);
+  }, [diaries, diaryYear, diaryMonth]);
+
+  //날짜 변경
+  const handleDateChange = (date) => {
+    const selectedYear = date.getFullYear();
+    const selectedMonth = date.getMonth() + 1;
+
+    setDiaryYear(selectedYear);
+    setDiaryMonth(selectedMonth);
+    setShowCalendarModal(false); // Close modal after selection
+  };
+
   const handleSort = () => {
     setIsSort((prevState) => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
 
-      // Update sortedDiaries instead of original diaries
-      console.log("sorted diary check", sortedDiaries);
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
@@ -128,7 +165,6 @@ const Home = () => {
     });
   };
 
-  // 날짜 선택 --> 미완성? --> 1차 시도
   const changeMonth = (offset) => {
     let newMonth = diaryMonth + offset;
     let newYear = diaryYear;
@@ -148,13 +184,11 @@ const Home = () => {
   return (
     <Container>
       <Div className="phone-container">
-        {/* 헤더바 */}
         <Div className="phone-header">
           <Img1 src={bannerImage} alt="BannerImage" />
 
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
-              {/* 왼쪽 메뉴 버튼 -- 구현 아직 안된듯? */}
               <button className="phone-menuBtn">
                 <GiHamburgerMenu />
               </button>
@@ -170,11 +204,9 @@ const Home = () => {
             </Div>
 
             <Div className="phone-headerRight">
-              {/* 테마 변경 버튼 --> 아직 기능 구현 처리 안됨 */}
               <button className="phone-themeBtn">
                 <LuPaintbrush />
               </button>
-
               <div className="phone-searchBox">
                 <input
                   title="일기 검색"
@@ -199,24 +231,54 @@ const Home = () => {
                   <AiOutlineClose />
                 </button>
               </div>
-              <button className="phone-sort" onClick={handleSort}>
-                {isSort === "asc" ? (
-                  // 가져다 대면 어떤 정렬인지 텍스트로도 표기
-                  <BsSortNumericDown title="오름차순 정렬" />
-                ) : (
-                  <BsSortNumericDownAlt title="내림차순 정렬" />
-                )}
-              </button>
             </Div>
           </Div>
-
-          <Div className="phone-theme">
-            <button onClick={() => changeMonth(-1)}>◀</button>
-            {diaryYear} {diaryMonth}월
-            <button onClick={() => changeMonth(1)}>▶</button>
-          </Div>
         </Div>
-        {/* Diary Section */}
+
+        {showCalendarModal && (
+          <Div className="modal-container">
+            <Div className="modal-content">
+              <button
+                className="modal-close"
+                onClick={() => setShowCalendarModal(false)}
+              >
+                ✖
+              </button>
+              <Calendar
+                onChange={handleDateChange}
+                value={new Date(diaryYear, diaryMonth - 1)}
+                maxDetail="year"
+              />
+            </Div>
+          </Div>
+        )}
+
+        {/* 날짜 선택 및 정렬 여기로. */}
+        <Div className="date-sort-container">
+          <Div className="phone-theme">
+            <button className="date-calendar" onClick={() => changeMonth(-1)}>
+              ←
+            </button>
+            <span
+              onClick={() => setShowCalendarModal(true)}
+              className="hover-scale"
+            >
+              {diaryYear} {diaryMonth}월 📅
+            </span>
+
+            <button className="date-calendar" onClick={() => changeMonth(1)}>
+              →
+            </button>
+          </Div>
+          <button className="phone-sort" onClick={handleSort}>
+            {isSort === "asc" ? (
+              <BsSortNumericDown title="오름차순 정렬" />
+            ) : (
+              <BsSortNumericDownAlt title="내림차순 정렬" />
+            )}
+          </button>
+        </Div>
+
         <Div className="diary-container">
           {searchValue && searchResults.length === 0 ? (
             <p>검색 결과가 없습니다.</p>
@@ -226,21 +288,18 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() => {
-                  console.log(
-                    "Navigating to DiaryUpdate with diaryNum:",
-                    diary.diaryNum
-                  );
-                  navigate("/diaryUpdate", {
-                    state: { diaryNum: diary.diaryNum },
-                  });
-                }}
+                onClick={() => navigate(`/diaryUpdate/${diary.diaryNum}`)}
               >
                 <p className="diary-date">
-                  {new Date(diary.writtenDate).toLocaleDateString()}
+                  {` ${new Date(diary.writtenDate).getDate()}일`}
+                  {new Date(diary.writtenDate).toLocaleDateString("ko-kr", {
+                    weekday: "long",
+                  })}
                 </p>
-                <p className="diary-title">{diary.title || "제목 없음"}</p>
-                <p className="diary-desc">{diary.content || "내용 없음"}</p>
+                <Div className="diary-content">
+                  <p className="diary-title">{diary.title || "제목 없음"}</p>
+                  <p className="diary-desc">{diary.content || "내용 없음"}</p>
+                </Div>
               </Div>
             ))
           ) : sortedDiaries.length === 0 ? (
@@ -251,21 +310,23 @@ const Home = () => {
                 key={index}
                 className="diary-box"
                 style={{ position: "relative", cursor: "pointer" }}
-                onClick={() => {
-                  console.log("Navigating to diaryNum:", `${diary.diaryNum}`);
-                  navigate(`/diaryUpdate/${diary.diaryNum}`);
-                }}
+                onClick={() => navigate(`/diaryUpdate/${diary.diaryNum}`)}
               >
                 <p className="diary-date">
-                  {new Date(diary.writtenDate).toLocaleDateString()}
+                  {new Date(diary.writtenDate).toLocaleDateString("ko-kr", {
+                    weekday: "long",
+                  })}
+                  {` ${new Date(diary.writtenDate).getDate()}일`}
                 </p>
-                <p className="diary-title">{diary.title || "제목 없음"}</p>
-                <p className="diary-desc">{diary.content || "내용 없음"}</p>
+                <Div className="diary-content">
+                  <p className="diary-title">{diary.title || "제목 없음"}</p>
+                  <p className="diary-desc">{diary.content || "내용 없음"}</p>
+                </Div>
               </Div>
             ))
           )}
         </Div>
-        {/* Footer */}
+
         <Div className="phone-footer">
           <RedirectButton onClick={() => navigate("/calendar")}>
             <FontAwesomeIcon icon={faCalendar} />

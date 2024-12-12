@@ -56,8 +56,8 @@ const Profile = () => {
         emailUniqueCheck(value);
       }
     }
-  }
-  
+  };
+
   // 이메일 중복 확인
   const emailUniqueCheck = async (emailValue) => {
     if (!emailValue) {
@@ -78,7 +78,7 @@ const Profile = () => {
         setEmailCheck(false);
       }
     }
-  }
+  };
 
   // 닉네임 체크
   const onChangeNickname = (e) => {
@@ -95,11 +95,11 @@ const Profile = () => {
       setNicknameMessage("닉네임은 20자 이하여야 합니다.");
       setNicknameCheck(false);
     }
-  }
+  };
 
   // 닉네임 중복 확인
   const nicknameUniqueCheck = async (nicknameValue) => {
-    if(!nicknameValue) {
+    if (!nicknameValue) {
       setNicknameMessage("");
       return;
     }
@@ -116,7 +116,7 @@ const Profile = () => {
         setNicknameCheck(false);
       }
     }
-  }
+  };
 
   // 현재 비밀번호 확인
   const onChangeCurrentPw = (e) => {
@@ -129,34 +129,34 @@ const Profile = () => {
       setCurrentPwMessage("비밀번호가 일치하지 않습니다.");
       setCurrentPwCheck(false);
     }
-  }
+  };
 
   // 새 비밀번호 유효성 체크
   const onChangeNewPassword = (e) => {
     setNewPassword(e.target.value);
     const pwRgx = /^[A-Za-z0-9!@#$%^&*()]+$/;
-    if(e.target.value.length < 8) {
+    if (e.target.value.length < 8) {
       setNewPasswordMessage("비밀번호는 8자 이상이어야 합니다.");
       setNewPasswordCheck(false);
-    } else if(!pwRgx.test(e.target.value)) {
-      setNewPasswordMessage("올바르지 않은 형식입니다.")
+    } else if (!pwRgx.test(e.target.value)) {
+      setNewPasswordMessage("올바르지 않은 형식입니다.");
       setNewPasswordCheck(false);
     } else {
       setNewPasswordMessage("올바른 형식입니다.");
       setNewPasswordCheck(true);
     }
-  }
+  };
   // 새 비밀번호 같은지 확인
   const onChangeNewPassword2 = (e) => {
     setNewPassword2(e.target.value);
-    if(e.target.value === newPassword){
+    if (e.target.value === newPassword) {
       setNewPasswordMessage2("비밀번호가 같습니다.");
       setNewPasswordCheck2(true);
     } else {
       setNewPasswordMessage2("비밀번호가 같지 않습니다.");
       setNewPasswordCheck2(false);
     }
-  }
+  };
 
   //백엔드로서부터 데이터 받기 위한 프로토타입.
   useEffect(() => {
@@ -217,10 +217,6 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Updated userPassword:", userPassword);
-  }, [userPassword]);  // userPassword가 변경될 때마다 실행됨
-
   return (
     <Container>
       <Div className={isDarkMode ? "phone-container-dark" : "phone-container" }>
@@ -230,12 +226,12 @@ const Profile = () => {
           </button>
           <p onClick={()=>navigate("/mypage")} className="mypage-title">회원 정보</p>
         </div>
-        
+
         <form className="profile-form">
           <input
             type="text"
-            value={userId} 
-            className="profile-inputRqd" 
+            value={userId}
+            className="profile-inputRqd"
             required
           />
           <div className="inputBox">
@@ -267,11 +263,13 @@ const Profile = () => {
               type="password"
               placeholder="현재 비밀번호를 입력하세요. (필수!)"
               value={currentPassword}
-              onChange={onChangeCurrentPw} 
+              onChange={onChangeCurrentPw}
               className="profile-input"
             />
             {currentPassword.length > 0 && (
-              <p className={`message${currentPwCheck ? "On" : "Off"}`}>{currentPwMessage}</p>
+              <p className={`message${currentPwCheck ? "On" : "Off"}`}>
+                {currentPwMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -279,11 +277,13 @@ const Profile = () => {
               type="password"
               placeholder="새로운 비밀번호를 입력하세요."
               value={newPassword}
-              onChange={onChangeNewPassword} 
+              onChange={onChangeNewPassword}
               className="profile-input"
             />
             {newPassword.length > 0 && (
-              <p className={`message${newPasswordCheck ? "On" : "Off"}`}>{newPasswordMessage}</p>
+              <p className={`message${newPasswordCheck ? "On" : "Off"}`}>
+                {newPasswordMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -291,11 +291,13 @@ const Profile = () => {
               type="password"
               placeholder="비밀번호 확인."
               value={newPassword2}
-              onChange={onChangeNewPassword2} 
+              onChange={onChangeNewPassword2}
               className="profile-input"
             />
             {newPassword2.length > 0 && (
-              <p className={`message${newPasswordCheck2 ? "On" : "Off"}`}>{newPasswordMessage2}</p>
+              <p className={`message${newPasswordCheck2 ? "On" : "Off"}`}>
+                {newPasswordMessage2}
+              </p>
             )}
           </div>
           

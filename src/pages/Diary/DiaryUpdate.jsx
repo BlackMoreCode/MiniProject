@@ -11,6 +11,8 @@ import { python } from "@codemirror/lang-python";
 import { java } from "@codemirror/lang-java";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 
+let sequenceCounter = 1;
+
 const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
@@ -32,7 +34,6 @@ const DiaryUpdate = () => {
   const { diaryNum } = useParams();
   const navigate = useNavigate();
   const { loggedInMember } = useContext(LoginContext);
-  const { removeDiary } = useContext(DiaryContext);
 
   useEffect(() => {
     const fetchDiary = async () => {
@@ -44,8 +45,7 @@ const DiaryUpdate = () => {
 
         console.log("Fetched diary data:", response);
 
-        // Check if the response contains a valid diary
-        if (response && response.title) {
+        if (response) {
           setTitle(response.title || "");
           setDescription(response.content || "");
           setDate(
@@ -54,15 +54,34 @@ const DiaryUpdate = () => {
               : ""
           );
           setTags(response.tags || []);
-          setCodeSnippets(response.codingDiaryEntries || []);
-        } else {
-          // If the diary is not found or null, reset the states
-          console.warn("No diary data found.");
-          setTitle("");
-          setDescription("");
-          setDate("");
-          setTags([]);
-          setCodeSnippets([]);
+
+          // Sort codingDiaryEntries by sequence
+          const sortedEntries = response.codingDiaryEntries.sort(
+            (a, b) => a.sequence - b.sequence
+          );
+
+          // Map sorted entries to snippets and comments
+          const groupedSnippets = [];
+          let currentSnippet = null;
+
+          sortedEntries.forEach((entry) => {
+            if (entry.entryType === "snippet") {
+              currentSnippet = {
+                programmingLanguageName: entry.programmingLanguageName,
+                content: entry.content,
+                commentary: [],
+                entryType: "snippet",
+                sequence: entry.sequence,
+              };
+              groupedSnippets.push(currentSnippet);
+            } else if (entry.entryType === "comment") {
+              if (currentSnippet) {
+                currentSnippet.commentary.push(entry.content);
+              }
+            }
+          });
+
+          setCodeSnippets(groupedSnippets);
         }
       } catch (error) {
         console.error("Error fetching diary:", error);
@@ -84,6 +103,8 @@ const DiaryUpdate = () => {
       return;
     }
 
+    let sequenceCounter = 1; // Ensure the sequence starts fresh for each update.
+
     const formatDate = (date) => {
       const d = new Date(date);
       const pad = (n) => (n < 10 ? "0" + n : n);
@@ -97,24 +118,39 @@ const DiaryUpdate = () => {
       content: description,
       tags,
       writtenDate: formatDate(date),
-      codingDiaryEntries: codeSnippets.map((snippet, index) => {
-        return {
-          programmingLanguageName: snippet.language || null,
-          entryType: snippet.language ? "snippet" : "comment",
-          content: snippet.language
-            ? snippet.code || ""
-            : snippet.commentary?.join("\n") || "",
-          sequence: index + 1,
-        };
+      codingDiaryEntries: codeSnippets.flatMap((snippet) => {
+        const entries = [];
+
+        // Add the snippet if it exists
+        if (snippet.content && snippet.entryType === "snippet") {
+          entries.push({
+            entryType: "snippet",
+            programmingLanguageName:
+              snippet.programmingLanguageName || "javascript",
+            content: snippet.content, // Preserve the snippet content
+            sequence: sequenceCounter++, // Increment the sequence
+          });
+        }
+
+        // Add associated comments
+        if (Array.isArray(snippet.commentary)) {
+          snippet.commentary.forEach((comment) => {
+            entries.push({
+              entryType: "comment",
+              programmingLanguageName: null,
+              content: comment, // Preserve the comment content
+              sequence: sequenceCounter++, // Increment the sequence
+            });
+          });
+        }
+
+        return entries;
       }),
     };
 
-    console.log("Tags to be sent:", tags);
     console.log("Updated Diary Payload:", updatedDiary);
 
     try {
-      console.log("Diary to Update:", updatedDiary);
-
       await AxiosApi.updateDiary({
         loggedInMember,
         diaryNum,
@@ -157,20 +193,44 @@ const DiaryUpdate = () => {
   const addTag = () => {
     const trimmedTag = tagInput.trim();
 
-    if (trimmedTag && !tags.includes(trimmedTag)) {
+    if (!trimmedTag) {
+      // Case 1: 빈 태그 허용 불가
+      setModalMessage("태그를 입력하세요!"); // "Please enter a tag!"
+      setIsModalOpen(true);
+    } else if (tags.includes(trimmedTag)) {
+      // Case 2: 중복 태그 막기
+      setModalMessage("중복된 태그는 추가할 수 없습니다."); // "Duplicate tags cannot be added."
+      setIsModalOpen(true);
+    } else {
+      // Case 3: 위의 2경우가 아닐경우
       setTags([...tags, trimmedTag]);
       setTagInput("");
-    } else {
-      setModalMessage("중복된 태그를 추가할 수 없습니다.");
-      setIsModalOpen(true);
     }
   };
 
   const addCodeSnippet = () => {
-    setCodeSnippets([
-      ...codeSnippets,
-      { language: "javascript", code: "", commentary: [] },
+    setCodeSnippets((prevSnippets) => [
+      ...prevSnippets,
+      {
+        programmingLanguageName: "javascript", // Default language
+        content: "", // New snippet starts empty
+        commentary: [], // No comments initially
+        entryType: "snippet", // Explicitly set the type
+      },
     ]);
+  };
+
+  const updateCodeSnippet = (snippetIndex, newCode) => {
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? {
+              ...snippet,
+              content: newCode, // Update the content field for the snippet
+            }
+          : snippet
+      )
+    );
   };
 
   const addCodeCommentary = (snippetIndex) => {
@@ -184,9 +244,18 @@ const DiaryUpdate = () => {
   };
 
   const updateCodeCommentary = (snippetIndex, commentaryIndex, newComment) => {
-    const updatedSnippets = [...codeSnippets];
-    updatedSnippets[snippetIndex].commentary[commentaryIndex] = newComment;
-    setCodeSnippets(updatedSnippets);
+    setCodeSnippets((prevSnippets) =>
+      prevSnippets.map((snippet, index) =>
+        index === snippetIndex
+          ? {
+              ...snippet,
+              commentary: snippet.commentary.map(
+                (comment, i) => (i === commentaryIndex ? newComment : comment) // Update only the targeted commentary
+              ),
+            }
+          : snippet
+      )
+    );
   };
 
   const removeCodeCommentary = (snippetIndex, commentaryIndex) => {
@@ -197,150 +266,149 @@ const DiaryUpdate = () => {
 
   return (
     <St.Container>
-      <St.Div className="phone-container">
-        <St.Form onSubmit={handleSubmit}>
-          <p>제목</p>
-          <St.InputGeneral
+      <St.Div className="phone-container" onSubmit={handleSubmit}>
+        <p>제목</p>
+        <St.InputGeneral
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="제목 입력"
+        />
+        <p>날짜</p>
+        <St.InputGeneral
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <label htmlFor="description">내용:</label>
+        <St.TextArea
+          id="description"
+          ref={textarea}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          placeholder="내용 입력"
+        />
+
+        <St.Div className="tag-section">
+          <St.TagInput
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="제목 입력"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            placeholder="태그를 입력하세요"
           />
-          <p>날짜</p>
-          <St.InputGeneral
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-          <label htmlFor="description">내용:</label>
-          <St.TextArea
-            id="description"
-            ref={textarea}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            placeholder="내용 입력"
-          />
+          <St.GeneralConfirmation type="button" onClick={addTag}>
+            태그 추가
+          </St.GeneralConfirmation>
+          <St.TagList>
+            {tags.map((tag, index) => (
+              <St.TagItem key={index}>
+                {tag}
+                <button onClick={() => setTags(tags.filter((t) => t !== tag))}>
+                  x
+                </button>
+              </St.TagItem>
+            ))}
+          </St.TagList>
+        </St.Div>
 
-          <St.Div className="tag-section">
-            <St.TagInput
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              placeholder="태그를 입력하세요"
-            />
-            <St.GeneralAddBtn type="button" onClick={addTag}>
-              태그 추가
-            </St.GeneralAddBtn>
-            <St.TagList>
-              {tags.map((tag, index) => (
-                <St.TagItem key={index}>
-                  {tag}
-                  <button
-                    onClick={() => setTags(tags.filter((t) => t !== tag))}
-                  >
-                    x
-                  </button>
-                </St.TagItem>
-              ))}
-            </St.TagList>
-          </St.Div>
+        <St.GeneralConfirmation
+          type="button"
+          onClick={() => setShowCodeSnippets((prev) => !prev)}
+        >
+          {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
+        </St.GeneralConfirmation>
 
-          <St.GeneralAddBtn
-            type="button"
-            onClick={() => setShowCodeSnippets((prev) => !prev)}
-          >
-            {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
-          </St.GeneralAddBtn>
+        <St.Div className="code-section">
+          {codeSnippets.map((snippet, snippetIndex) => (
+            <div key={snippetIndex}>
+              {/* Language Dropdown */}
+              <select
+                value={snippet.programmingLanguageName}
+                onChange={(e) => {
+                  const updatedSnippets = [...codeSnippets];
+                  updatedSnippets[snippetIndex].programmingLanguageName =
+                    e.target.value;
+                  setCodeSnippets(updatedSnippets);
+                }}
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+              </select>
 
-          {showCodeSnippets && (
-            <St.Div className="code-section">
-              {codeSnippets.map((snippet, snippetIndex) => (
-                <div key={snippetIndex}>
-                  <select
-                    value={snippet.language}
-                    onChange={(e) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].language = e.target.value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
-                  >
-                    <option value="javascript">JavaScript</option>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                  </select>
-                  <CodeMirror
-                    value={snippet.code}
-                    height="auto"
-                    theme={dracula}
-                    extensions={[
-                      snippet.language === "javascript"
-                        ? javascript()
-                        : snippet.language === "python"
-                        ? python()
-                        : java(),
-                    ]}
-                    onChange={(value) => {
-                      const updatedSnippets = [...codeSnippets];
-                      updatedSnippets[snippetIndex].code = value;
-                      setCodeSnippets(updatedSnippets);
-                    }}
+              {/* Code Editor */}
+              <CodeMirror
+                value={snippet.content}
+                height="auto"
+                theme={dracula}
+                extensions={[
+                  snippet.programmingLanguageName === "javascript"
+                    ? javascript()
+                    : snippet.programmingLanguageName === "python"
+                    ? python()
+                    : java(),
+                ]}
+                onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+              />
+
+              <St.GeneralConfirmation
+                type="button"
+                onClick={() => removeCodeSnippet(snippetIndex)}
+              >
+                코드 스니펫 삭제
+              </St.GeneralConfirmation>
+
+              {/* Commentary Section */}
+              {snippet.commentary.map((comment, commentaryIndex) => (
+                <div key={commentaryIndex}>
+                  <St.TextArea
+                    value={comment}
+                    onChange={(e) =>
+                      updateCodeCommentary(
+                        snippetIndex,
+                        commentaryIndex,
+                        e.target.value
+                      )
+                    }
                   />
-                  <St.GeneralRmvBtn
+                  <St.GeneralConfirmation
                     type="button"
-                    onClick={() => removeCodeSnippet(snippetIndex)}
+                    onClick={() =>
+                      removeCodeCommentary(snippetIndex, commentaryIndex)
+                    }
                   >
-                    코드 스니펫 삭제
-                  </St.GeneralRmvBtn>
-
-                  {snippet.commentary.map((comment, commentaryIndex) => (
-                    <div key={commentaryIndex}>
-                      <St.TextArea
-                        value={comment}
-                        onChange={(e) =>
-                          updateCodeCommentary(
-                            snippetIndex,
-                            commentaryIndex,
-                            e.target.value
-                          )
-                        }
-                      />
-                      <St.GeneralRmvBtn
-                        type="button"
-                        onClick={() =>
-                          removeCodeCommentary(snippetIndex, commentaryIndex)
-                        }
-                      >
-                        코멘트 삭제
-                      </St.GeneralRmvBtn>
-                    </div>
-                  ))}
-                  <St.GeneralAddBtn
-                    type="button"
-                    onClick={() => addCodeCommentary(snippetIndex)}
-                  >
-                    코드 코멘트 추가
-                  </St.GeneralAddBtn>
+                    코멘트 삭제
+                  </St.GeneralConfirmation>
                 </div>
               ))}
-              <St.GeneralAddBtn type="button" onClick={addCodeSnippet}>
-                코드 스니펫 추가
-              </St.GeneralAddBtn>
-            </St.Div>
-          )}
 
-          <div className="buttonBox">
-            <St.ConfirmBtn type="submit" onClick={handleSubmit}>
-              수정
-            </St.ConfirmBtn>
-            <St.RmvBtnS type="button" onClick={handleDelete}>
-              삭제
-            </St.RmvBtnS>
-            <St.EtcBtn type="button" onClick={() => navigate("/")}>
-              취소
-            </St.EtcBtn>
-          </div>
-        </St.Form>
+              <St.GeneralConfirmation
+                type="button"
+                onClick={() => addCodeCommentary(snippetIndex)}
+              >
+                코드 코멘트 추가
+              </St.GeneralConfirmation>
+            </div>
+          ))}
+
+          {/* Add Snippet Button */}
+          <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
+            코드 스니펫 추가
+          </St.GeneralConfirmation>
+        </St.Div>
+
+        <div className="buttonBox">
+          <St.ConfirmBtn type="submit" onClick={handleSubmit}>
+            수정
+          </St.ConfirmBtn>
+          <St.ConfirmBtn type="button" onClick={handleDelete}>
+            삭제
+          </St.ConfirmBtn>
+          <St.EtcBtn type="button" onClick={() => navigate("/")}>
+            취소
+          </St.EtcBtn>
+        </div>
       </St.Div>
 
       <ConfirmationModal

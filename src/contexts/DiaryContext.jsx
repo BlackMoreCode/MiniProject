@@ -8,6 +8,7 @@ export const DiaryProvider = (props) => {
   const { loggedInMember } = useContext(LoginContext); // 로그인 컨텍스트에 접근해야한다.
   const [hasFetchedDiaries, setHasFetchedDiaries] = useState(false);
   const [diaries, setDiaries] = useState([]);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const fetchDiaries = async () => {
     if (!loggedInMember || hasFetchedDiaries) return;
@@ -25,6 +26,24 @@ export const DiaryProvider = (props) => {
       setDiaries(response.diaries); // Update context state
     } catch (error) {
       console.error("Failed to fetch diaries from backend:", error);
+    }
+  };
+
+  // 해당 월의 일기를 fetch 처리해줌
+  const fetchDiariesForMonth = async (year, month, loggedInMember) => {
+    if (!loggedInMember) return; // Ensure user is logged in
+
+    try {
+      const response = await AxiosApi.getDiaries({
+        loggedInMember,
+        year,
+        month,
+      });
+
+      setDiaries(response.diaries || []); // Update state with fetched diaries
+      setHasFetched(true); // Set flag to indicate successful fetch
+    } catch (error) {
+      console.error("Error fetching diaries for month:", error);
     }
   };
 
@@ -58,6 +77,7 @@ export const DiaryProvider = (props) => {
       value={{
         diaries,
         fetchDiaries,
+        fetchDiariesForMonth,
         addDiary,
         updateDiary,
         removeDiary,
