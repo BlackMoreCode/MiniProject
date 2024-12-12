@@ -9,6 +9,7 @@ export const Container = styled.div`
 `;
 
 export const Div = styled.div`
+  // MyPage.jsx 관련
   &.mypage-container {
     width: 100%;
     height: 100%;
@@ -32,7 +33,6 @@ export const Div = styled.div`
     }
   }
   
-  // MyPage.jsx 관련
   .mypage-header {
     display: flex;
     background-color: #eee;
@@ -46,15 +46,17 @@ export const Div = styled.div`
     cursor: pointer;
   }
   .link-container {
-    margin-top: 40px;
-    margin: 40px 20px 0 20px;
+    padding: 40px 20px 0 20px;
     box-sizing: border-box;
     color: #777;
+  }
+  .linkBox:nth-child(1) {
     border-top: 1px solid #777;
   }
   .linkBox {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #777;
     cursor: pointer;
@@ -88,6 +90,54 @@ export const Div = styled.div`
     .link-button-last {
       border: none;
     }
+    .theme-toggle {
+      position: relative;
+      display: inline-block;
+      width: 80px;
+      height: 30px;
+      input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 30px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
   }
   
 

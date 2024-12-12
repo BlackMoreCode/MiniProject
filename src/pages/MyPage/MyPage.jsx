@@ -9,7 +9,8 @@ import { Container, Div } from "./MyPageStyles";
 
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { BsFileFont } from "react-icons/bs";
-import { TbSunMoon } from "react-icons/tb";
+import { FiSun } from "react-icons/fi";
+import { IoMoonOutline } from "react-icons/io5";
 import { PiImageLight, PiSignOut } from "react-icons/pi";
 import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
@@ -46,11 +47,15 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
               <button className="link-button">폰트 변경</button>
             </div>
 
-            <div onClick={()=>navigate("/changeTheme")} className="linkBox">
+            <div /* onClick={()=>navigate("/changeTheme")} */className="linkBox">
               <div className="link-icon">
-                <TbSunMoon />
+                <FiSun />
               </div>
               <button className="link-button">테마 변경</button>
+              <label className="theme-toggle">
+                <input type="checkbox" />
+                <span className="slider" />
+              </label>
             </div>
 
             <div onClick={()=>navigate("/banner")} className="linkBox">
