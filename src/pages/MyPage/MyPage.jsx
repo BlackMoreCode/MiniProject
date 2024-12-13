@@ -1,12 +1,14 @@
 // import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
-
+import AxiosApi from "../../api/AxiosApi";
+// context
 import { useContext, useEffect, useState } from "react";
+import { LoginContext } from "../../contexts/LoginContext";
 // import { FontContext } from "../../contexts/FontContext";
 
 import { Container, Div } from "./MyPageStyles";
-import { LoginContext } from "../../contexts/LoginContext";
 
+// icon
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { BsFileFont } from "react-icons/bs";
 import { FiSun } from "react-icons/fi";
@@ -18,14 +20,24 @@ import { IoIosArrowBack } from "react-icons/io";
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const navigate = useNavigate();
-  
-  // const { selectedFont } = useContext(FontContext);
+  const { loggedInMember } = useContext(LoginContext);
 
   // Dark 모드 전환
   const { isDarkMode, setIsDarkMode } = useContext(LoginContext);
-  const handleDarkChange = (e) => {
-    setIsDarkMode(e.target.checked);
-  }
+  const handleDarkChange = async (e) => {
+    try {
+      const checked = e.target.checked;
+      await AxiosApi.updateDiarySetting(
+        loggedInMember, 
+        "default",                      // font
+        checked ? "dark" : "default",   // theme
+        "default"                       // bannerImage
+      );
+      setIsDarkMode(checked);
+    } catch (error) {
+      console.error("Failed to change theme:", error);
+    }
+  };
 
   return (
     <Container>
