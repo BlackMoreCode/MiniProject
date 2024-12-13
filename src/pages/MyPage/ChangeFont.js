@@ -1,14 +1,18 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginContext } from "../../contexts/LoginContext";
 import "../../styles/Font/fonts.css";
+// context
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
+// css
 import { Container, Div } from "./MyPageStyles";
+// icon
 import { IoIosArrowBack } from "react-icons/io";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
+  const { diarySetting } = useContext(DiarySettingContext);
   const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
-  const { isDarkMode } = useContext(LoginContext); // Dark 모드
 
   const fontClass = [
     "font-basic",
@@ -41,7 +45,12 @@ const ChangeFont = () => {
 
   return (
     <Container>
-      <Div className={isDarkMode ? "font-container-dark" : "font-container"}>
+      <Div 
+        className={
+          diarySetting.theme === "dark"
+           ? "font-container-dark"
+           : "font-container"}
+      >
         <div className="font-header">
           <button onClick={() => navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
