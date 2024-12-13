@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
-
-import { LoginContext } from "../../contexts/LoginContext";
-import { Container, Div } from "./MyPageStyles";
-import { PrevPageButton } from "../../components/PrevPageButton";
 import { useNavigate } from "react-router-dom";
-import leftArrowIcon from "../../assets/icons/left-arrow.png";
+
+// context
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
+// css
+import { Container, Div } from "./MyPageStyles";
+// icon
 import { IoIosArrowBack } from "react-icons/io";
+
 
 const Profile = () => {
   const { userId, userPassword, setUserPassword } = useContext(LoginContext);
@@ -29,9 +32,8 @@ const Profile = () => {
   const [newPassword2, setNewPassword2] = useState("");
   const [newPasswordMessage2, setNewPasswordMessage2] = useState("");
   const [newPasswordCheck2, setNewPasswordCheck2] = useState("");
-  const [message, setMessage] = useState("");
-  const [isDisabled, setIsDisabled] = useState(true); // Dark 모드
-  const { isDarkMode } = useContext(LoginContext);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const { diarySetting } = useContext(DiarySettingContext);
 
   const navigate = useNavigate();
 
@@ -227,7 +229,13 @@ const Profile = () => {
 
   return (
     <Container>
-      <Div className={isDarkMode ? "phone-container-dark" : "phone-container" }>
+      <Div 
+        className={
+          diarySetting.theme === "dark"
+            ? "phone-container-dark"
+            : "phone-container"
+        }
+      >
         <div className="profile-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
