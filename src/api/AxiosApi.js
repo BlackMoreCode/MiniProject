@@ -285,11 +285,21 @@ export const AxiosApi = {
   },
 
   deleteSchedule: async ({ loggedInMember, scheduleNum }) => {
-    const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
-      loggedInMember,
-      scheduleNum,
-    });
-    return response.data;
+    try {
+      console.log("Sending deleteSchedule request with:", {
+        loggedInMember,
+        scheduleNum,
+      });
+      const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
+        loggedInMember,
+        scheduleNum,
+      });
+      console.log("Received deleteSchedule response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting schedule:", error.response || error);
+      throw error;
+    }
   },
 };
 

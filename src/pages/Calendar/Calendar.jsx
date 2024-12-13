@@ -89,8 +89,11 @@ const Calendar = () => {
   };
 
   const handleDeleteEvent = (eventToDelete) => {
+    if (!eventToDelete.id) {
+      toast.error("삭제할 이벤트를 식별할 수 없습니다.");
+      return;
+    }
     deleteEvent(eventToDelete);
-    setModalData(null);
   };
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
@@ -151,15 +154,18 @@ const Calendar = () => {
             })}{" "}
             이벤트 목록
           </h3>
+          {/* 방어적 코딩 임시 추가; undefined 객체의 속성에 접근 못하게 */}
           {selectedDateEvents.map((event, index) => (
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
                 {event.isAllDay
                   ? "All Day"
-                  : `${event.time.start} - ${event.time.end}`}{" "}
+                  : `${event.time?.start || "00:00"} - ${
+                      event.time?.end || "00:00"
+                    }`}{" "}
                 | {event.title}
               </span>
-              {event.isImportant && "⭐"} {/* Changed to match boolean field */}
+              {event.isImportant && "⭐"}
               {event.checked && <CheckIndicator>✔</CheckIndicator>}
             </EventItem>
           ))}

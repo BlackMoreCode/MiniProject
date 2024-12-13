@@ -81,17 +81,17 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const [time, setTime] = useState({ start: "", end: "" });
   const [isAllDay, setIsAllDay] = useState(false);
   const [alarms, setAlarms] = useState([]);
-  const [notes, setNotes] = useState("");
+  const [description, setDescription] = useState(""); // Replaced notes with description
   const [importance, setImportance] = useState(false);
 
   useEffect(() => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
-      setIsAllDay(data.event.isAllDay || false);
+      setIsAllDay(data.event.isAllDay || false); // Ensure 'isAllDay' is set correctly
       setAlarms(data.event.alarmTimes || []);
-      setNotes(data.event.notes || "");
-      setImportance(data.event.importance || false);
+      setDescription(data.event.description || ""); // Handle null descriptions
+      setImportance(data.event.isImportant || false);
     }
   }, [data]);
 
@@ -151,9 +151,11 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
       time: isAllDay ? null : time,
       isAllDay,
       alarmTimes: alarms,
-      notes,
+      description: description.trim() || "",
       importance,
     };
+
+    console.log("Saving event payload:", event);
     onSave(event);
   };
 
@@ -196,13 +198,13 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
             <label className="labelFont">이벤트 시작 시간:</label>
             <Input
               type="time"
-              value={time.start}
+              value={time.start || ""}
               onChange={(e) => setTime({ ...time, start: e.target.value })}
             />
             <label className="labelFont">이벤트 종료 시간:</label>
             <Input
               type="time"
-              value={time.end}
+              value={time.end || ""}
               onChange={(e) => setTime({ ...time, end: e.target.value })}
             />
           </>
@@ -234,8 +236,8 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
         <label className="labelFont">메모:</label>
         <TextArea
           rows="4"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={description} // Updated to use description
+          onChange={(e) => setDescription(e.target.value)} // Updated handler
           placeholder="이 이벤트에 대한 메모를 남겨주세요."
         />
 
