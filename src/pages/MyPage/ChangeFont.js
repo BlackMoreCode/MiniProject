@@ -1,14 +1,18 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginContext } from "../../contexts/LoginContext";
 import "../../styles/Font/fonts.css";
+// context
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
+// css
 import { Container, Div } from "./MyPageStyles";
+// icon
 import { IoIosArrowBack } from "react-icons/io";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
+  const { diarySetting } = useContext(DiarySettingContext);
   const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
-  const { isDarkMode } = useContext(LoginContext); // Dark 모드
 
   const fontClass = [
     "font-basic",
@@ -39,9 +43,32 @@ const ChangeFont = () => {
     navigate("/");
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
-      <Div className={isDarkMode ? "font-container-dark" : "font-container"}>
+      <Div 
+        className={`${
+          diarySetting.theme === "dark"
+           ? "font-container-dark"
+           : "font-container"} 
+          ${userFont} 
+        `}
+      >
         <div className="font-header">
           <button onClick={() => navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />

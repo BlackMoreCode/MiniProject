@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Container, Div } from "./MyPageStyles";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { BsFileFont } from "react-icons/bs";
@@ -12,9 +12,13 @@ import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
   const { diarySetting, updateDiarySetting } = useContext(DiarySettingContext);
-
+  
   const navigate = useNavigate();
 
+  // 테마 업데이트
+  const handleDarkChange = async (e) => {
+    updateTheme(e.target);
+  };
   const updateTheme = async (element) => {
     const isUpdated = await updateDiarySetting(
       "theme",
@@ -26,18 +30,31 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
     }
   };
 
-  const handleDarkChange = async (e) => {
-    updateTheme(e.target);
-  };
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("");
+    }
+  }, [diarySetting.font]);
 
   return (
     <Container>
       <Div
-        className={
-          diarySetting.theme === "dark"
+        className={`
+          ${diarySetting.theme === "dark"
             ? "mypage-container-dark"
-            : "mypage-container"
-        }
+            : "mypage-container"} 
+            ${userFont}
+        `}
       >
         <Div className="menuBox">
           <div className="mypage-header" onClick={() => navigate("/")}>

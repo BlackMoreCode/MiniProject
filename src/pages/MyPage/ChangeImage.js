@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { DiarySettingContext } from "../../contexts/DiarySettingContext";
-import { Container, Div } from "./MyPageStyles";
-import { IoIosArrowBack } from "react-icons/io";
+// context
 import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
+// css
+import { Container, Div } from "./MyPageStyles";
+// icon
+import { IoIosArrowBack } from "react-icons/io";
+
 import AxiosApi from "../../api/AxiosApi";
 
 // 배너 이미지 매핑
@@ -13,8 +17,7 @@ import {
 } from "../../util/bannerImageUtils";
 
 const ChangeImage = () => {
-  const { updateDiarySetting } = useContext(DiarySettingContext);
-  const { isDarkMode, loggedInMember } = useContext(LoginContext);
+  const { diarySetting, updateDiarySetting } = useContext(DiarySettingContext);
   const navigate = useNavigate();
 
   // 배너 이미지 목록을 bannerImageMap를 이용해서 동적으로 생성
@@ -38,10 +41,31 @@ const ChangeImage = () => {
     }
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
       <Div
-        className={isDarkMode ? "banner-container-dark" : "banner-container"}
+        className={`${
+          diarySetting.theme === "dark"
+           ? "banner-container-dark"
+            : "banner-container"} 
+            ${userFont} 
+        `}
       >
         <div className="banner-header">
           <button onClick={() => navigate("/mypage")} className="backBtn">

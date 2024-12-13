@@ -39,7 +39,7 @@ import { bannerSrcPathDict } from "../util/bannerImageUtils";
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
   const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
-  const { diarySetting } = useContext(DiarySettingContext);
+  const { diarySetting, updateDiarySetting } = useContext(DiarySettingContext);
 
   const [sortedDiaries, setSortedDiaries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -50,9 +50,6 @@ const Home = () => {
   const [diaryMonth, setDiaryMonth] = useState(new Date().getMonth() + 1);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [allDiaries, setAllDiaries] = useState([]);
-
-  // Dark 모드 전환
-  const { isDarkMode, setIsDarkMode } = useContext(LoginContext);
 
   const navigate = useNavigate();
 
@@ -190,10 +187,17 @@ const Home = () => {
     setDiaryMonth(newMonth);
   };
 
-  // Dark 모드 전환
-  const handleDarkChange = () => {
-    setIsDarkMode(prevState => !prevState);
-  }
+  // theme 변경
+  const updateTheme = async () => {
+    const isUpdated = await updateDiarySetting(
+      "theme",
+      diarySetting.theme === "dark" ? "default" : "dark"
+    );
+
+    if (!isUpdated) {
+      alert("테마 변경 실패");
+    }
+  };
 
   return (
     <Container>
@@ -218,10 +222,14 @@ const Home = () => {
 
             <Div className="phone-headerRight">
               <button 
-                className={isDarkMode ? "phone-themeBtn-dark" : "phone-themeBtn"} 
-                onClick={handleDarkChange}
+                className={
+                  diarySetting.theme === "dark"
+                   ? "phone-themeBtn-dark"
+                   : "phone-themeBtn"
+                } 
+                onClick={updateTheme}
               >
-                {isDarkMode ? <IoMoonOutline /> : <FiSun />}
+                {diarySetting.theme === "dark" ? <IoMoonOutline /> : <FiSun />}
               </button>
               <div className="phone-searchBox">
                 <input

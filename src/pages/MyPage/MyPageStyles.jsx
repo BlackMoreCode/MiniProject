@@ -9,6 +9,50 @@ export const Container = styled.div`
 `;
 
 export const Div = styled.div`
+  // 공통
+  .backBtn {
+    background-color: transparent;
+    border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    svg {
+      width: 30px;
+      height: 30px;
+      path {
+        fill: #777;
+      }
+    }
+  }
+  // 폰트
+  &.font-do-hyeon {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Do Hyeon", sans-serif;
+    }
+  }
+  &.font-gowun-dodum {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Gowun Dodum", sans-serif;
+    }
+  }
+  &.font-hi-melody {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Hi Melody", sans-serif;
+    }
+  }
+  &.font-jua {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Jua", sans-serif;
+    }
+  }
   // MyPage.jsx 관련
   &.mypage-container {
     width: 100%;
@@ -55,21 +99,6 @@ export const Div = styled.div`
       }
     }
   }
-
-  .backBtn {
-    background-color: transparent;
-    border: none;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    svg {
-      width: 30px;
-      height: 30px;
-      path {
-        fill: #777;
-      }
-    }
-  }
   
   .mypage-header {
     display: flex;
@@ -82,6 +111,8 @@ export const Div = styled.div`
     font-weight: 600;
     color: #777;
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
   .link-container {
     padding: 40px 20px 0 20px;
@@ -526,5 +557,3 @@ export const Div = styled.div`
     }
   }
 `;
-
-// ModeChange 관련
