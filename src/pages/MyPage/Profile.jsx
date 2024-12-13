@@ -133,13 +133,17 @@ const Profile = () => {
 
   // 새 비밀번호 유효성 체크
   const onChangeNewPassword = (e) => {
-    setNewPassword(e.target.value);
+    const input = e.target.value;
+    setNewPassword(input);
     const pwRgx = /^[A-Za-z0-9!@#$%^&*()]+$/;
-    if (e.target.value.length < 8) {
+    if (input.length < 8) {
       setNewPasswordMessage("비밀번호는 8자 이상이어야 합니다.");
       setNewPasswordCheck(false);
-    } else if (!pwRgx.test(e.target.value)) {
+    } else if (!pwRgx.test(input)) {
       setNewPasswordMessage("올바르지 않은 형식입니다.");
+      setNewPasswordCheck(false);
+    } else if (input === userPassword) {
+      setNewPasswordMessage("현재 비밀번호와 같습니다.");
       setNewPasswordCheck(false);
     } else {
       setNewPasswordMessage("올바른 형식입니다.");
@@ -148,8 +152,12 @@ const Profile = () => {
   };
   // 새 비밀번호 같은지 확인
   const onChangeNewPassword2 = (e) => {
-    setNewPassword2(e.target.value);
-    if (e.target.value === newPassword) {
+    const input = e.target.value;
+    setNewPassword2(input);
+    if (input === userPassword) {
+      setNewPasswordMessage2("현재 비밀번호와 같습니다.");
+      setNewPasswordCheck2(false);
+    } else if (input === newPassword) {
       setNewPasswordMessage2("비밀번호가 같습니다.");
       setNewPasswordCheck2(true);
     } else {
