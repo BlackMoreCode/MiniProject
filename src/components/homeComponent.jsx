@@ -49,22 +49,21 @@ export const Div = styled.div`
 
   .phone-menuBtn {
     align-items: center;
-    background-color: white;
+    background-color: #494a50;
     border: none;
     border-radius: 100%;
     display: flex;
     justify-content: center;
     padding: 5px;
+    color: white;
     cursor: pointer;
     svg {
       width: 20px;
       height: 20px;
     }
-    path {
-      fill: black;
-    }
     &:hover {
-      scale: 1.2;
+      background-color: #292a2d;
+      transition: ease-in-out 0.3s;
     }
   }
 
@@ -86,14 +85,36 @@ export const Div = styled.div`
       align-items: center;
       border: none;
       border-radius: 50%;
-      background-color: white;
+      background-color: #494a50;
+      color: white;
       cursor: pointer;
       svg {
-        width: 25px;
-        height: 25px;
+        width: 21px;
+        height: 21px;
       }
       &:hover {
-        scale: 1.2;
+        background-color: #292a2d;
+        transition: ease-in-out 0.3s;
+      }
+    }
+    .phone-themeBtn-dark {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      border-radius: 50%;
+      background-color: #494a50;
+      color: white;
+      cursor: pointer;
+      svg {
+        width: 21px;
+        height: 21px;
+      }
+      &:hover {
+        background-color: #292a2d;
+        transition: ease-in-out 0.3s;
       }
     }
     .phone-searchBox {
@@ -103,10 +124,6 @@ export const Div = styled.div`
       background-color: #494a50;
       padding: 0 3px;
       border-radius: 15px;
-      /* &:hover {
-        scale: 1.2;
-        background-color: #292a2d;
-      } */
       input {
         color: rgb(244, 244, 246);
         width: 100px;
@@ -169,12 +186,11 @@ export const Div = styled.div`
       color: rgb(244, 244, 246);
       border: none;
       border-radius: 50%;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       font-size: 16px;
       &:hover {
         background-color: #292a2d;
-        scale: 1.2;
         transition: ease-in-out 0.3s;
       }
       cursor: pointer;
@@ -193,17 +209,17 @@ export const Div = styled.div`
       display: flex;
       justify-content: center;
       align-items: baseline;
-      padding: 2.5px;
+      padding: 2.5px 0;
       background-color: #494a50;
       color: rgb(244, 244, 246);
       border: none;
       border-radius: 50%;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       font-size: 16px;
       &:hover {
         background-color: #292a2d;
-        scale: 1.2;
+        /* scale: 1.2; */
         transition: ease-in-out 0.3s;
       }
       cursor: pointer;
@@ -215,10 +231,7 @@ export const Div = styled.div`
     .hover-scale {
       transition: transform 0.2s ease-in-out;
       display: inline-block;
-    }
-
-    .hover-scale:hover {
-      transform: scale(1.15);
+      cursor: pointer;
     }
   }
 

@@ -235,7 +235,7 @@ const Home = () => {
 
             <Div className="phone-headerRight">
               <button 
-                className="phone-themeBtn" 
+                className={isDarkMode ? "phone-themeBtn-dark" : "phone-themeBtn"} 
                 onClick={handleDarkChange}
               >
                 {isDarkMode ? <IoMoonOutline /> : <FiSun />}
