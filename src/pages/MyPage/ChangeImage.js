@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { BannerImageContext } from "../../contexts/BannerImageContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 import { Container, Div } from "./MyPageStyles";
 import { IoIosArrowBack } from "react-icons/io";
 import { LoginContext } from "../../contexts/LoginContext";
@@ -13,7 +13,7 @@ import {
 } from "../../util/bannerImageUtils";
 
 const ChangeImage = () => {
-  const { setBannerImage } = useContext(BannerImageContext);
+  const { updateDiarySetting } = useContext(DiarySettingContext);
   const { isDarkMode, loggedInMember } = useContext(LoginContext);
   const navigate = useNavigate();
 
@@ -24,19 +24,14 @@ const ChangeImage = () => {
   }));
 
   const handleImageDoubleClick = async (src) => {
-    const updatedDiarySetting = {
-      mainBannerImage: getBannerNameFromSrc(src),
-    };
-
-    // 알려진 유효한 키들로 백엔드를 업데이트
-    const updated = await AxiosApi.updateDiarySetting(
-      loggedInMember,
-      updatedDiarySetting
+    const isUpdated = await updateDiarySetting(
+      "mainBannerImage",
+      getBannerNameFromSrc(src)
     );
 
-    if (updated) {
-      alert("이미지가 변경되었습니다.");
-      setBannerImage(src);
+    if (isUpdated) {
+      alert("배너 이미지가 변경되었습니다.");
+      updateDiarySetting(src);
       navigate("/");
     } else {
       alert("이미지를 변경하는 데 실패했습니다.");

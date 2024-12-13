@@ -6,7 +6,6 @@ export const LoginProvider = (props) => {
   const [userId, setUserId] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
   const [selectedFont, setSelectedFont] = useState("Nanum Gothic");
-  const [isDarkMode, setIsDarkMode] = useState(null);
 
   const loggedInMember =
     userId && userPassword ? { id: userId, password: userPassword } : null;
@@ -47,8 +46,6 @@ export const LoginProvider = (props) => {
         logout,
         selectedFont,
         setSelectedFont,
-        isDarkMode,
-        setIsDarkMode,
       }}
     >
       {props.children}

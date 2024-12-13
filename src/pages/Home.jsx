@@ -14,7 +14,7 @@ import {
 //Context
 import { LoginContext } from "../contexts/LoginContext";
 import { DiaryContext } from "../contexts/DiaryContext";
-import { BannerImageContext } from "../contexts/BannerImageContext";
+import { DiarySettingContext } from "../contexts/DiarySettingContext";
 
 //Font and Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,15 +29,13 @@ import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-import defaultBanner from "../assets/bannerimages/banner5.jpg";
-
 // 배너 이미지 매핑
 import { bannerSrcPathDict } from "../util/bannerImageUtils";
 
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
   const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
-  const { bannerImage, setBannerImage } = useContext(BannerImageContext);
+  const { diarySetting } = useContext(DiarySettingContext);
 
   const [sortedDiaries, setSortedDiaries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -57,21 +55,6 @@ const Home = () => {
       fetchAllDiaries();
     }
   }, [loggedInMember]);
-
-  // 백엔드 에서부터 배너이미지 세팅을 불러오기 위한 useEffect
-  useEffect(() => {
-    if (loggedInMember) {
-      (async () => {
-        const settings = await AxiosApi.getDiarySetting(loggedInMember);
-        if (settings && settings.mainBannerImage) {
-          // 키를 실제로 import 처리한 이미지 (e.g. banner1) 에 매핑 처리해야합니다
-          const mappedImage =
-            bannerSrcPathDict[settings.mainBannerImage] || defaultBanner;
-          setBannerImage(mappedImage);
-        }
-      })();
-    }
-  }, [loggedInMember, setBannerImage]);
 
   useEffect(() => {
     if (loggedInMember) {
@@ -204,7 +187,7 @@ const Home = () => {
       <Div className="phone-container">
         <Div className="phone-header">
           <Img1
-            src={bannerImage ? bannerImage : defaultBanner}
+            src={bannerSrcPathDict[diarySetting.mainBannerImage]}
             alt="BannerImage"
           />
           <Div className="phone-headerbar">

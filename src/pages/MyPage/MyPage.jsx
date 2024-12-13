@@ -1,12 +1,6 @@
-// import { Container } from "../../components/homeComponent";
 import { useNavigate } from "react-router-dom";
-
-import { useContext, useEffect, useState } from "react";
-// import { FontContext } from "../../contexts/FontContext";
-
+import { useContext } from "react";
 import { Container, Div } from "./MyPageStyles";
-import { LoginContext } from "../../contexts/LoginContext";
-
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { BsFileFont } from "react-icons/bs";
 import { FiSun } from "react-icons/fi";
@@ -14,30 +8,20 @@ import { IoMoonOutline } from "react-icons/io5";
 import { PiImageLight, PiSignOut } from "react-icons/pi";
 import { FaRegBell } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
-import AxiosApi from "../../api/AxiosApi";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 
 const MyPage = (/* 유저 아이디 받기?? */) => {
+  const { diarySetting, updateDiarySetting } = useContext(DiarySettingContext);
+
   const navigate = useNavigate();
 
-  // const { selectedFont } = useContext(FontContext);
-
-  // Dark 모드 전환
-  const { loggedInMember, isDarkMode, setIsDarkMode } =
-    useContext(LoginContext);
-
   const updateTheme = async (element) => {
-    const updatedDiarySetting = {
-      theme: element.checked ? "dark" : "default",
-    };
-
-    const isUpdated = await AxiosApi.updateDiarySetting(
-      loggedInMember,
-      updatedDiarySetting
+    const isUpdated = await updateDiarySetting(
+      "theme",
+      element.checked ? "dark" : "default"
     );
 
-    if (isUpdated) {
-      setIsDarkMode(!isDarkMode);
-    } else {
+    if (!isUpdated) {
       alert("테마 변경 실패");
     }
   };
@@ -49,7 +33,11 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
   return (
     <Container>
       <Div
-        className={isDarkMode ? "mypage-container-dark" : "mypage-container"}
+        className={
+          diarySetting.theme === "dark"
+            ? "mypage-container-dark"
+            : "mypage-container"
+        }
       >
         <Div className="menuBox">
           <div className="mypage-header" onClick={() => navigate("/")}>
@@ -76,13 +64,13 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
 
             <div className="linkBox box3">
               <div className="link-icon">
-                {isDarkMode ? <IoMoonOutline /> : <FiSun />}
+                {diarySetting.theme === "dark" ? <IoMoonOutline /> : <FiSun />}
               </div>
               <button className="link-button">테마 변경</button>
               <label className="theme-toggle">
                 <input
                   type="checkbox"
-                  checked={isDarkMode}
+                  checked={diarySetting.theme === "dark"}
                   onChange={handleDarkChange}
                 />
                 <span className="slider" />
