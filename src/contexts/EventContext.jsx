@@ -1,31 +1,57 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useContext } from "react";
 import { toast } from "react-toastify";
+import AxiosApi from "../api/AxiosApi";
+import { LoginContext } from "../contexts/LoginContext";
 
 export const EventContext = createContext();
 
 const EventProvider = ({ children }) => {
   const [events, setEvents] = useState({});
+  const { loggedInMember } = useContext(LoginContext);
 
-  useEffect(() => {
-    const savedEvents = localStorage.getItem("events");
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents));
+  const fetchSchedules = async (year, month) => {
+    try {
+      const response = await AxiosApi.getMonthlySchedules({
+        loggedInMember,
+        year,
+        month,
+      });
+      if (response.success) {
+        const fetchedSchedules = response.schedules; // 백엔드 응답에 따라서 수정해야함
+        const newEvents = {};
+
+        fetchedSchedules.forEach((schedule) => {
+          const dateKey = new Date(schedule.startDate).toDateString();
+          if (!newEvents[dateKey]) {
+            newEvents[dateKey] = [];
+          }
+          newEvents[dateKey].push(schedule);
+        });
+
+        setEvents(newEvents);
+      } else {
+        toast.error("스케줄을 불러오는 데 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+      toast.error("스케줄을 불러오는 중 오류가 발생했습니다.");
     }
-  }, []);
+  };
 
   useEffect(() => {
-    localStorage.setItem("events", JSON.stringify(events));
-  }, [events]);
+    // Fetch schedules for the current month on mount
+    const now = new Date();
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString(); // Months are 0-indexed
+    fetchSchedules(year, month);
+  }, [loggedInMember]); // Re-fetch if loggedInMember changes
 
   const scheduleAlarms = (event) => {
     const now = Date.now();
-    //  단일이 아닌 몇일 지속 이벤트에 대한 알람의 경우 시작날짜의 시간에 적용
-    // 종일 이벤트의 경우. alarmTimes는 일 단위; 시간이 정해져있다면 분 단위
 
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
 
-    // 종일 이벤트가 아니라면 event.time에 의존해서 정확한 이벤트 시작 시간을 구함.
     const eventStartTimestamp =
       startDate.getTime() +
       (event.isAllDay
@@ -42,7 +68,6 @@ const EventProvider = ({ children }) => {
     };
 
     if (event.isAllDay) {
-      //alarmTimes는 startDate 이전에는 일 단위 (24시간 = 86400000 밀리초 / millisecond)
       event.alarmTimes.forEach((alarmTime) => {
         const alarmTimestamp = startDate.getTime() - alarmTime * 86400000;
         if (alarmTimestamp > now) {
@@ -60,7 +85,6 @@ const EventProvider = ({ children }) => {
         }
       });
     } else {
-      // alarmTimes 시작시간전 분 단위
       event.alarmTimes.forEach((alarmTime) => {
         const alarmTimestamp =
           eventStartTimestamp - parseInt(alarmTime) * 60000;
@@ -86,69 +110,145 @@ const EventProvider = ({ children }) => {
     }
   };
 
-  const addEvent = (event) => {
-    const startKey = new Date(event.startDate).toDateString();
-    const endKey = new Date(event.endDate).toDateString();
-    const newEvents = { ...events };
+  const addEvent = async (event) => {
+    console.log("Adding event:", event); // Log the event before processing
+    try {
+      // alartTimes을 notifications으로 전환
+      const notifications = event.alarmTimes.map((alarmTime) => {
+        const eventStart = new Date(event.startDate);
+        const alarmTimestamp = event.isAllDay
+          ? eventStart.getTime() - alarmTime * 86400000
+          : eventStart.getTime() - alarmTime * 60000;
+        const alertTime = new Date(alarmTimestamp).toISOString().slice(0, 19);
+        return {
+          alertTime,
+          alertMethod: "webPush",
+        };
+      });
 
-    // 해당 이벤트가 여러일에 걸쳐 있다 --> 각 날짜의 리스트에 추가.
-    let current = new Date(event.startDate);
-    while (current <= new Date(event.endDate)) {
-      const dateKey = current.toDateString();
+      const scheduleDto = {
+        title: event.title,
+        description: event.description,
+        startDate: new Date(event.startDate).toISOString().slice(0, 19),
+        endDate: new Date(event.endDate).toISOString().slice(0, 19),
+        isAllday: event.isAllDay,
+        isImportant: event.isImportant,
+        notifications,
+      };
+
+      const response = await AxiosApi.saveSchedule({
+        loggedInMember,
+        newSchedule: scheduleDto,
+      });
+
+      if (response.success) {
+        toast.success("스케줄이 성공적으로 저장되었습니다.");
+        // Refetch schedules after adding
+        const year = new Date(event.startDate).getFullYear().toString();
+        const month = (new Date(event.startDate).getMonth() + 1).toString();
+        fetchSchedules(year, month);
+      } else {
+        toast.error("스케줄 저장에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error adding event:", error);
+      toast.error("스케줄을 추가하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  const updateEvent = async (updatedEvent) => {
+    try {
+      // Transform alarmTimes into notifications
+      const notifications = updatedEvent.alarmTimes.map((alarmTime) => {
+        const eventStart = new Date(updatedEvent.startDate);
+        const alarmTimestamp = updatedEvent.isAllDay
+          ? eventStart.getTime() - alarmTime * 86400000
+          : eventStart.getTime() - alarmTime * 60000;
+        const alertTime = new Date(alarmTimestamp).toISOString().slice(0, 19);
+        return {
+          alertTime,
+          alertMethod: "webPush",
+        };
+      });
+
+      const scheduleDto = {
+        title: updatedEvent.title,
+        description: updatedEvent.description, // Use description instead of notes
+        startDate: new Date(updatedEvent.startDate).toISOString().slice(0, 19),
+        endDate: new Date(updatedEvent.endDate).toISOString().slice(0, 19),
+        isAllday: updatedEvent.isAllDay,
+        isImportant: updatedEvent.isImportant,
+        notifications,
+      };
+
+      const response = await AxiosApi.updateSchedule({
+        loggedInMember,
+        scheduleNum: updatedEvent.id, // Assuming 'id' corresponds to 'scheduleNum'
+        updatedSchedule: scheduleDto,
+      });
+
+      if (response.success) {
+        toast.success("스케줄이 성공적으로 업데이트되었습니다.");
+        // Refetch schedules after updating
+        const year = new Date(updatedEvent.startDate).getFullYear().toString();
+        const month = (
+          new Date(updatedEvent.startDate).getMonth() + 1
+        ).toString();
+        fetchSchedules(year, month);
+      } else {
+        toast.error("스케줄 업데이트에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error updating event:", error);
+      toast.error("스케줄을 업데이트하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  const deleteEventFunc = async (eventToDelete) => {
+    try {
+      const response = await AxiosApi.deleteSchedule({
+        loggedInMember,
+        scheduleNum: eventToDelete.id, // Assuming 'id' corresponds to 'scheduleNum'
+      });
+
+      if (response.success) {
+        toast.success("스케줄이 성공적으로 삭제되었습니다.");
+        // Refetch schedules after deleting
+        const year = new Date(eventToDelete.startDate).getFullYear().toString();
+        const month = (
+          new Date(eventToDelete.startDate).getMonth() + 1
+        ).toString();
+        fetchSchedules(year, month);
+      } else {
+        toast.error("스케줄 삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      toast.error("스케줄을 삭제하는 중 오류가 발생했습니다.");
+    }
+  };
+
+  const updateEventsState = (fetchedSchedules) => {
+    const newEvents = {};
+    fetchedSchedules.forEach((schedule) => {
+      const dateKey = new Date(schedule.startDate).toDateString();
       if (!newEvents[dateKey]) {
         newEvents[dateKey] = [];
       }
-      // 기존에 없다면 새로운 이벤트 아이디 주기
-      const eventId = event.id || Date.now();
-      newEvents[dateKey].push({ ...event, id: eventId });
-      current.setDate(current.getDate() + 1);
-    }
-
-    setEvents(newEvents);
-    scheduleAlarms(event);
-  };
-
-  const updateEvent = (updatedEvent) => {
-    // 날짜 범위 (date range) 나 정한 시간이 바뀌었을 수도 있으므로 이 해당 이벤트 ID의 기존 인스턴스들 먼저 삭제
-    const newEvents = {};
-    for (const dateKey in events) {
-      newEvents[dateKey] = events[dateKey].filter(
-        (e) => e.id !== updatedEvent.id
-      );
-      if (newEvents[dateKey].length === 0) {
-        delete newEvents[dateKey];
-      }
-    }
-
-    // 그 뒤 새로운 버전 업데이트
-    let current = new Date(updatedEvent.startDate);
-    while (current <= new Date(updatedEvent.endDate)) {
-      const dateKey = current.toDateString();
-      if (!newEvents[dateKey]) newEvents[dateKey] = [];
-      newEvents[dateKey].push(updatedEvent);
-      current.setDate(current.getDate() + 1);
-    }
-
-    setEvents(newEvents);
-    scheduleAlarms(updatedEvent);
-  };
-
-  const deleteEvent = (event) => {
-    // 등록된 날짜들로서부터 이벤트 제거
-    const newEvents = { ...events };
-    for (const dateKey in newEvents) {
-      newEvents[dateKey] = newEvents[dateKey].filter((e) => e.id !== event.id);
-      if (newEvents[dateKey].length === 0) {
-        delete newEvents[dateKey];
-      }
-    }
-
+      newEvents[dateKey].push(schedule);
+    });
     setEvents(newEvents);
   };
 
   return (
     <EventContext.Provider
-      value={{ events, addEvent, updateEvent, deleteEvent }}
+      value={{
+        events,
+        addEvent,
+        updateEvent,
+        deleteEvent: deleteEventFunc, // Renamed to avoid conflict with internal deleteEvent
+        fetchSchedules, // Expose fetchSchedules if needed elsewhere
+      }}
     >
       {children}
     </EventContext.Provider>

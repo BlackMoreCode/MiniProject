@@ -261,11 +261,18 @@ export const AxiosApi = {
 
   saveSchedule: async ({ loggedInMember, newSchedule }) => {
     // { loggedInMember, newSchedule }
-    const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
-      loggedInMember,
-      newSchedule,
-    });
-    return response.data;
+    console.log("Saving schedule:", { loggedInMember, newSchedule }); // payload 검사용 로그
+    try {
+      const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
+        loggedInMember,
+        newSchedule,
+      });
+      console.log("Save response:", response.data); // 백엔드 응답 로깅용
+      return response.data;
+    } catch (error) {
+      console.error("Error saving schedule:", error.response || error); // 에러 응답 로그용
+      throw error;
+    }
   },
 
   updateSchedule: async ({ loggedInMember, scheduleNum, updatedSchedule }) => {

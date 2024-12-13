@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { LoginContext } from "../../contexts/LoginContext";
 import { EventContext } from "../../contexts/EventContext";
 import * as IntegratedStyles from "./CalendarStyles";
@@ -16,18 +16,35 @@ const Calendar = () => {
 
   const [modalData, setModalData] = useState(null);
   const { isDarkMode } = useContext(LoginContext);
-  const { events, addEvent, updateEvent, deleteEvent } =
-    useContext(EventContext);
+  const { events, addEvent, updateEvent, deleteEvent, fetchSchedules } =
+    useContext(EventContext); // EventContext 으로 부터 fetchSchedules 불러오기
 
   const navigate = useNavigate();
 
   const handlePrevMonth = () => {
-    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1));
+    const newDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - 1,
+      1
+    );
+    setCurrentDate(newDate);
   };
 
   const handleNextMonth = () => {
-    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1));
+    const newDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      1
+    );
+    setCurrentDate(newDate);
   };
+
+  useEffect(() => {
+    // 고른 현재 날짜가 바뀔 때 마다 스케쥴을 fetch 해옴
+    const year = currentDate.getFullYear().toString();
+    const month = (currentDate.getMonth() + 1).toString();
+    fetchSchedules(year, month);
+  }, [currentDate, fetchSchedules]);
 
   const handleDateSelection = (range) => {
     // 유저가 같은 범위를 다시 누른다면, 해당 선택을 클리어. 즉 더블 클릭시나 이럴때도 지우려고 도입 시도.
@@ -55,17 +72,17 @@ const Calendar = () => {
   };
 
   const handleEditEvent = (event) => {
-    console.log("Editing event:", event); // 이 방식으로는 이미 startDate/endDate가 있으니 요정도만. 그리고 로깅으로 체크
+    console.log("Editing event:", event);
     setModalData({ start: event.startDate, end: event.endDate, event });
   };
 
   const handleSaveEvent = (event) => {
-    console.log("Saving event:", event); // 저장되는 이벤트를 보자..
+    console.log("Saving event:", event);
     if (event.id) {
-      console.log("Updating event with ID:", event.id); //이벤트를 무슨 id랑 업데이트 하는가..?
+      console.log("Updating event with ID:", event.id);
       updateEvent(event);
     } else {
-      console.log("Adding new event:", event); // 새로 추가되는 이벤트
+      console.log("Adding new event:", event);
       addEvent(event);
     }
     setModalData(null);
@@ -142,7 +159,7 @@ const Calendar = () => {
                   : `${event.time.start} - ${event.time.end}`}{" "}
                 | {event.title}
               </span>
-              {event.importance && "⭐"}
+              {event.isImportant && "⭐"} {/* Changed to match boolean field */}
               {event.checked && <CheckIndicator>✔</CheckIndicator>}
             </EventItem>
           ))}
