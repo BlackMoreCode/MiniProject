@@ -1,15 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../contexts/LoginContext";
 import "../../styles/Font/fonts.css";
-import styled from "styled-components";
 import { Container, Div } from "./MyPageStyles";
 import { IoIosArrowBack } from "react-icons/io";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
   const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
-  const [currentFont, setCurrentFont] = useState(selectedFont); // 로컬 상태 추가
   const { isDarkMode } = useContext(LoginContext); // Dark 모드
 
   const fontClass = [
@@ -36,7 +34,6 @@ const ChangeFont = () => {
 
   const handleFontDoubleClick = (fontClass) => {
     setSelectedFont(fontClass); // 폰트 상태 업데이트
-    setCurrentFont(fontClass); // 로컬 상태 업데이트
     document.body.className = fontClass; // DOM 업데이트
     alert(`${fontClass} 폰트가 적용되었습니다.`);
     navigate("/");

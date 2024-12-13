@@ -214,26 +214,15 @@ export const AxiosApi = {
     }
   },
 
-  updateDiarySetting: async (loggedInMember, font, theme, mainBannerImage) => {
-    // 현재 아직 값이 없어서 font 랑 alertSound는 디폴트 처리해야한다!!!
+  updateDiarySetting: async (loggedInMember, updatedDiarySetting) => {
     console.log("Sending to updateDiarySetting:", {
       loggedInMember,
-      updatedDiarySetting: {
-        font,
-        theme,
-        mainBannerImage,
-        alertSound: "default",
-      },
+      updatedDiarySetting,
     });
     try {
       const response = await axios.post(`${API_BASE_URL}/setting/update`, {
         loggedInMember,
-        updatedDiarySetting: {
-          font,
-          theme,
-          mainBannerImage,
-          alertSound: "default", // 고정값
-        },
+        updatedDiarySetting,
       });
 
       // 응답에서 상태 확인
@@ -272,11 +261,18 @@ export const AxiosApi = {
 
   saveSchedule: async ({ loggedInMember, newSchedule }) => {
     // { loggedInMember, newSchedule }
-    const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
-      loggedInMember,
-      newSchedule,
-    });
-    return response.data;
+    console.log("Saving schedule:", { loggedInMember, newSchedule }); // payload 검사용 로그
+    try {
+      const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
+        loggedInMember,
+        newSchedule,
+      });
+      console.log("Save response:", response.data); // 백엔드 응답 로깅용
+      return response.data;
+    } catch (error) {
+      console.error("Error saving schedule:", error.response || error); // 에러 응답 로그용
+      throw error;
+    }
   },
 
   updateSchedule: async ({ loggedInMember, scheduleNum, updatedSchedule }) => {
@@ -289,11 +285,21 @@ export const AxiosApi = {
   },
 
   deleteSchedule: async ({ loggedInMember, scheduleNum }) => {
-    const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
-      loggedInMember,
-      scheduleNum,
-    });
-    return response.data;
+    try {
+      console.log("Sending deleteSchedule request with:", {
+        loggedInMember,
+        scheduleNum,
+      });
+      const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
+        loggedInMember,
+        scheduleNum,
+      });
+      console.log("Received deleteSchedule response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting schedule:", error.response || error);
+      throw error;
+    }
   },
 };
 

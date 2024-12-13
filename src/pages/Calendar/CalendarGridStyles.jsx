@@ -1,13 +1,14 @@
+// CalendarGridStyles.jsx
 import styled from "styled-components";
 
-// 공통 부분
+// Common Styles
 export const EventCount = styled.div`
   position: absolute;
   top: 5px;
   right: 5px;
   background: #dadadb;
   color: #66666e;
-  border-radius: 25%;
+  border-radius: 50%; /* Changed from 25% to 50% for perfect circle */
   width: 16px;
   height: 16px;
   font-size: 10px;
@@ -24,18 +25,17 @@ export const StarIndicator = styled.div`
   font-size: 10px;
 `;
 
-// 바뀌는 부분들
+// Changing Parts
 
-// 그리드 컨테이너 라이트
+// Grid Container Light
 export const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  /* background: #494a50; */
   padding: 10px;
 `;
 
-// 그리드 컨테이너 다크
+// Grid Container Dark
 export const GridContainerDark = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -44,22 +44,18 @@ export const GridContainerDark = styled.div`
   padding: 10px;
 `;
 
-// 각 요일 셀 라이트
+// Day Cell Light
 export const DayCell = styled.div`
   position: relative;
   padding: 12px;
   padding-top: 24px;
-  background: ${(props) =>
-    props.isToday ? "##bdbdbd" : props.isSelected ? "#dadadb" : "#f4f4f6"};
+  background: ${({ $isToday, $isSelected }) =>
+    $isToday ? "#bdbdbd" : $isSelected ? "#dadadb" : "#f4f4f6"};
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
-  border: ${(props) =>
-    props.isToday
-      ? "2px solid black"
-      : props.isSelected
-      ? "2px solid black"
-      : "none"};
+  border: ${({ $isToday, $isSelected }) =>
+    $isToday || $isSelected ? "2px solid black" : "none"};
 
   &:hover {
     background: #dadadb;
@@ -67,22 +63,18 @@ export const DayCell = styled.div`
   }
 `;
 
-// 각 요일 셀 다크
+// Day Cell Dark
 export const DayCellDark = styled.div`
   position: relative;
   padding: 12px;
   padding-top: 30px;
-  background: ${(props) =>
-    props.isToday ? "##bdbdbd" : props.isSelected ? "#555" : "#222"};
+  background: ${({ $isToday, $isSelected }) =>
+    $isToday ? "#bdbdbd" : $isSelected ? "#555" : "#222"};
   text-align: center;
   border-radius: 4px;
   cursor: pointer;
-  border: ${(props) =>
-    props.isToday
-      ? "2px solid white"
-      : props.isSelected
-      ? "2px solid white"
-      : "none"};
+  border: ${({ $isToday, $isSelected }) =>
+    $isToday || $isSelected ? "2px solid white" : "none"};
 
   &:hover {
     background: #444;
@@ -90,42 +82,25 @@ export const DayCellDark = styled.div`
   }
 `;
 
-// 각 요일 색상 표기 라이트
+// Day Number Light
 export const DayNumber = styled.span`
   display: inline-block;
-  color: ${(props) =>
-    props.isToday
-      ? "black"
-      : props.isSunday
-      ? "red"
-      : props.isSaturday
-      ? "blue"
-      : "black"};
-  /* background: ${(props) => (props.isToday ? "white" : "none")};
-  padding: ${(props) => (props.isToday ? "5px" : "0")}; */
-  border-radius: ${(props) => (props.isToday ? "20%" : "0")};
+  color: ${({ $isSunday, $isSaturday }) =>
+    $isSunday ? "red" : $isSaturday ? "blue" : "black"};
+  border-radius: ${({ $isToday }) => ($isToday ? "20%" : "0")};
 `;
 
-// 각 요일 색상 표기 다크
+// Day Number Dark
 export const DayNumberDark = styled.span`
   display: inline-block;
-  color: ${(props) =>
-    props.isToday
-      ? "white"
-      : props.isSunday
-      ? "red"
-      : props.isSaturday
-      ? "blue"
-      : "white"};
-  /* background: ${(props) => (props.isToday ? "white" : "none")};
-  padding: ${(props) => (props.isToday ? "5px" : "0")}; */
-  border-radius: ${(props) => (props.isToday ? "20%" : "0")};
+  color: ${({ $isSunday, $isSaturday }) =>
+    $isSunday ? "red" : $isSaturday ? "blue" : "white"};
+  border-radius: ${({ $isToday }) => ($isToday ? "20%" : "0")};
 `;
 
-// 각 요일 (일~토) 표기 라이트
+// Weekdays Header Light
 export const WeekdaysHeader = styled.div`
   display: grid;
-  position: relative;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
   padding: 12px 10px;
@@ -134,10 +109,9 @@ export const WeekdaysHeader = styled.div`
   font-weight: bold;
 `;
 
-// 각 요일 (일~토) 표기 다크
+// Weekdays Header Dark
 export const WeekdaysHeaderDark = styled.div`
   display: grid;
-  position: relative;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
   padding: 12px 10px;

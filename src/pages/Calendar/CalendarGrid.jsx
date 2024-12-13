@@ -1,3 +1,4 @@
+// CalendarGrid.jsx
 import React, { useContext, useState } from "react";
 import { LoginContext } from "../../contexts/LoginContext";
 import * as Styles from "./CalendarGridStyles";
@@ -92,26 +93,28 @@ const CalendarGrid = ({ date, onDateRangeSelect, selectedRange, events }) => {
 
           const eventCount = eventsForDay.length;
           const hasImportantEvent = eventsForDay.some(
-            (event) => event.importance
+            (event) => event.isImportant
           );
 
           const isInSelection =
             isInSelectedRange(cellDate) || isInDragSelection(cellDate);
 
+          const isSunday = index % 7 === 0;
+          const isSaturday = index % 7 === 6;
+
           return (
             <DayCell
               key={index}
-              isToday={isToday}
-              isSelected={isInSelection}
+              $isToday={isToday} // Transient prop
+              $isSelected={isInSelection} // Transient prop
               onMouseDown={() => handleMouseDown(cellDate)}
               onMouseEnter={() => handleMouseEnter(cellDate)}
             >
               {day && (
                 <>
                   <DayNumber
-                    isToday={isToday}
-                    isSunday={index % 7 === 0}
-                    isSaturday={index % 7 === 6}
+                    $isSunday={isSunday} // Transient prop
+                    $isSaturday={isSaturday} // Transient prop
                   >
                     {day}
                   </DayNumber>
