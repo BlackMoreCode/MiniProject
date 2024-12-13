@@ -222,14 +222,19 @@ export const AxiosApi = {
           font,
           theme,
           mainBannerImage,
-          alertSound: "default",
+          alertSound: "default", // 고정값
         },
       });
-      return response.data.isUpdated;
+  
+      // 응답에서 상태 확인
+      console.log("API Response:", response.data);
+      return response.data.isUpdated; // 성공 여부 반환
     } catch (error) {
-      return false;
+      console.error("Error updating diary setting:", error);
+      return false; // 실패 시 false 반환
     }
   },
+  
 
   // 플래너 / 스케쥴 관련 API
   getMonthlySchedules: async ({ loggedInMember, year, month }) => {

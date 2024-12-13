@@ -7,42 +7,43 @@ import { IoIosArrowBack } from "react-icons/io";
 import { LoginContext } from "../../contexts/LoginContext";
 import AxiosApi from "../../api/AxiosApi";
 
-import banner1 from "../../assets/bannerimages/banner1.jpg";
-import banner2 from "../../assets/bannerimages/banner2.jpg";
-import banner3 from "../../assets/bannerimages/banner3.jpg";
-import banner4 from "../../assets/bannerimages/banner4.jpg";
-import banner5 from "../../assets/bannerimages/banner5.jpg";
+import image1 from "../../assets/bannerimages/banner1.jpg";
+import image2 from "../../assets/bannerimages/banner2.jpg";
+import image3 from "../../assets/bannerimages/banner3.jpg";
+import image4 from "../../assets/bannerimages/banner4.jpg";
+import image5 from "../../assets/bannerimages/banner5.jpg";
 
-const CURRENT_MAIN_BANNER_IMAGE = [
-  { src: banner1, alt: "banner 1" },
-  { src: banner2, alt: "banner 2" },
-  { src: banner3, alt: "banner 3" },
-  { src: banner4, alt: "banner 4" },
-  { src: banner5, alt: "banner 5" },
+const images = [
+  { src: image1, alt: "banner 1" },
+  { src: image2, alt: "banner 2" },
+  { src: image3, alt: "banner 3" },
+  { src: image4, alt: "banner 4" },
+  { src: image5, alt: "banner 5" },
 ];
 
 const ChangeImage = () => {
   const { setBannerImage } = useContext(BannerImageContext);
-  // const [selectedImage, setSelectedImage] = useState(image5); // 기본 이미지로 초기화
   const { isDarkMode } = useContext(LoginContext); // Dark 모드
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+ 
 
-  // const handleImageSelect = (src) => {
-  //   setSelectedImage(src); // 선택된 이미지 상태 업데이트
-  // };
-
-  // const handleImageChange = () => {
-  //   // 배너 이미지를 변경하는 로직 (예: 상태 업데이트, 서버로 저장 요청 등)
-  //   setBannerImage(selectedImage);
-  //   alert("이미지가 변경되었습니다");
-  //   navigate("/"); // 메인 페이지로 이동
-  // };
   const handleImageDoubleClick = async (src) => {
     try {
-      const loggedInMember = 2; 
-      const font = "default"; 
-      const theme = "default"; 
+      const loggedInMember = 2; // 현재 로그인된 사용자 ID (테스트 값)
+      const font = "default";
+      const theme = "default";
+  
+      console.log("API 요청 데이터:", {
+        loggedInMember,
+        updatedDiarySetting: {
+          font,
+          theme,
+          mainBannerImage: src,
+          alertSound: "default",
+        },
+      });
+  
       const response = await AxiosApi.updateDiarySetting(
         loggedInMember,
         font,
@@ -51,17 +52,17 @@ const ChangeImage = () => {
       );
   
       if (response) {
-        setBannerImage(src); 
+        setBannerImage(src);
         alert("이미지가 변경되었습니다.");
         navigate("/");
       } else {
-        setMessage("이미지 변경에 실패하였습니다.");
+        alert("이미지 변경 실패");
       }
     } catch (error) {
-      console.error("Failed to update image:", error);
-      setMessage("이미지가 변경에 실패하였습니다.");
+      console.error("Error updating image:", error);
     }
   };
+  
 
   return (
     <Container>
@@ -74,8 +75,9 @@ const ChangeImage = () => {
             배너
           </p>
         </div>
+
         <div className="banner-body">
-          {CURRENT_MAIN_BANNER_IMAGE.map((image) => (
+          {images.map((image) => (
             <div
               key={image.src}
               className="banner-box"
@@ -85,24 +87,8 @@ const ChangeImage = () => {
             </div>
           ))}
         </div>
-
-        {/* {images.map((image) => (
-          <div key={image.src} className="banner-box">
-            <img
-              src={image.src}
-              alt={image.alt}
-              className="banner-image"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = image5; // Use a fallback image
-              }}
-            />
-          </div>
-        ))} */}
-
       </Div>
     </Container>
-    
   );
 };
 
