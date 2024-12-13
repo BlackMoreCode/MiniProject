@@ -32,7 +32,7 @@ import "react-calendar/dist/Calendar.css";
 import defaultBanner from "../assets/bannerimages/banner5.jpg";
 
 // 배너 이미지 매핑
-import { bannerImageMap } from "../util/bannerImageMap";
+import { bannerSrcPathDict } from "../util/bannerImageUtils";
 
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
@@ -66,7 +66,7 @@ const Home = () => {
         if (settings && settings.mainBannerImage) {
           // 키를 실제로 import 처리한 이미지 (e.g. banner1) 에 매핑 처리해야합니다
           const mappedImage =
-            bannerImageMap[settings.mainBannerImage] || defaultBanner;
+            bannerSrcPathDict[settings.mainBannerImage] || defaultBanner;
           setBannerImage(mappedImage);
         }
       })();

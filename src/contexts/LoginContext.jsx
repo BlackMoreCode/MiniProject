@@ -5,7 +5,7 @@ export const LoginContext = createContext(null);
 export const LoginProvider = (props) => {
   const [userId, setUserId] = useState(null);
   const [userPassword, setUserPassword] = useState(null);
-  const [selectedFont, setSelectedFont] = useState("font-dohyeon");
+  const [selectedFont, setSelectedFont] = useState("Nanum Gothic");
   const [isDarkMode, setIsDarkMode] = useState(null);
 
   const loggedInMember =
