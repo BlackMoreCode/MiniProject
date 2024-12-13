@@ -31,10 +31,13 @@ import "react-calendar/dist/Calendar.css";
 
 import defaultBanner from "../assets/bannerimages/banner5.jpg";
 
+// 배너 이미지 매핑
+import { bannerImageMap } from "../util/bannerImageMap";
+
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
   const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
-  const { bannerImage } = useContext(BannerImageContext);
+  const { bannerImage, setBannerImage } = useContext(BannerImageContext);
 
   const [sortedDiaries, setSortedDiaries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -43,10 +46,38 @@ const Home = () => {
 
   const [diaryYear, setDiaryYear] = useState(new Date().getFullYear());
   const [diaryMonth, setDiaryMonth] = useState(new Date().getMonth() + 1);
-  const [showCalendarModal, setShowCalendarModal] = useState(false); // 모달 상태
-  const [allDiaries, setAllDiaries] = useState([]); // 모든 일기 표시  상태?
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [allDiaries, setAllDiaries] = useState([]);
 
   const navigate = useNavigate();
+
+  // 컴포넌트 마운트 / 로그인 시 검색을 위해 모든 일기를 fetch
+  useEffect(() => {
+    if (loggedInMember) {
+      fetchAllDiaries();
+    }
+  }, [loggedInMember]);
+
+  // 백엔드 에서부터 배너이미지 세팅을 불러오기 위한 useEffect
+  useEffect(() => {
+    if (loggedInMember) {
+      (async () => {
+        const settings = await AxiosApi.getDiarySetting(loggedInMember);
+        if (settings && settings.mainBannerImage) {
+          // 키를 실제로 import 처리한 이미지 (e.g. banner1) 에 매핑 처리해야합니다
+          const mappedImage =
+            bannerImageMap[settings.mainBannerImage] || defaultBanner;
+          setBannerImage(mappedImage);
+        }
+      })();
+    }
+  }, [loggedInMember, setBannerImage]);
+
+  useEffect(() => {
+    if (loggedInMember) {
+      fetchDiariesForMonth(diaryYear, diaryMonth, loggedInMember);
+    }
+  }, [loggedInMember, diaryYear, diaryMonth, fetchDiariesForMonth]);
 
   const fetchAllDiaries = async () => {
     try {
@@ -65,7 +96,7 @@ const Home = () => {
     }
 
     if (allDiaries.length === 0) {
-      fetchAllDiaries(); // 검색이 시작될 시에만 모든 일기를 fetch 처리
+      fetchAllDiaries();
     } else {
       const results = allDiaries.filter((diary) =>
         diary.title.toLowerCase().includes(searchValue.toLowerCase())
@@ -73,19 +104,6 @@ const Home = () => {
       setSearchResults(results);
     }
   }, [searchValue, allDiaries]);
-
-  // 성능 이슈를 위해 일단 유저 로그인 될시 / 컴포넌트 마운트시 allDiaries에 캐시되게 한다
-  useEffect(() => {
-    if (loggedInMember) {
-      fetchAllDiaries();
-    }
-  }, [loggedInMember]);
-
-  useEffect(() => {
-    if (loggedInMember) {
-      fetchDiariesForMonth(diaryYear, diaryMonth, loggedInMember);
-    }
-  }, [loggedInMember, diaryYear, diaryMonth]);
 
   // 검색 필터 적용
   useEffect(() => {
@@ -140,14 +158,13 @@ const Home = () => {
     setSortedDiaries(filteredDiaries);
   }, [diaries, diaryYear, diaryMonth]);
 
-  //날짜 변경
   const handleDateChange = (date) => {
     const selectedYear = date.getFullYear();
     const selectedMonth = date.getMonth() + 1;
 
     setDiaryYear(selectedYear);
     setDiaryMonth(selectedMonth);
-    setShowCalendarModal(false); // Close modal after selection
+    setShowCalendarModal(false);
   };
 
   const handleSort = () => {
@@ -158,7 +175,6 @@ const Home = () => {
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
           const dateB = new Date(b.writtenDate);
-
           return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
         })
       );
@@ -187,8 +203,10 @@ const Home = () => {
     <Container>
       <Div className="phone-container">
         <Div className="phone-header">
-          <Img1 src={bannerImage ? bannerImage : defaultBanner} alt="BannerImage" />
-
+          <Img1
+            src={bannerImage ? bannerImage : defaultBanner}
+            alt="BannerImage"
+          />
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
               <button className="phone-menuBtn">
@@ -255,7 +273,6 @@ const Home = () => {
           </Div>
         )}
 
-        {/* 날짜 선택 및 정렬 여기로. */}
         <Div className="date-sort-container">
           <Div className="phone-theme">
             <button className="date-calendar" onClick={() => changeMonth(-1)}>
