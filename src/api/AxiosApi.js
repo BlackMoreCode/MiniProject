@@ -151,10 +151,30 @@ export const AxiosApi = {
   updateProfile: async (id, email, nickname, password) => {
     try {
       const response = await axios.post(`${BACKEND_DOMAIN}/members/update`, {
-        id, 
-        email, 
-        nickname, 
-        password
+        id,
+        email,
+        nickname,
+        password,
+      });
+      if (response.status === 200 && response.data.success) {
+        return true;
+      } else {
+        // success가 false이면 백엔드 응답 구조 상 원래 항상 catch로 가야하기 때문에
+        // 이 라인에 도달하는 경우는 알 수 없는 응답으로 처리했습니다.
+        throw new Error("알 수 없는 응답");
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+
+  // 회원 정보 삭제
+  deleteMember: async (id, password) => {
+    try {
+      const response = await axios.post(`${BACKEND_DOMAIN}/members/delete`, {
+        id,
+        password,
       });
       if (response.status === 200 && response.data.success) {
         return true;
@@ -172,9 +192,22 @@ export const AxiosApi = {
   getUserDetails: async (id) => {
     try {
       const response = await axios.post(`${BACKEND_DOMAIN}/members/get`, {
-        id
+        id,
       });
       return response.data.memberInfo;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  },
+
+  getDiarySetting: async (loggedInMember) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/setting/get`,
+        loggedInMember
+      );
+      return response.data.diarySetting;
     } catch (error) {
       console.error(error);
       return null;
@@ -189,18 +222,65 @@ export const AxiosApi = {
           font,
           theme,
           mainBannerImage,
-          alertSound: "default", // 고정값
+          alertSound: "default",
         },
       });
-  
-      // 응답에서 상태 확인
-      console.log("API Response:", response.data);
-      return response.data.isUpdated; // 성공 여부 반환
+      return response.data.isUpdated;
     } catch (error) {
-      console.error("Error updating diary setting:", error);
-      return false; // 실패 시 false 반환
+      return false;
     }
-  }
+  },
+
+  // 플래너 / 스케쥴 관련 API
+  getMonthlySchedules: async ({ loggedInMember, year, month }) => {
+    // { loggedInMember: {id,password}, date:{year,month} }
+    // 이하는 테스트용 로그
+    console.log("Requesting monthly schedules with:", {
+      loggedInMember,
+      year,
+      month,
+    });
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/schedule/get-monthly-list`,
+        {
+          loggedInMember,
+          date: { year, month },
+        }
+      );
+      console.log("Received monthly schedules response:", response.data); // 백으로서부터 받은 데이터
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching monthly schedules:", error);
+      throw error;
+    }
+  },
+
+  saveSchedule: async ({ loggedInMember, newSchedule }) => {
+    // { loggedInMember, newSchedule }
+    const response = await axios.post(`${API_BASE_URL}/schedule/save`, {
+      loggedInMember,
+      newSchedule,
+    });
+    return response.data;
+  },
+
+  updateSchedule: async ({ loggedInMember, scheduleNum, updatedSchedule }) => {
+    const response = await axios.post(`${API_BASE_URL}/schedule/update`, {
+      loggedInMember,
+      scheduleNum,
+      updatedSchedule,
+    });
+    return response.data;
+  },
+
+  deleteSchedule: async ({ loggedInMember, scheduleNum }) => {
+    const response = await axios.post(`${API_BASE_URL}/schedule/delete`, {
+      loggedInMember,
+      scheduleNum,
+    });
+    return response.data;
+  },
 };
 
 export default AxiosApi;

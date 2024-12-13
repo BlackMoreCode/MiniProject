@@ -7,7 +7,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { FiSun } from "react-icons/fi";
 import { IoMoonOutline } from "react-icons/io5";
 
-import image1 from "../../assets/bannerimages/image1.jpg";
+import image1 from "../../assets/bannerimages/banner1.jpg";
 
 const ChangeTheme = () => {
   const navigate = useNavigate();
@@ -16,10 +16,12 @@ const ChangeTheme = () => {
     <Container>
       <Div className="font-container">
         <div className="font-header">
-          <button onClick={()=>navigate("/mypage")} className="backBtn">
+          <button onClick={() => navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
           </button>
-          <p onClick={()=>navigate("/mypage")} className="mypage-title">테마</p>
+          <p onClick={() => navigate("/mypage")} className="mypage-title">
+            테마
+          </p>
         </div>
 
         <div className="font-body">
@@ -47,10 +49,8 @@ const ChangeTheme = () => {
             </div>
           </div>
         </div>
-
       </Div>
     </Container>
-    
   );
 };
 

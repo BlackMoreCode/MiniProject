@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-// import * as Styles from "../Calendar/CalendarStylesDark"; // 임시처리; 기존 CSS 는 다크모드 취급
-import * as Styles from "../Calendar/CalendarStylesLight"; // 새로 작업할 것을 라이트모드고, 디폴트 설정.
-
-// import CalendarGrid from "./CalendarGridDark"; // 임시 처리; 달력을 만들기 위한 Grid 컴포넌트; 다크 모드 취급
-import CalendarGrid from "./CalendarGridLight"; // 새로 CSS  처리할 디폴트 라이트 모드 (CSS 제외한 로직은 다크모드랑 일치)
-
+import React, { useState, useContext } from "react";
+import { LoginContext } from "../../contexts/LoginContext";
+import { EventContext } from "../../contexts/EventContext";
+import * as IntegratedStyles from "./CalendarStyles";
+import CalendarGrid from "./CalendarGrid";
 import Modal from "./CalendarModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,24 +10,16 @@ import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [events, setEvents] = useState({});
+
+  // 여러일에 걸쳐서 이벤트 등록해주기 위한 범위 선택
+  const [selectedRange, setSelectedRange] = useState(null);
+
   const [modalData, setModalData] = useState(null);
+  const { isDarkMode } = useContext(LoginContext);
+  const { events, addEvent, updateEvent, deleteEvent } =
+    useContext(EventContext);
 
   const navigate = useNavigate();
-
-  // 임시코드: localStorage로부 컴포넌트가 마운트될 때 events를 로드
-  useEffect(() => {
-    const savedEvents = localStorage.getItem("events");
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents));
-    }
-  }, []);
-
-  // events 상태가 변경될 때 마다 localStorage에 이벤트 저장.
-  useEffect(() => {
-    localStorage.setItem("events", JSON.stringify(events));
-  }, [events]);
 
   const handlePrevMonth = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1));
@@ -39,184 +29,113 @@ const Calendar = () => {
     setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1));
   };
 
-  const handleDateClick = (date) => {
-    setSelectedDate(date);
+  const handleDateSelection = (range) => {
+    // 유저가 같은 범위를 다시 누른다면, 해당 선택을 클리어. 즉 더블 클릭시나 이럴때도 지우려고 도입 시도.
+    if (
+      selectedRange &&
+      selectedRange.start.toDateString() === range.start.toDateString() &&
+      selectedRange.end.toDateString() === range.end.toDateString()
+    ) {
+      setSelectedRange(null);
+    } else {
+      setSelectedRange(range);
+    }
   };
 
   const handleAddEvent = () => {
-    if (selectedDate) {
-      setModalData({ date: selectedDate, event: null });
+    if (selectedRange && selectedRange.start && selectedRange.end) {
+      setModalData({
+        start: selectedRange.start,
+        end: selectedRange.end,
+        event: null,
+      });
     } else {
-      toast.warn("요일을 먼저 골라주세요!");
+      toast.warn("먼저 날짜 범위를 선택해주세요!");
     }
   };
 
   const handleEditEvent = (event) => {
-    const dateKey = new Date(event.date).toDateString();
-    setEvents((prev) => {
-      const updatedEvents = {
-        ...prev,
-        [dateKey]: prev[dateKey].map((e) =>
-          e.id === event.id ? { ...e, checked: true } : e
-        ),
-      };
-      localStorage.setItem("events", JSON.stringify(updatedEvents));
-      return updatedEvents;
-    });
-
-    setModalData({ date: selectedDate, event });
+    console.log("Editing event:", event); // 이 방식으로는 이미 startDate/endDate가 있으니 요정도만. 그리고 로깅으로 체크
+    setModalData({ start: event.startDate, end: event.endDate, event });
   };
 
   const handleSaveEvent = (event) => {
-    const dateKey = event.date.toDateString();
-    setEvents((prev) => {
-      // 해당 날짜에 이벤트가 존재한다면
-      if (prev[dateKey]) {
-        // ID 체크해서 이벤트가 이미 있나 확인
-        const existingEventIndex = prev[dateKey].findIndex(
-          (e) => e.id === event.id
-        );
-        if (existingEventIndex !== -1) {
-          // 이미 존재하는 것이라면 업데이트
-          const updatedEvents = [...prev[dateKey]];
-          updatedEvents[existingEventIndex] = event;
-          return { ...prev, [dateKey]: updatedEvents };
-        }
-        // 아닐 시 새로운 이벤트 추가  --> 추가로 이벤트가 확인되었는지 체크하는 로직 추가
-        return {
-          ...prev,
-          [dateKey]: [...prev[dateKey], { ...event, checked: false }],
-        };
-      }
-      //해당 날짜에 이벤트가 없다면 리스트 추가 --> 추가로 이벤트가 확인되었는지 체크하는 로직 추가
-      return { ...prev, [dateKey]: [{ ...event, checked: false }] };
-    });
-    // Save alarms
-    if (event.alarmTimes) {
-      scheduleAlarms(event);
+    console.log("Saving event:", event); // 저장되는 이벤트를 보자..
+    if (event.id) {
+      console.log("Updating event with ID:", event.id); //이벤트를 무슨 id랑 업데이트 하는가..?
+      updateEvent(event);
+    } else {
+      console.log("Adding new event:", event); // 새로 추가되는 이벤트
+      addEvent(event);
     }
-
-    setModalData(null); // 모달 닫기.
+    setModalData(null);
   };
 
   const handleDeleteEvent = (eventToDelete) => {
-    const dateKey = new Date(eventToDelete.date).toDateString(); // 저장된 date 문자열을 Date 객체 (Date String)로 변환
-    setEvents((prev) => {
-      const updatedEvents = {
-        ...prev,
-        [dateKey]: prev[dateKey].filter(
-          (event) => event.id !== eventToDelete.id
-        ),
-      };
-      // 더 이상 해당 요일에 이벤트가 없을 시 date 키 삭제
-      if (updatedEvents[dateKey].length === 0) {
-        delete updatedEvents[dateKey];
-      }
-      // 업데이트된 이벤트들을 localStorage로 저장
-      localStorage.setItem("events", JSON.stringify(updatedEvents));
-      return updatedEvents;
-    });
-    setModalData(null); //  모달 닫기
-  };
-
-  // 알람 스케쥴
-  const scheduleAlarms = (event) => {
-    const now = Date.now();
-    const eventStartTimestamp =
-      new Date(event.date).getTime() +
-      (event.isAllDay
-        ? 0
-        : parseInt(event.time.start.split(":")[0]) * 3600000 +
-          parseInt(event.time.start.split(":")[1]) * 60000);
-
-    const playSound = (soundPath) => {
-      const audio = new Audio(soundPath);
-      audio.play().catch((error) => {
-        toast.error("Error playing alarm sound.");
-        console.error(error);
-      });
-    };
-
-    if (event.isAllDay) {
-      event.alarmTimes.forEach((alarmTime) => {
-        const alarmTimestamp =
-          new Date(event.date).getTime() - alarmTime * 86400000;
-        if (alarmTimestamp > now) {
-          const delay = alarmTimestamp - now;
-          setTimeout(() => {
-            toast(
-              `All-Day Event Reminder: "${event.title}" - ${
-                alarmTime === 0
-                  ? "Today!"
-                  : `${alarmTime} day${alarmTime > 1 ? "s" : ""} before`
-              }`
-            );
-            playSound("/zawarudoEffect.mp3");
-          }, delay);
-        }
-      });
-    } else {
-      // 특정 시간대를 알람으로 정했고, 몇분 전~ 알람을 선택했을 시 메인 알람 전에 사전 알람을 제공.
-      event.alarmTimes.forEach((alarmTime) => {
-        const alarmTimestamp =
-          eventStartTimestamp - parseInt(alarmTime) * 60000;
-        if (alarmTimestamp > now) {
-          const delay = alarmTimestamp - now;
-          setTimeout(() => {
-            toast(
-              `리마인더:  "${event.title}" 이 시작하기 ${alarmTime} 분 전입니다!`
-            );
-            playSound("/zawarudoEffect.mp3");
-          }, delay);
-        }
-      });
-
-      // 메인 일정 알람.
-      if (eventStartTimestamp > now) {
-        const delay = eventStartTimestamp - now;
-        setTimeout(() => {
-          toast(`리마인더: "${event.title}" 가 시작합니다!`);
-          playSound("/zawarudoEnhanced.wav");
-        }, delay);
-      }
-    }
+    deleteEvent(eventToDelete);
+    setModalData(null);
   };
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
   const year = currentDate.getFullYear();
-  const selectedDateEvents = selectedDate
-    ? events[selectedDate.toDateString()] || []
-    : [];
+  const selectedDateEvents =
+    selectedRange && selectedRange.start
+      ? events[selectedRange.start.toDateString()] || []
+      : [];
+
+  const CalendarWrapper = isDarkMode
+    ? IntegratedStyles.CalendarWrapperDark
+    : IntegratedStyles.CalendarWrapper;
+
+  const Navigation = IntegratedStyles.Navigation;
+  const CheckIndicator = IntegratedStyles.CheckIndicator;
+  const Button = isDarkMode
+    ? IntegratedStyles.ButtonDark
+    : IntegratedStyles.Button;
+  const EventListWrapper = isDarkMode
+    ? IntegratedStyles.EventListWrapperDark
+    : IntegratedStyles.EventListWrapper;
+  const EventItem = isDarkMode
+    ? IntegratedStyles.EventItemDark
+    : IntegratedStyles.EventItem;
+  const ButtonContainer = isDarkMode
+    ? IntegratedStyles.ButtonContainerDark
+    : IntegratedStyles.ButtonContainer;
+  const AddButtonBack = isDarkMode
+    ? IntegratedStyles.AddButtonBackDark
+    : IntegratedStyles.AddButtonBack;
+  const AddButton = isDarkMode
+    ? IntegratedStyles.AddButtonDark
+    : IntegratedStyles.AddButton;
 
   return (
-    <Styles.CalendarWrapper>
-      <Styles.Navigation>
-        <Styles.Button onClick={handlePrevMonth}>이전 달</Styles.Button>
+    <CalendarWrapper>
+      <Navigation>
+        <Button onClick={handlePrevMonth}>이전 달</Button>
         <h2>
           {year} {monthName}
         </h2>
-        <Styles.Button onClick={handleNextMonth}>다음 달</Styles.Button>
-      </Styles.Navigation>
+        <Button onClick={handleNextMonth}>다음 달</Button>
+      </Navigation>
+
       <CalendarGrid
         date={currentDate}
-        onDateClick={handleDateClick}
-        selectedDate={selectedDate}
+        onDateRangeSelect={handleDateSelection}
+        selectedRange={selectedRange}
         events={events}
       />
-      {selectedDate && (
-        <Styles.EventListWrapper>
+
+      {selectedRange && selectedRange.start && (
+        <EventListWrapper>
           <h3>
-            {`${selectedDate.getDate()}일`}{" "}
-            {selectedDate.toLocaleDateString("ko-kr", {
+            {`${selectedRange.start.getDate()}일`}{" "}
+            {selectedRange.start.toLocaleDateString("ko-kr", {
               weekday: "long",
             })}{" "}
             이벤트 목록
           </h3>
           {selectedDateEvents.map((event, index) => (
-            <Styles.EventItem
-              key={index}
-              onClick={() => handleEditEvent(event)}
-            >
+            <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
                 {event.isAllDay
                   ? "All Day"
@@ -224,20 +143,17 @@ const Calendar = () => {
                 | {event.title}
               </span>
               {event.importance && "⭐"}
-              {event.checked && (
-                <Styles.CheckIndicator>✔</Styles.CheckIndicator>
-              )}
-            </Styles.EventItem>
+              {event.checked && <CheckIndicator>✔</CheckIndicator>}
+            </EventItem>
           ))}
-        </Styles.EventListWrapper>
+        </EventListWrapper>
       )}
-      <Styles.ButtonContainer>
-        <Styles.AddButtonBack onClick={() => navigate("/")}>
-          ←
-        </Styles.AddButtonBack>
-        <Styles.AddButton onClick={handleAddEvent}>+</Styles.AddButton>
-      </Styles.ButtonContainer>
-      {console.log}
+
+      <ButtonContainer>
+        <AddButtonBack onClick={() => navigate("/")}>←</AddButtonBack>
+        <AddButton onClick={handleAddEvent}>+</AddButton>
+      </ButtonContainer>
+
       {modalData && (
         <Modal
           data={modalData}
@@ -247,7 +163,7 @@ const Calendar = () => {
         />
       )}
       <ToastContainer />
-    </Styles.CalendarWrapper>
+    </CalendarWrapper>
   );
 };
 

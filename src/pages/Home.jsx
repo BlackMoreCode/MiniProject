@@ -29,6 +29,8 @@ import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
+import defaultBanner from "../assets/bannerimages/banner5.jpg";
+
 const Home = () => {
   const { logout, loggedInMember } = useContext(LoginContext);
   const { diaries, fetchDiariesForMonth } = useContext(DiaryContext);
@@ -185,7 +187,7 @@ const Home = () => {
     <Container>
       <Div className="phone-container">
         <Div className="phone-header">
-          <Img1 src={bannerImage} alt="BannerImage" />
+          <Img1 src={bannerImage ? bannerImage : defaultBanner} alt="BannerImage" />
 
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
