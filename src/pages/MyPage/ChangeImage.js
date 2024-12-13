@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 // context
 import { LoginContext } from "../../contexts/LoginContext";
@@ -41,14 +41,31 @@ const ChangeImage = () => {
     }
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
       <Div
-        className={
+        className={`${
           diarySetting.theme === "dark"
            ? "banner-container-dark"
-            : "banner-container"
-        }
+            : "banner-container"} 
+            ${userFont} 
+        `}
       >
         <div className="banner-header">
           <button onClick={() => navigate("/mypage")} className="backBtn">

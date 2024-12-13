@@ -227,14 +227,31 @@ const Profile = () => {
     }
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
       <Div 
-        className={
+        className={`${
           diarySetting.theme === "dark"
             ? "phone-container-dark"
-            : "phone-container"
-        }
+            : "phone-container"} 
+          ${userFont} 
+        `}
       >
         <div className="profile-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
