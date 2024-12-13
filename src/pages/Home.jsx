@@ -18,12 +18,16 @@ import { BannerImageContext } from "../contexts/BannerImageContext";
 
 //Font and Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faPerson } from "@fortawesome/free-solid-svg-icons";
-import { GiHamburgerMenu } from "react-icons/gi";
+import { faCalendar, faUser } from "@fortawesome/free-solid-svg-icons";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiLogOut } from "react-icons/fi";
 import { LuSearch, LuPaintbrush } from "react-icons/lu";
 import { BsSortNumericDown, BsSortNumericDownAlt } from "react-icons/bs";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+
+// Light & Dark icon
+import { FiSun } from "react-icons/fi";
+import { IoMoonOutline } from "react-icons/io5";
 
 // Calendar
 import Calendar from "react-calendar";
@@ -48,6 +52,9 @@ const Home = () => {
   const [diaryMonth, setDiaryMonth] = useState(new Date().getMonth() + 1);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [allDiaries, setAllDiaries] = useState([]);
+
+  // Dark 모드 전환
+  const { isDarkMode, setIsDarkMode } = useContext(LoginContext);
 
   const navigate = useNavigate();
 
@@ -167,10 +174,11 @@ const Home = () => {
     setShowCalendarModal(false);
   };
 
+  // 일기 정렬
   const handleSort = () => {
     setIsSort((prevState) => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
-
+      
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
@@ -199,6 +207,11 @@ const Home = () => {
     setDiaryMonth(newMonth);
   };
 
+  // Dark 모드 전환
+  const handleDarkChange = () => {
+    setIsDarkMode(prevState => !prevState);
+  }
+
   return (
     <Container>
       <Div className="phone-container">
@@ -209,9 +222,6 @@ const Home = () => {
           />
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
-              <button className="phone-menuBtn">
-                <GiHamburgerMenu />
-              </button>
               <button
                 className="phone-menuBtn"
                 onClick={() => {
@@ -224,8 +234,11 @@ const Home = () => {
             </Div>
 
             <Div className="phone-headerRight">
-              <button className="phone-themeBtn">
-                <LuPaintbrush />
+              <button 
+                className="phone-themeBtn" 
+                onClick={handleDarkChange}
+              >
+                {isDarkMode ? <IoMoonOutline /> : <FiSun />}
               </button>
               <div className="phone-searchBox">
                 <input
@@ -276,7 +289,7 @@ const Home = () => {
         <Div className="date-sort-container">
           <Div className="phone-theme">
             <button className="date-calendar" onClick={() => changeMonth(-1)}>
-              ←
+              <IoIosArrowBack />
             </button>
             <span
               onClick={() => setShowCalendarModal(true)}
@@ -286,7 +299,7 @@ const Home = () => {
             </span>
 
             <button className="date-calendar" onClick={() => changeMonth(1)}>
-              →
+              <IoIosArrowForward />
             </button>
           </Div>
           <button className="phone-sort" onClick={handleSort}>
@@ -352,7 +365,7 @@ const Home = () => {
           </RedirectButton>
           <AddButton onClick={() => navigate("/diaryInsert")}>+</AddButton>
           <RedirectButton onClick={() => navigate("/mypage")}>
-            <FontAwesomeIcon icon={faPerson} />
+            <FontAwesomeIcon icon={faUser} />
           </RedirectButton>
         </Div>
       </Div>
