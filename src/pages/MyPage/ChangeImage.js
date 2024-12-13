@@ -28,40 +28,12 @@ const ChangeImage = () => {
   const [message, setMessage] = useState("");
  
 
-  const handleImageDoubleClick = async (src) => {
-    try {
-      const loggedInMember = 2; // 현재 로그인된 사용자 ID (테스트 값)
-      const font = "default";
-      const theme = "default";
-  
-      console.log("API 요청 데이터:", {
-        loggedInMember,
-        updatedDiarySetting: {
-          font,
-          theme,
-          mainBannerImage: src,
-          alertSound: "default",
-        },
-      });
-  
-      const response = await AxiosApi.updateDiarySetting(
-        loggedInMember,
-        font,
-        theme,
-        src
-      );
-  
-      if (response) {
-        setBannerImage(src);
-        alert("이미지가 변경되었습니다.");
-        navigate("/");
-      } else {
-        alert("이미지 변경 실패");
-      }
-    } catch (error) {
-      console.error("Error updating image:", error);
-    }
+  const handleImageDoubleClick = (src) => {
+    setBannerImage(src); // 배너 이미지를 선택된 이미지로 업데이트
+    alert("이미지가 변경되었습니다.");
+    navigate("/"); 
   };
+  
   
 
   return (
