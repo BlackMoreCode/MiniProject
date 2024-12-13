@@ -215,6 +215,16 @@ export const AxiosApi = {
   },
 
   updateDiarySetting: async (loggedInMember, font, theme, mainBannerImage) => {
+    // 현재 아직 값이 없어서 font 랑 alertSound는 디폴트 처리해야한다!!!
+    console.log("Sending to updateDiarySetting:", {
+      loggedInMember,
+      updatedDiarySetting: {
+        font,
+        theme,
+        mainBannerImage,
+        alertSound: "default",
+      },
+    });
     try {
       const response = await axios.post(`${API_BASE_URL}/setting/update`, {
         loggedInMember,
@@ -225,7 +235,7 @@ export const AxiosApi = {
           alertSound: "default", // 고정값
         },
       });
-  
+
       // 응답에서 상태 확인
       console.log("API Response:", response.data);
       return response.data.isUpdated; // 성공 여부 반환
@@ -234,7 +244,6 @@ export const AxiosApi = {
       return false; // 실패 시 false 반환
     }
   },
-  
 
   // 플래너 / 스케쥴 관련 API
   getMonthlySchedules: async ({ loggedInMember, year, month }) => {
