@@ -322,84 +322,86 @@ const DiaryUpdate = () => {
             {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
           </St.GeneralConfirmation>
 
-          <St.Div className="code-section">
-            {codeSnippets.map((snippet, snippetIndex) => (
-              <div key={snippetIndex}>
-                {/* Language Dropdown */}
-                <select
-                  value={snippet.programmingLanguageName}
-                  onChange={(e) => {
-                    const updatedSnippets = [...codeSnippets];
-                    updatedSnippets[snippetIndex].programmingLanguageName =
-                      e.target.value;
-                    setCodeSnippets(updatedSnippets);
-                  }}
-                >
-                  <option value="javascript">JavaScript</option>
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                </select>
+          {showCodeSnippets && (
+            <St.Div className="code-section">
+              {codeSnippets.map((snippet, snippetIndex) => (
+                <div key={snippetIndex}>
+                  {/* Language Dropdown */}
+                  <select
+                    value={snippet.programmingLanguageName}
+                    onChange={(e) => {
+                      const updatedSnippets = [...codeSnippets];
+                      updatedSnippets[snippetIndex].programmingLanguageName =
+                        e.target.value;
+                      setCodeSnippets(updatedSnippets);
+                    }}
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                  </select>
 
-                {/* Code Editor */}
-                <CodeMirror
-                  value={snippet.content}
-                  height="auto"
-                  theme={dracula}
-                  extensions={[
-                    snippet.programmingLanguageName === "javascript"
-                      ? javascript()
-                      : snippet.programmingLanguageName === "python"
-                      ? python()
-                      : java(),
-                  ]}
-                  onChange={(value) => updateCodeSnippet(snippetIndex, value)}
-                />
+                  {/* Code Editor */}
+                  <CodeMirror
+                    value={snippet.content}
+                    height="auto"
+                    theme={dracula}
+                    extensions={[
+                      snippet.programmingLanguageName === "javascript"
+                        ? javascript()
+                        : snippet.programmingLanguageName === "python"
+                        ? python()
+                        : java(),
+                    ]}
+                    onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+                  />
 
-                <St.GeneralConfirmation
-                  type="button"
-                  onClick={() => removeCodeSnippet(snippetIndex)}
-                >
-                  코드 스니펫 삭제
-                </St.GeneralConfirmation>
+                  <St.GeneralConfirmation
+                    type="button"
+                    onClick={() => removeCodeSnippet(snippetIndex)}
+                  >
+                    코드 스니펫 삭제
+                  </St.GeneralConfirmation>
 
-                {/* Commentary Section */}
-                {snippet.commentary.map((comment, commentaryIndex) => (
-                  <div key={commentaryIndex}>
-                    <St.TextArea
-                      value={comment}
-                      onChange={(e) =>
-                        updateCodeCommentary(
-                          snippetIndex,
-                          commentaryIndex,
-                          e.target.value
-                        )
-                      }
-                    />
-                    <St.GeneralConfirmation
-                      type="button"
-                      onClick={() =>
-                        removeCodeCommentary(snippetIndex, commentaryIndex)
-                      }
-                    >
-                      코멘트 삭제
-                    </St.GeneralConfirmation>
-                  </div>
-                ))}
+                  {/* Commentary Section */}
+                  {snippet.commentary.map((comment, commentaryIndex) => (
+                    <div key={commentaryIndex}>
+                      <St.TextArea
+                        value={comment}
+                        onChange={(e) =>
+                          updateCodeCommentary(
+                            snippetIndex,
+                            commentaryIndex,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <St.GeneralConfirmation
+                        type="button"
+                        onClick={() =>
+                          removeCodeCommentary(snippetIndex, commentaryIndex)
+                        }
+                      >
+                        코멘트 삭제
+                      </St.GeneralConfirmation>
+                    </div>
+                  ))}
 
-                <St.GeneralConfirmation
-                  type="button"
-                  onClick={() => addCodeCommentary(snippetIndex)}
-                >
-                  코드 코멘트 추가
-                </St.GeneralConfirmation>
-              </div>
-            ))}
+                  <St.GeneralConfirmation
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralConfirmation>
+                </div>
+              ))}
 
-            {/* Add Snippet Button */}
-            <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
-              코드 스니펫 추가
-            </St.GeneralConfirmation>
-          </St.Div>
+              {/* Add Snippet Button */}
+              <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
+                코드 스니펫 추가
+              </St.GeneralConfirmation>
+            </St.Div>
+          )}
 
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>

@@ -14,6 +14,7 @@ export const Div = styled.div`
     padding: 20px;
     scrollbar-width: none; /* For Firefox */
     -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    gap: 10px;
   }
 
   &.diary-header {
@@ -41,6 +42,7 @@ export const Div = styled.div`
   .buttonBox {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
   }
 
   /* .code-section button {
