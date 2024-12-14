@@ -16,6 +16,7 @@ export const Div = styled.div`
     -ms-overflow-style: none; /* For Internet Explorer and Edge */
     gap: 10px;
   }
+
   // dark 모드
   &.phone-container-dark {
     width: 500px;
@@ -48,6 +49,53 @@ export const Div = styled.div`
           background-color: #eee;
         }
       }
+    }
+  }
+
+  // 폰트
+  &.font-default {
+    font-family: "Nanum Gothic", sans-serif;
+    input,
+    textarea,
+    button,
+    div {
+      font-family: "Nanum Gothic", sans-serif;
+    }
+  }
+  &.font-do-hyeon {
+    font-family: "Do Hyeon", sans-serif;
+    input,
+    textarea,
+    button,
+    div {
+      font-family: "Do Hyeon", sans-serif;
+    }
+  }
+  &.font-gowun-dodum {
+    font-family: "Gowun Dodum", sans-serif;
+    input,
+    textarea,
+    button,
+    div {
+      font-family: "Gowun Dodum", sans-serif;
+    }
+  }
+  &.font-hi-melody {
+    font-family: "Hi Melody", sans-serif;
+    input,
+    textarea,
+    button,
+    div {
+      font-family: "Hi Melody", sans-serif;
+    }
+  }
+  &.font-jua {
+    font-family: "Jua", sans-serif;
+    input,
+    textarea,
+    button,
+    div {
+      font-family: "Jua", sans-serif;
     }
   }
 
