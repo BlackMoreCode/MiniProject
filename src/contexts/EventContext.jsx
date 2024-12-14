@@ -19,6 +19,7 @@ const EventProvider = ({ children }) => {
 
   const fetchSchedules = useCallback(
     async (year, month) => {
+      if (!loggedInMember) return;
       try {
         const response = await AxiosApi.getMonthlySchedules({
           loggedInMember,
@@ -29,27 +30,26 @@ const EventProvider = ({ children }) => {
         if (response.success) {
           console.log("Fetched schedules from backend:", response.schedules);
 
-          const fetchedSchedules = response.schedules.map((schedule) => ({
-            ...schedule,
-            isAllDay: schedule.isAllday,
-            id: schedule.scheduleNum.toString(), // Ensure 'id' is a string
-            description: schedule.description || "",
-          }));
+          if (response.schedules) {
+            const fetchedSchedules = response.schedules.map((schedule) => ({
+              ...schedule,
+              isAllDay: schedule.isAllday,
+              id: schedule.scheduleNum.toString(), // Ensure 'id' is a string
+              description: schedule.description || "",
+            }));
+            console.log("Mapped schedules with 'id':", fetchedSchedules);
+            const newEvents = {};
+            fetchedSchedules.forEach((schedule) => {
+              const dateKey = new Date(schedule.startDate).toDateString();
+              if (!newEvents[dateKey]) {
+                newEvents[dateKey] = [];
+              }
+              newEvents[dateKey].push(schedule);
+            });
 
-          console.log("Mapped schedules with 'id':", fetchedSchedules);
-
-          const newEvents = {};
-          fetchedSchedules.forEach((schedule) => {
-            const dateKey = new Date(schedule.startDate).toDateString();
-            if (!newEvents[dateKey]) {
-              newEvents[dateKey] = [];
-            }
-            newEvents[dateKey].push(schedule);
-          });
-
-          setEvents(newEvents);
-
-          console.log("Updated events state:", newEvents);
+            setEvents(newEvents);
+            console.log("Updated events state:", newEvents);
+          } else setEvents({});
         } else {
           toast.error("스케줄을 불러오는 데 실패했습니다.");
         }
@@ -152,10 +152,13 @@ const EventProvider = ({ children }) => {
         endDate,
         isAllday: event.isAllDay,
         isImportant: event.isImportant, // Ensure consistent naming
-        notifications: event.alarmTimes.map((alarmTime) => ({
-          alertTime: formatToSeoulLocal(new Date(alarmTime)), // Ensure alertTime is correctly formatted
-          alertMethod: "webPush",
-        })),
+        notifications:
+          event.alarmTimes.length !== 0
+            ? event.alarmTimes.map((alarmTime) => ({
+                alertTime: formatToSeoulLocal(new Date(alarmTime)), // Ensure alertTime is correctly formatted
+                alertMethod: "webPush",
+              }))
+            : null,
       };
 
       console.log("Payload for saveSchedule:", {

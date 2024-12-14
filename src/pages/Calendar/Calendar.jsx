@@ -94,6 +94,7 @@ const Calendar = () => {
       return;
     }
     deleteEvent(eventToDelete);
+    setModalData(null);
   };
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });

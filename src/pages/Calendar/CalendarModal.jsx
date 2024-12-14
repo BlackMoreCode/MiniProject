@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
-import { formatToSeoulLocal } from "../../util/dateUtils";
+import {
+  extractDateOnly,
+  extractTimeOnly,
+  formatToSeoulLocal,
+} from "../../util/dateUtils";
 
 const ModalWrapper = styled.div`
   position: fixed;
@@ -88,11 +92,40 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   useEffect(() => {
     if (data.event) {
       setTitle(data.event.title || "");
-      setTime(data.event.time || { start: "", end: "" });
+      setTime({
+        start: data.event.startDate
+          ? extractTimeOnly(data.event.startDate)
+          : "",
+        end: data.event.startDate ? extractTimeOnly(data.event.endDate) : "",
+      });
       setIsAllDay(data.event.isAllDay || false); // isAllDay가 제대로 세팅되게..
       setAlarms(data.event.alarmTimes || []);
       setDescription(data.event.description || ""); // descriptions 이 비어있는, 즉 NULL 값이여도 문제 없이 핸들링
       setImportance(data.event.isImportant || false);
+
+      if (data.event.notifications) {
+        const alertTimeList = [];
+        data.event.notifications.forEach((noti) => {
+          if (data.event.isAllDay) {
+            const startDate = new Date(data.event.startDate);
+            const alertTime = new Date(noti.alertTime);
+
+            const timeDifference = startDate - alertTime;
+            const daysDifference = timeDifference / (1000 * 3600 * 24);
+
+            alertTimeList.push(daysDifference);
+          } else {
+            const startDate = new Date(data.event.startDate);
+            const alertTime = new Date(noti.alertTime);
+
+            const timeDifference = startDate - alertTime;
+            const minutesDifference = timeDifference / (1000 * 60);
+
+            alertTimeList.push(minutesDifference);
+          }
+        });
+        setAlarms(alertTimeList);
+      }
     }
   }, [data]);
 
@@ -126,6 +159,18 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
 
   const handleSave = () => {
     if (!validateFields()) return;
+
+    if (isAllDay) {
+      // isAllDay가 true일 때, 0, 1, 2를 제거
+      setAlarms((prevAlarms) =>
+        prevAlarms.filter((alarm) => ![0, 1, 2].includes(alarm))
+      );
+    } else {
+      // isAllDay가 false일 때, 15, 30, 45, 60, 120을 제거
+      setAlarms((prevAlarms) =>
+        prevAlarms.filter((alarm) => ![15, 30, 45, 60, 120].includes(alarm))
+      );
+    }
 
     const startDateObj = new Date(data.start);
     const endDateObj = new Date(data.end);
