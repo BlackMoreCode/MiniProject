@@ -375,7 +375,7 @@ export const Div = styled.div`
       background-color: #444;
       color: #aaa;
       &:hover {
-        border: 5px solid #aaa;
+        border: 5px solid #ccc;
         color: #eee;
         p {
           scale: 1.02;
@@ -414,7 +414,7 @@ export const Div = styled.div`
     padding: 10px;
     margin: 10px 0;
     &:hover {
-      border: 5px solid #ccc;
+      border: 5px solid #aaa;
       padding: 5px;
       p {
         scale: 1.02;

@@ -201,7 +201,11 @@ const Home = () => {
 
   return (
     <Container>
-      <Div className="phone-container">
+      <Div 
+        className={diarySetting.theme === "dark"
+         ? "phone-container-dark"
+         : "phone-container"} 
+      >
         <Div className="phone-header">
           <Img1
             src={bannerSrcPathDict[diarySetting.mainBannerImage]}
@@ -210,7 +214,7 @@ const Home = () => {
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
               <button
-                className="phone-menuBtn"
+                className="phone-backBtn"
                 onClick={() => {
                   logout();
                   navigate("/intro");
@@ -222,11 +226,7 @@ const Home = () => {
 
             <Div className="phone-headerRight">
               <button 
-                className={
-                  diarySetting.theme === "dark"
-                   ? "phone-themeBtn-dark"
-                   : "phone-themeBtn"
-                } 
+                className="phone-themeBtn" 
                 onClick={updateTheme}
               >
                 {diarySetting.theme === "dark" ? <IoMoonOutline /> : <FiSun />}
