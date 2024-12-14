@@ -16,6 +16,40 @@ export const Div = styled.div`
     -ms-overflow-style: none; /* For Internet Explorer and Edge */
     gap: 10px;
   }
+  // dark 모드
+  &.phone-container-dark {
+    width: 500px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    gap: 10px;
+
+    background-color: black;
+    color: white;
+    input {
+      background-color: #444;
+      color: white;
+      &::placeholder {
+        color: #ccc;
+      }
+    }
+    textarea {
+      background-color: #444;
+      color: white;
+    }
+    .buttonBox {
+      div {
+        background-color: #ccc;
+        color: black;
+        &:hover {
+          background-color: #eee;
+        }
+      }
+    }
+  }
 
   &.diary-header {
     display: flex;
@@ -43,6 +77,9 @@ export const Div = styled.div`
     display: flex;
     justify-content: space-between;
     gap: 20px;
+    div {
+      cursor: pointer;
+    }
   }
 
   /* .code-section button {
@@ -168,8 +205,8 @@ export const TagList = styled.div`
 
 // 추가된 태그들을 위한 CSS
 export const TagItem = styled.div`
-  background-color: #007bff;
-  color: white;
+  background-color: ${(props) => (props.isDark ? "#aaa" : "#494a50")};
+  color: ${(props) => (props.isDark ? "black" : "white")};
   padding: 5px 10px;
   border-radius: 20px;
   display: inline-flex;
@@ -177,15 +214,16 @@ export const TagItem = styled.div`
   margin: 4px;
   font-size: 14px;
   &:hover {
-    background-color: #0262c9;
+    background-color: ${(props) => (props.isDark ? "#eee" : "#292a2d")};
     font-weight: bold;
   }
 
   button {
     margin-left: 8px;
     background: none;
+    background-color: transparent;
     border: none;
-    color: white;
+    color: ${(props) => (props.isDark ? "black" : "white")};
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -225,11 +263,11 @@ export const GeneralConfirmation = styled.button`
   border: none;
   border-radius: 10px;
   margin: 8px 0;
-  background-color: #f4f4f6;
-  color: #66666e;
+  background-color: ${(props) => (props.isDark ? "#777" : "#f4f4f6")};
+  color: ${(props) => (props.isDark ? "black" : "#66666e")};
   cursor: pointer;
   &:hover {
-    background-color: #dadadb;
+    background-color: ${(props) => (props.isDark ? "#aaa" : "#dadadb")};
     font-weight: bold;
   }
 `;
