@@ -12,7 +12,6 @@ import { IoIosArrowBack } from "react-icons/io";
 const ChangeFont = () => {
   const navigate = useNavigate();
   const { diarySetting } = useContext(DiarySettingContext);
-  const { selectedFont, setSelectedFont } = useContext(LoginContext); // UserContext 사용
 
   const fontClass = [
     "font-basic",
@@ -37,7 +36,6 @@ const ChangeFont = () => {
   }));
 
   const handleFontDoubleClick = (fontClass) => {
-    setSelectedFont(fontClass); // 폰트 상태 업데이트
     document.body.className = fontClass; // DOM 업데이트
     alert(`${fontClass} 폰트가 적용되었습니다.`);
     navigate("/");
@@ -55,7 +53,7 @@ const ChangeFont = () => {
     } else if(diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
-      setUserFont("");
+      setUserFont("font-default");
     }
   }, [diarySetting.font]);
 

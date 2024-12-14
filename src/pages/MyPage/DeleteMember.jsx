@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import AxiosApi from "../../api/AxiosApi";
-
-import { LoginContext } from "../../contexts/LoginContext";
-import { Container, Div } from "./MyPageStyles";
 import { useNavigate } from "react-router-dom";
+// context
+import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
+// css
+import { Container, Div } from "./MyPageStyles";
+// icon
 import { IoIosArrowBack } from "react-icons/io";
 
 const DeleteMember = () => {
@@ -25,9 +28,9 @@ const DeleteMember = () => {
   const [passwordMessage2, setPasswordMessage2] = useState("");
   const [passwordCheck2, setPasswordCheck2] = useState("");
 
-  const { isDarkMode } = useContext(LoginContext); // Dark 모드
-
   const { logout } = useContext(LoginContext);
+
+  const { diarySetting } = useContext(DiarySettingContext);
 
   const inputRef = useRef([]);
 
@@ -45,6 +48,22 @@ const DeleteMember = () => {
     };
     if (userId) fetchUserDetails();
   }, [userId]);
+
+  // 폰트 설정
+    const [ userFont, setUserFont ] = useState("default");
+    useEffect(() => {
+      if(diarySetting.font === "Do Hyeon") {
+        setUserFont("font-do-hyeon");
+      } else if(diarySetting.font === "Gowun Dodum") {
+        setUserFont("font-gowun-dodum");
+      } else if(diarySetting.font === "Hi Melody") {
+        setUserFont("font-hi-melody");
+      } else if(diarySetting.font === "Jua") {
+        setUserFont("font-jua");
+      } else {
+        setUserFont("font-default");
+      }
+    }, [diarySetting.font]);
 
   // 페이지 열 때 커서 포커싱
   useEffect(() => {
@@ -138,7 +157,13 @@ const DeleteMember = () => {
 
   return (
     <Container>
-      <Div className={isDarkMode ? "phone-container-dark" : "phone-container" }>
+      <Div 
+        className={`${
+          diarySetting.theme === "dark"
+           ? "phone-container-dark"
+           : "phone-container"} 
+          ${userFont} 
+        `}>
         <div className="profile-header">
           <button onClick={()=>navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />

@@ -25,6 +25,13 @@ export const Div = styled.div`
     }
   }
   // 폰트
+  &.font-default {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Nanum Gothic", sans-serif;
+    }
+  }
   &.font-do-hyeon {
     .mypage-title,
     .link-button,
