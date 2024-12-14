@@ -11,23 +11,21 @@ import { IoIosArrowBack } from "react-icons/io";
 
 const ChangeFont = () => {
   const navigate = useNavigate();
-  const { diarySetting } = useContext(DiarySettingContext);
+  const { diarySetting, updateDiarySetting } = useContext(DiarySettingContext);
 
   const fontClass = [
-    "font-basic",
-    "font-dohyeon",
+    "font-default",
+    "font-do-hyeon",
     "font-gowun-dodum",
     "font-hi-melody",
     "font-jua",
-    "font-nanum-gothic",
   ];
   const fontTitle = [
-    "Basic",
+    "Default",
     "Do Hyeon",
     "Gowun Dodum",
     "Hi Melody",
     "Jua",
-    "Nanum Gothic",
   ];
 
   const fontData = fontClass.map((fontClass, index) => ({
@@ -35,13 +33,7 @@ const ChangeFont = () => {
     title: fontTitle[index],
   }));
 
-  const handleFontDoubleClick = (fontClass) => {
-    document.body.className = fontClass; // DOM 업데이트
-    alert(`${fontClass} 폰트가 적용되었습니다.`);
-    navigate("/");
-  };
-
-  // 폰트 설정
+  // 폰트 가져오기
   const [ userFont, setUserFont ] = useState("default");
   useEffect(() => {
     if(diarySetting.font === "Do Hyeon") {
@@ -56,6 +48,35 @@ const ChangeFont = () => {
       setUserFont("font-default");
     }
   }, [diarySetting.font]);
+
+  // 폰트 변경
+  const handleFontDoubleClick = (fontClass) => {
+    let thisFont = "";
+    if(fontClass === "font-default") {
+      thisFont = "default";
+    } else if(fontClass === "font-do-hyeon") {
+      thisFont = "Do Hyeon";
+    } else if(fontClass === "font-gowun-dodum") {
+      thisFont = "Gowun Dodum";
+    } else if(fontClass === "font-hi-melody") {
+      thisFont = "Hi Melody";
+    } else if(fontClass === "font-jua") {
+      thisFont = "Jua";
+    }
+    changeFont(thisFont);
+  };
+  const changeFont = async (thisFont) => {
+    const isUpdated = await updateDiarySetting(
+      "font",
+      diarySetting.font = thisFont
+    );
+    if (isUpdated) {
+      alert(`폰트가 ${thisFont} 로 변경되었습니다.`);
+    } else {
+      alert("폰트 변경 실패. 관리자에게 문의해주세요.");
+      navigate("/mypage")
+    }
+  };
 
   return (
     <Container>

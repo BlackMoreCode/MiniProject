@@ -420,6 +420,21 @@ export const Div = styled.div`
         scale: 1.02;
       }
     }
+    &.font-default {
+      font-family: "Nanum Gothic", sans-serif;
+    }
+    &.font-do-hyeon {
+      font-family: "Do Hyeon", sans-serif;
+    }
+    &.font-gowun-dodum {
+      font-family: "Gowun Dodum", sans-serif;
+    }
+    &.font-hi-melody {
+      font-family: "Hi Melody", sans-serif;
+    }
+    &.font-jua {
+      font-family: "Jua", sans-serif;
+    }
   }
 
   // theme 관련
