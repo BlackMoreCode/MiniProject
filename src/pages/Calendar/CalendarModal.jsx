@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
+import { formatToSeoulLocal } from "../../util/dateUtils";
 
 const ModalWrapper = styled.div`
   position: fixed;
@@ -81,16 +82,16 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const [time, setTime] = useState({ start: "", end: "" });
   const [isAllDay, setIsAllDay] = useState(false);
   const [alarms, setAlarms] = useState([]);
-  const [description, setDescription] = useState(""); // Replaced notes with description
+  const [description, setDescription] = useState(""); // 기존에 notes라고 썼더니 너무 헷갈려서 백엔드의 description으로 통일처리
   const [importance, setImportance] = useState(false);
 
   useEffect(() => {
     if (data.event) {
       setTitle(data.event.title || "");
       setTime(data.event.time || { start: "", end: "" });
-      setIsAllDay(data.event.isAllDay || false); // Ensure 'isAllDay' is set correctly
+      setIsAllDay(data.event.isAllDay || false); // isAllDay가 제대로 세팅되게..
       setAlarms(data.event.alarmTimes || []);
-      setDescription(data.event.description || ""); // Handle null descriptions
+      setDescription(data.event.description || ""); // descriptions 이 비어있는, 즉 NULL 값이여도 문제 없이 핸들링
       setImportance(data.event.isImportant || false);
     }
   }, [data]);
@@ -126,37 +127,52 @@ const CalendarModal = ({ data, onSave, onDelete, closeModal }) => {
   const handleSave = () => {
     if (!validateFields()) return;
 
-    const startDate = new Date(data.start);
-    const endDate = new Date(data.end);
+    const startDateObj = new Date(data.start);
+    const endDateObj = new Date(data.end);
 
     if (!isAllDay && time.start) {
       const [sh, sm] = time.start.split(":");
-      startDate.setHours(parseInt(sh, 10), parseInt(sm, 10), 0, 0);
+      startDateObj.setHours(parseInt(sh, 10), parseInt(sm, 10), 0, 0);
     } else {
-      startDate.setHours(0, 0, 0, 0);
+      startDateObj.setHours(0, 0, 0, 0);
     }
 
     if (!isAllDay && time.end) {
       const [eh, em] = time.end.split(":");
-      endDate.setHours(parseInt(eh, 10), parseInt(em, 10), 0, 0);
+      endDateObj.setHours(parseInt(eh, 10), parseInt(em, 10), 0, 0);
     } else {
-      endDate.setHours(23, 59, 59, 999);
+      endDateObj.setHours(23, 59, 59, 999);
     }
 
-    const event = {
+    const startDate = formatToSeoulLocal(startDateObj).slice(0, 19); // 'yyyy-MM-dd'T'HH:mm:ss'
+    const endDate = formatToSeoulLocal(endDateObj).slice(0, 19); // 'yyyy-MM-dd'T'HH:mm:ss'
+
+    const eventPayload = {
       id: data.event?.id || null,
       startDate,
       endDate,
       title,
       time: isAllDay ? null : time,
       isAllDay,
-      alarmTimes: alarms,
+      alarmTimes: alarms.map((alarm) => {
+        if (isAllDay) {
+          //  하루 종일 이벤트라면 알람은 일 단위로 전으로
+          const alarmDate = new Date(startDateObj);
+          alarmDate.setDate(alarmDate.getDate() - alarm);
+          return alarmDate;
+        } else {
+          // 특정 시간대로 정해진 이벤트라면 알람은 시작시간 n분 전으로
+          const alarmDate = new Date(startDateObj);
+          alarmDate.setMinutes(alarmDate.getMinutes() - alarm);
+          return alarmDate;
+        }
+      }),
       description: description.trim() || "",
-      importance,
+      isImportant: importance,
     };
 
-    console.log("Saving event payload:", event);
-    onSave(event);
+    console.log("Saving event payload:", eventPayload);
+    onSave(eventPayload);
   };
 
   const handleDelete = () => {

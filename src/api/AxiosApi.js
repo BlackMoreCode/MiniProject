@@ -1,4 +1,5 @@
 import axios from "axios";
+import { formatToSeoulLocal } from "../util/dateUtils";
 
 const BACKEND_DOMAIN = "http://localhost:8111";
 const API_BASE_URL = "http://localhost:8111/api";
@@ -236,8 +237,6 @@ export const AxiosApi = {
 
   // 플래너 / 스케쥴 관련 API
   getMonthlySchedules: async ({ loggedInMember, year, month }) => {
-    // { loggedInMember: {id,password}, date:{year,month} }
-    // 이하는 테스트용 로그
     console.log("Requesting monthly schedules with:", {
       loggedInMember,
       year,
@@ -251,11 +250,16 @@ export const AxiosApi = {
           date: { year, month },
         }
       );
-      console.log("Received monthly schedules response:", response.data); // 백으로서부터 받은 데이터
+      console.log("Received monthly schedules response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching monthly schedules:", error);
-      throw error;
+      if (error.response) {
+        console.error("Error fetching monthly schedules:", error.response.data);
+        throw error.response.data;
+      } else {
+        console.error("Error fetching monthly schedules:", error.message);
+        throw new Error("Network or server error");
+      }
     }
   },
 
@@ -270,18 +274,39 @@ export const AxiosApi = {
       console.log("Save response:", response.data); // 백엔드 응답 로깅용
       return response.data;
     } catch (error) {
-      console.error("Error saving schedule:", error.response || error); // 에러 응답 로그용
-      throw error;
+      if (error.response) {
+        console.error("Error saving schedule:", error.response.data);
+        throw error.response.data;
+      } else {
+        console.error("Error saving schedule:", error.message);
+        throw new Error("Network or server error");
+      }
     }
   },
 
   updateSchedule: async ({ loggedInMember, scheduleNum, updatedSchedule }) => {
-    const response = await axios.post(`${API_BASE_URL}/schedule/update`, {
+    console.log("Updating schedule:", {
       loggedInMember,
       scheduleNum,
       updatedSchedule,
     });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_BASE_URL}/schedule/update`, {
+        loggedInMember,
+        scheduleNum,
+        updatedSchedule,
+      });
+      console.log("Update response:", response.data);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error("Error updating schedule:", error.response.data);
+        throw error.response.data;
+      } else {
+        console.error("Error updating schedule:", error.message);
+        throw new Error("Network or server error");
+      }
+    }
   },
 
   deleteSchedule: async ({ loggedInMember, scheduleNum }) => {
@@ -297,8 +322,13 @@ export const AxiosApi = {
       console.log("Received deleteSchedule response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error deleting schedule:", error.response || error);
-      throw error;
+      if (error.response) {
+        console.error("Error deleting schedule:", error.response.data);
+        throw error.response.data;
+      } else {
+        console.error("Error deleting schedule:", error.message);
+        throw new Error("Network or server error");
+      }
     }
   },
 };
