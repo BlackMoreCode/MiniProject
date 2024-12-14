@@ -422,36 +422,6 @@ export const Div = styled.div`
     }
   }
 
-  .font-dohyun {
-    font-family: "Do Hyeon", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-gowun-dodum {
-    font-family: "Gowun Dodum", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-hi-melody {
-    font-family: "Hi Melody", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-jua {
-    font-family: "Jua", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-nanum-gothic {
-    font-family: "Nanum Gothic", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
   // theme 관련
   .theme-box {
     background-color: rgb(244,244,246);

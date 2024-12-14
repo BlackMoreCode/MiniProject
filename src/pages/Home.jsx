@@ -199,12 +199,32 @@ const Home = () => {
     }
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("font-default");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
       <Div 
-        className={diarySetting.theme === "dark"
-         ? "phone-container-dark"
-         : "phone-container"} 
+        className={`
+          ${diarySetting.theme === "dark"
+          ? "phone-container-dark"
+          : "phone-container"} 
+          ${userFont}
+        `} 
+        
       >
         <Div className="phone-header">
           <Img1

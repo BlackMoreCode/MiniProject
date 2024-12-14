@@ -33,6 +33,23 @@ export const Div = styled.div`
     display: flex;
     flex-direction: column;
   }
+  // font
+  &.font-default {
+    font-family: "Nanum Gothic", sans-serif;
+  }
+  &.font-do-hyeon {
+    font-family: "Do Hyeon", sans-serif;
+  }
+  &.font-gowun-dodum {
+    font-family: "Gowun Dodum", sans-serif;
+  }
+  &.font-hi-melody {
+    font-family: "Hi Melody", sans-serif;
+  }
+  &.font-jua {
+    font-family: "Jua", sans-serif;
+  }
+
   // dark 모드
   &.phone-container-dark {
     width: 100%;
@@ -113,7 +130,7 @@ export const Div = styled.div`
         }
       }
     }
-  }
+  } // dark 모드 끝
 
   &.phone-header {
     position: relative;
