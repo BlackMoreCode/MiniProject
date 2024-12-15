@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
-import {
-  extractDateOnly,
-  extractTimeOnly,
-  formatToSeoulLocal,
-} from "../../util/dateUtils";
+import { extractTimeOnly, formatToSeoulLocal } from "../../util/dateUtils";
 
 const ModalWrapper = styled.div`
   position: fixed;
