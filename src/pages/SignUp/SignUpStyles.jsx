@@ -10,6 +10,12 @@ export const SignUpContents = styled.div`
   height: 100%;
 
   padding: 20px;
+
+  * {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
 `;
 
 export const SignUpHeader = styled.header`
@@ -75,18 +81,19 @@ export const SignUpMain = styled.main`
 
     padding: 15px 0;
 
-    background-color: #007bff;
+    background-color: #e8e8e8;
 
     border: 0;
     border-radius: 10px;
 
-    color: white;
+    color: black;
     font-weight: bold;
   }
 
+  button:not(:disabled):focus,
   button:not(:disabled):hover,
   button:not(:disabled):active {
-    background-color: #0a6dce;
+    background-color: #d8d8d8;
   }
 
   button:not(:disabled):active {
@@ -95,5 +102,6 @@ export const SignUpMain = styled.main`
 
   button:disabled {
     opacity: 0.5;
+    cursor: not-allowed;
   }
 `;

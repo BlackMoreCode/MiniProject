@@ -11,6 +11,12 @@ export const IntroContents = styled.div`
 
   font-size: 18px;
 
+  * {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
   img {
     width: 55%;
     margin-bottom: 120px;
@@ -34,7 +40,9 @@ export const IntroContents = styled.div`
     cursor: pointer;
   }
 
-  button:hover {
+  button:focus,
+  button:hover,
+  button:active {
     background-color: #d8d8d8;
   }
 

@@ -10,6 +10,7 @@ const MessageModal = forwardRef((props, ref) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const modalOverlayElement = useRef(null);
+  const onClose = useRef(null);
 
   useImperativeHandle(ref, () => ({
     enable(newTitle, newDescription) {
@@ -21,6 +22,10 @@ const MessageModal = forwardRef((props, ref) => {
       modalOverlayElement.current.style.display = "none";
       setTitle("");
       setDescription("");
+      if (onClose.current) onClose.current();
+    },
+    setOnClose(callback = null) {
+      if (callback) onClose.current = callback;
     },
   }));
 
@@ -31,7 +36,13 @@ const MessageModal = forwardRef((props, ref) => {
           <h3>{title}</h3>
           <p>{description}</p>
         </div>
-        <button onClick={() => ref?.current?.disable()}>확인</button>
+        <button
+          onClick={() => {
+            ref?.current?.disable();
+          }}
+        >
+          확인
+        </button>
       </ModalContents>
     </ModalOverlay>
   );
