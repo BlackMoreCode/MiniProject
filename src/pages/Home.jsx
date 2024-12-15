@@ -326,7 +326,7 @@ const Home = () => {
               style={
                 diarySetting.theme === "dark"
                   ? { color: "white", marginLeft: "125px" }
-                  : {}
+                  : { marginLeft: "125px" }
               }
             >
               검색 결과가 없습니다.
@@ -356,7 +356,7 @@ const Home = () => {
               style={
                 diarySetting.theme === "dark"
                   ? { color: "white", marginLeft: "100px" }
-                  : {}
+                  : { marginLeft: "100px" }
               }
             >
               추가된 일기가 아직 없습니다.
