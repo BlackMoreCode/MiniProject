@@ -42,7 +42,7 @@ const MyPage = (/* 유저 아이디 받기?? */) => {
     } else if(diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
-      setUserFont("");
+      setUserFont("font-default");
     }
   }, [diarySetting.font]);
 

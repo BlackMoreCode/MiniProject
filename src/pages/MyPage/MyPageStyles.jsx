@@ -25,6 +25,13 @@ export const Div = styled.div`
     }
   }
   // 폰트
+  &.font-default {
+    .mypage-title,
+    .link-button,
+    input {
+      font-family: "Nanum Gothic", sans-serif;
+    }
+  }
   &.font-do-hyeon {
     .mypage-title,
     .link-button,
@@ -368,7 +375,7 @@ export const Div = styled.div`
       background-color: #444;
       color: #aaa;
       &:hover {
-        border: 5px solid #aaa;
+        border: 5px solid #ccc;
         color: #eee;
         p {
           scale: 1.02;
@@ -407,42 +414,27 @@ export const Div = styled.div`
     padding: 10px;
     margin: 10px 0;
     &:hover {
-      border: 5px solid #ccc;
+      border: 5px solid #aaa;
       padding: 5px;
       p {
         scale: 1.02;
       }
     }
-  }
-
-  .font-dohyun {
-    font-family: "Do Hyeon", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-gowun-dodum {
-    font-family: "Gowun Dodum", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-hi-melody {
-    font-family: "Hi Melody", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-jua {
-    font-family: "Jua", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-
-  .font-nanum-gothic {
-    font-family: "Nanum Gothic", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+    &.font-default {
+      font-family: "Nanum Gothic", sans-serif;
+    }
+    &.font-do-hyeon {
+      font-family: "Do Hyeon", sans-serif;
+    }
+    &.font-gowun-dodum {
+      font-family: "Gowun Dodum", sans-serif;
+    }
+    &.font-hi-melody {
+      font-family: "Hi Melody", sans-serif;
+    }
+    &.font-jua {
+      font-family: "Jua", sans-serif;
+    }
   }
 
   // theme 관련

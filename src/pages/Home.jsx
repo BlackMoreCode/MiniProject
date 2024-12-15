@@ -199,9 +199,33 @@ const Home = () => {
     }
   };
 
+  // 폰트 설정
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("font-default");
+    }
+  }, [diarySetting.font]);
+
   return (
     <Container>
-      <Div className="phone-container">
+      <Div 
+        className={`
+          ${diarySetting.theme === "dark"
+          ? "phone-container-dark"
+          : "phone-container"} 
+          ${userFont}
+        `} 
+        
+      >
         <Div className="phone-header">
           <Img1
             src={bannerSrcPathDict[diarySetting.mainBannerImage]}
@@ -210,7 +234,7 @@ const Home = () => {
           <Div className="phone-headerbar">
             <Div className="phone-headerLeft">
               <button
-                className="phone-menuBtn"
+                className="phone-backBtn"
                 onClick={() => {
                   logout();
                   navigate("/intro");
@@ -222,11 +246,7 @@ const Home = () => {
 
             <Div className="phone-headerRight">
               <button 
-                className={
-                  diarySetting.theme === "dark"
-                   ? "phone-themeBtn-dark"
-                   : "phone-themeBtn"
-                } 
+                className="phone-themeBtn" 
                 onClick={updateTheme}
               >
                 {diarySetting.theme === "dark" ? <IoMoonOutline /> : <FiSun />}

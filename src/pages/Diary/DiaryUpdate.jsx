@@ -3,6 +3,7 @@ import AxiosApi from "../../api/AxiosApi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { LoginContext } from "../../contexts/LoginContext";
 import { DiaryContext } from "../../contexts/DiaryContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 import * as St from "./diaryComponent";
 import ConfirmationModal from "./ConfirmationModal";
 import CodeMirror from "@uiw/react-codemirror";
@@ -17,6 +18,7 @@ const DiaryUpdate = () => {
   const location = useLocation();
   const textarea = useRef(null);
   const { fetchDiaries } = useContext(DiaryContext);
+  const { diarySetting } = useContext(DiarySettingContext);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -264,10 +266,34 @@ const DiaryUpdate = () => {
     setCodeSnippets(updatedSnippets);
   };
 
+  // 폰트 가져오기
+  const [ userFont, setUserFont ] = useState("default");
+  useEffect(() => {
+    if(diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if(diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if(diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if(diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("font-default");
+    }
+  }, [diarySetting.font]);
+
   return (
     <div style={{ height: "100%", overflowY: "auto" }}>
       <St.Container>
-        <St.Div className="phone-container" onSubmit={handleSubmit}>
+        <St.Div 
+          className={`${
+            diarySetting.theme === "dark"
+            ? "phone-container-dark"
+            : "phone-container"} 
+            ${userFont} 
+          `}
+          onSubmit={handleSubmit}
+        >
           <p>제목</p>
           <St.InputGeneral
             type="text"
@@ -298,12 +324,19 @@ const DiaryUpdate = () => {
               onChange={(e) => setTagInput(e.target.value)}
               placeholder="태그를 입력하세요"
             />
-            <St.GeneralConfirmation type="button" onClick={addTag}>
+            <St.GeneralConfirmation 
+              type="button" 
+              onClick={addTag}
+              isDark={diarySetting.theme === "dark"}
+            >
               태그 추가
             </St.GeneralConfirmation>
             <St.TagList>
               {tags.map((tag, index) => (
-                <St.TagItem key={index}>
+                <St.TagItem
+                  key={index}
+                  isDark={diarySetting.theme === "dark"}
+                >
                   {tag}
                   <button
                     onClick={() => setTags(tags.filter((t) => t !== tag))}
@@ -318,88 +351,98 @@ const DiaryUpdate = () => {
           <St.GeneralConfirmation
             type="button"
             onClick={() => setShowCodeSnippets((prev) => !prev)}
+            isDark={diarySetting.theme === "dark"}
           >
             {showCodeSnippets ? "코드 일기 닫기" : "코드 일기 열기"}
           </St.GeneralConfirmation>
 
-          <St.Div className="code-section">
-            {codeSnippets.map((snippet, snippetIndex) => (
-              <div key={snippetIndex}>
-                {/* Language Dropdown */}
-                <select
-                  value={snippet.programmingLanguageName}
-                  onChange={(e) => {
-                    const updatedSnippets = [...codeSnippets];
-                    updatedSnippets[snippetIndex].programmingLanguageName =
-                      e.target.value;
-                    setCodeSnippets(updatedSnippets);
-                  }}
-                >
-                  <option value="javascript">JavaScript</option>
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                </select>
+          {showCodeSnippets && (
+            <St.Div className="code-section">
+              {codeSnippets.map((snippet, snippetIndex) => (
+                <div key={snippetIndex}>
+                  {/* Language Dropdown */}
+                  <select
+                    value={snippet.programmingLanguageName}
+                    onChange={(e) => {
+                      const updatedSnippets = [...codeSnippets];
+                      updatedSnippets[snippetIndex].programmingLanguageName =
+                        e.target.value;
+                      setCodeSnippets(updatedSnippets);
+                    }}
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                  </select>
 
-                {/* Code Editor */}
-                <CodeMirror
-                  value={snippet.content}
-                  height="auto"
-                  theme={dracula}
-                  extensions={[
-                    snippet.programmingLanguageName === "javascript"
-                      ? javascript()
-                      : snippet.programmingLanguageName === "python"
-                      ? python()
-                      : java(),
-                  ]}
-                  onChange={(value) => updateCodeSnippet(snippetIndex, value)}
-                />
+                  {/* Code Editor */}
+                  <CodeMirror
+                    value={snippet.content}
+                    height="auto"
+                    theme={dracula}
+                    extensions={[
+                      snippet.programmingLanguageName === "javascript"
+                        ? javascript()
+                        : snippet.programmingLanguageName === "python"
+                        ? python()
+                        : java(),
+                    ]}
+                    onChange={(value) => updateCodeSnippet(snippetIndex, value)}
+                  />
 
-                <St.GeneralConfirmation
-                  type="button"
-                  onClick={() => removeCodeSnippet(snippetIndex)}
-                >
-                  코드 스니펫 삭제
-                </St.GeneralConfirmation>
+                  <St.GeneralConfirmation
+                    type="button"
+                    onClick={() => removeCodeSnippet(snippetIndex)}
+                    isDark={diarySetting.theme === "dark"}
+                  >
+                    코드 스니펫 삭제
+                  </St.GeneralConfirmation>
 
-                {/* Commentary Section */}
-                {snippet.commentary.map((comment, commentaryIndex) => (
-                  <div key={commentaryIndex}>
-                    <St.TextArea
-                      value={comment}
-                      onChange={(e) =>
-                        updateCodeCommentary(
-                          snippetIndex,
-                          commentaryIndex,
-                          e.target.value
-                        )
-                      }
-                    />
-                    <St.GeneralConfirmation
-                      type="button"
-                      onClick={() =>
-                        removeCodeCommentary(snippetIndex, commentaryIndex)
-                      }
-                    >
-                      코멘트 삭제
-                    </St.GeneralConfirmation>
-                  </div>
-                ))}
+                  {/* Commentary Section */}
+                  {snippet.commentary.map((comment, commentaryIndex) => (
+                    <div key={commentaryIndex}>
+                      <St.TextArea
+                        value={comment}
+                        onChange={(e) =>
+                          updateCodeCommentary(
+                            snippetIndex,
+                            commentaryIndex,
+                            e.target.value
+                          )
+                        }
+                      />
+                      <St.GeneralConfirmation
+                        type="button"
+                        onClick={() =>
+                          removeCodeCommentary(snippetIndex, commentaryIndex)
+                        }
+                        isDark={diarySetting.theme === "dark"}
+                      >
+                        코멘트 삭제
+                      </St.GeneralConfirmation>
+                    </div>
+                  ))}
 
-                <St.GeneralConfirmation
-                  type="button"
-                  onClick={() => addCodeCommentary(snippetIndex)}
-                >
-                  코드 코멘트 추가
-                </St.GeneralConfirmation>
-              </div>
-            ))}
+                  <St.GeneralConfirmation
+                    type="button"
+                    onClick={() => addCodeCommentary(snippetIndex)}
+                    isDark={diarySetting.theme === "dark"}
+                  >
+                    코드 코멘트 추가
+                  </St.GeneralConfirmation>
+                </div>
+              ))}
 
-            {/* Add Snippet Button */}
-            <St.GeneralConfirmation type="button" onClick={addCodeSnippet}>
-              코드 스니펫 추가
-            </St.GeneralConfirmation>
-          </St.Div>
+              {/* Add Snippet Button */}
+              <St.GeneralConfirmation 
+                type="button" 
+                onClick={addCodeSnippet}
+                isDark={diarySetting.theme === "dark"}
+              >
+                코드 스니펫 추가
+              </St.GeneralConfirmation>
+            </St.Div>
+          )}
 
           <div className="buttonBox">
             <St.ConfirmBtn type="submit" onClick={handleSubmit}>

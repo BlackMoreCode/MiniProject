@@ -33,6 +33,104 @@ export const Div = styled.div`
     display: flex;
     flex-direction: column;
   }
+  // font
+  &.font-default {
+    font-family: "Nanum Gothic", sans-serif;
+  }
+  &.font-do-hyeon {
+    font-family: "Do Hyeon", sans-serif;
+  }
+  &.font-gowun-dodum {
+    font-family: "Gowun Dodum", sans-serif;
+  }
+  &.font-hi-melody {
+    font-family: "Hi Melody", sans-serif;
+  }
+  &.font-jua {
+    font-family: "Jua", sans-serif;
+  }
+
+  // dark 모드
+  &.phone-container-dark {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .phone-backBtn {
+      background-color: #aaa;
+      color: black;
+      &:hover {
+        background-color: #eee;
+        transition: ease-in-out 0.3s;
+      }
+    }
+    .phone-headerRight {
+      .phone-themeBtn {
+        background-color: #aaa;
+        color: black;
+        &:hover {
+          background-color: #eee;
+          transition: ease-in-out 0.3s;
+        }
+      }
+      .phone-searchBox {
+        background-color: #aaa;
+        color: black;
+        .searchBtn,
+        .closeBtn,
+        input {
+          color: black;
+        }
+      }
+    }
+    .date-sort-container {
+      background-color: black;
+      color: #eee;
+      .date-calendar {
+        background-color: #aaa;
+        color: black;
+        &:hover {
+          background-color: #eee;
+          transition: ease-in-out 0.3s;
+        }
+      }
+      .phone-sort {
+        background-color: #aaa;
+        color: black;
+        &:hover {
+          background-color: #eee;
+          transition: ease-in-out 0.3s;
+        }
+      }
+    }
+    .diary-container {
+      background-color: black;
+      .diary-box {
+        background-color: #444;
+        &:hover {
+          padding: 5px;
+          border: 5px solid #ccc;
+        }
+        p {
+          color: #aaa;
+        }
+        &:hover p {
+          color: #eee;
+        }
+      }
+    }
+    .phone-footer {
+      background-color: black;
+      button {
+        background-color: #aaa;
+        color: black;
+        &:hover {
+          background-color: #eee;
+          transition: ease-in-out 0.3s;
+        }
+      }
+    }
+  } // dark 모드 끝
 
   &.phone-header {
     position: relative;
@@ -47,7 +145,7 @@ export const Div = styled.div`
     padding: 10px;
   }
 
-  .phone-menuBtn {
+  .phone-backBtn {
     align-items: center;
     background-color: #494a50;
     border: none;
@@ -97,26 +195,7 @@ export const Div = styled.div`
         transition: ease-in-out 0.3s;
       }
     }
-    .phone-themeBtn-dark {
-      width: 30px;
-      height: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: none;
-      border-radius: 50%;
-      background-color: #494a50;
-      color: white;
-      cursor: pointer;
-      svg {
-        width: 21px;
-        height: 21px;
-      }
-      &:hover {
-        background-color: #292a2d;
-        transition: ease-in-out 0.3s;
-      }
-    }
+    
     .phone-searchBox {
       display: flex;
       justify-content: center;
@@ -317,11 +396,11 @@ export const Div = styled.div`
     gap: 10px; /* Space between date and content */
 
     &:hover {
-      /* padding: 5px; */
-      /* border: 3px solid #ccc; */
-      background-color: #c9c9c9;
-      color: white;
-      transition: ease-in-out 0.3s;
+      padding: 5px;
+      border: 5px solid #aaa;
+      /* background-color: #c9c9c9; */
+      /* color: white; */
+      /* transition: ease-in-out 0.3s; */
     }
 
     .diary-date {
