@@ -158,7 +158,7 @@ const Home = () => {
   const handleSort = () => {
     setIsSort((prevState) => {
       const newSortOrder = prevState === "asc" ? "desc" : "asc";
-      
+
       setSortedDiaries((prevDiaries) =>
         [...prevDiaries].sort((a, b) => {
           const dateA = new Date(a.writtenDate);
@@ -200,15 +200,15 @@ const Home = () => {
   };
 
   // 폰트 설정
-  const [ userFont, setUserFont ] = useState("default");
+  const [userFont, setUserFont] = useState("default");
   useEffect(() => {
-    if(diarySetting.font === "Do Hyeon") {
+    if (diarySetting.font === "Do Hyeon") {
       setUserFont("font-do-hyeon");
-    } else if(diarySetting.font === "Gowun Dodum") {
+    } else if (diarySetting.font === "Gowun Dodum") {
       setUserFont("font-gowun-dodum");
-    } else if(diarySetting.font === "Hi Melody") {
+    } else if (diarySetting.font === "Hi Melody") {
       setUserFont("font-hi-melody");
-    } else if(diarySetting.font === "Jua") {
+    } else if (diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
       setUserFont("font-default");
@@ -217,14 +217,15 @@ const Home = () => {
 
   return (
     <Container>
-      <Div 
+      <Div
         className={`
-          ${diarySetting.theme === "dark"
-          ? "phone-container-dark"
-          : "phone-container"} 
+          ${
+            diarySetting.theme === "dark"
+              ? "phone-container-dark"
+              : "phone-container"
+          } 
           ${userFont}
-        `} 
-        
+        `}
       >
         <Div className="phone-header">
           <Img1
@@ -245,10 +246,7 @@ const Home = () => {
             </Div>
 
             <Div className="phone-headerRight">
-              <button 
-                className="phone-themeBtn" 
-                onClick={updateTheme}
-              >
+              <button className="phone-themeBtn" onClick={updateTheme}>
                 {diarySetting.theme === "dark" ? <IoMoonOutline /> : <FiSun />}
               </button>
               <div className="phone-searchBox">
@@ -324,7 +322,15 @@ const Home = () => {
 
         <Div className="diary-container">
           {searchValue && searchResults.length === 0 ? (
-            <p>검색 결과가 없습니다.</p>
+            <p
+              style={
+                diarySetting.theme === "dark"
+                  ? { color: "white", marginLeft: "125px" }
+                  : {}
+              }
+            >
+              검색 결과가 없습니다.
+            </p>
           ) : searchValue ? (
             searchResults.map((diary, index) => (
               <Div
@@ -346,7 +352,15 @@ const Home = () => {
               </Div>
             ))
           ) : sortedDiaries.length === 0 ? (
-            <p>추가된 일기가 아직 없습니다.</p>
+            <p
+              style={
+                diarySetting.theme === "dark"
+                  ? { color: "white", marginLeft: "100px" }
+                  : {}
+              }
+            >
+              추가된 일기가 아직 없습니다.
+            </p>
           ) : (
             sortedDiaries.map((diary, index) => (
               <Div
