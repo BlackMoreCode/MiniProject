@@ -9,7 +9,7 @@ export const Navigation = styled.div`
 `;
 
 export const CheckIndicator = styled.span`
-  color: white;
+  color: ${({ theme }) => (theme === "dark" ? "white" : "green")};
   font-size: 18px;
   margin-left: 10px;
 `;

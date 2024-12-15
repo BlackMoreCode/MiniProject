@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 import { EventContext } from "../../contexts/EventContext";
 import * as IntegratedStyles from "./CalendarStyles";
 import CalendarGrid from "./CalendarGrid";
@@ -14,13 +14,21 @@ const Calendar = () => {
 
   // 여러일에 걸쳐서 이벤트 등록해주기 위한 범위 선택
   const [selectedRange, setSelectedRange] = useState(null);
-
   const [modalData, setModalData] = useState(null);
-  const { isDarkMode } = useContext(LoginContext);
+
+  // Theme setting fetched from DiarySettingContext
+  const { diarySetting } = useContext(DiarySettingContext);
   const { events, addEvent, updateEvent, deleteEvent, fetchSchedules } =
-    useContext(EventContext); // EventContext 으로 부터 fetchSchedules 불러오기
+    useContext(EventContext);
 
   const navigate = useNavigate();
+  const isDarkMode = diarySetting.theme === "dark";
+
+  useEffect(() => {
+    const year = currentDate.getFullYear().toString();
+    const month = (currentDate.getMonth() + 1).toString();
+    fetchSchedules(year, month);
+  }, [currentDate, fetchSchedules]);
 
   const handlePrevMonth = () => {
     const newDate = new Date(
@@ -40,13 +48,6 @@ const Calendar = () => {
     setCurrentDate(newDate);
   };
 
-  useEffect(() => {
-    // 고른 현재 날짜가 바뀔 때 마다 스케쥴을 fetch 해옴
-    const year = currentDate.getFullYear().toString();
-    const month = (currentDate.getMonth() + 1).toString();
-    fetchSchedules(year, month);
-  }, [currentDate, fetchSchedules]);
-
   const handleDateSelection = (range) => {
     // 유저가 같은 범위를 다시 누른다면, 해당 선택을 클리어. 즉 더블 클릭시나 이럴때도 지우려고 도입 시도.
     if (
@@ -61,7 +62,7 @@ const Calendar = () => {
   };
 
   const handleAddEvent = () => {
-    if (selectedRange && selectedRange.start && selectedRange.end) {
+    if (selectedRange?.start && selectedRange.end) {
       setModalData({
         start: selectedRange.start,
         end: selectedRange.end,
@@ -100,17 +101,13 @@ const Calendar = () => {
 
   const monthName = currentDate.toLocaleString("default", { month: "long" });
   const year = currentDate.getFullYear();
-  const selectedDateEvents =
-    selectedRange && selectedRange.start
-      ? events[selectedRange.start.toDateString()] || []
-      : [];
+  const selectedDateEvents = selectedRange?.start
+    ? events[selectedRange.start.toDateString()] || []
+    : [];
 
   const CalendarWrapper = isDarkMode
     ? IntegratedStyles.CalendarWrapperDark
     : IntegratedStyles.CalendarWrapper;
-
-  const Navigation = IntegratedStyles.Navigation;
-  const CheckIndicator = IntegratedStyles.CheckIndicator;
   const Button = isDarkMode
     ? IntegratedStyles.ButtonDark
     : IntegratedStyles.Button;
@@ -132,13 +129,13 @@ const Calendar = () => {
 
   return (
     <CalendarWrapper>
-      <Navigation>
+      <IntegratedStyles.Navigation>
         <Button onClick={handlePrevMonth}>이전 달</Button>
         <h2>
           {year} {monthName}
         </h2>
         <Button onClick={handleNextMonth}>다음 달</Button>
-      </Navigation>
+      </IntegratedStyles.Navigation>
 
       <CalendarGrid
         date={currentDate}
@@ -147,7 +144,7 @@ const Calendar = () => {
         events={events}
       />
 
-      {selectedRange && selectedRange.start && (
+      {selectedRange?.start && (
         <EventListWrapper>
           <h3>
             {`${selectedRange.start.getDate()}일`}{" "}
@@ -174,7 +171,6 @@ const Calendar = () => {
                 | {event.title}
               </span>
               {event.isImportant && "⭐"}
-              {event.checked && <CheckIndicator>✔</CheckIndicator>}
             </EventItem>
           ))}
         </EventListWrapper>
