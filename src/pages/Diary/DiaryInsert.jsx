@@ -1,4 +1,10 @@
-import React, { useContext, useState, useRef, useCallback, useEffect } from "react";
+import React, {
+  useContext,
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../contexts/LoginContext";
@@ -208,33 +214,40 @@ const DiaryInsert = () => {
   }, []);
 
   // 폰트 가져오기
-    const [ userFont, setUserFont ] = useState("default");
-    useEffect(() => {
-      if(diarySetting.font === "Do Hyeon") {
-        setUserFont("font-do-hyeon");
-      } else if(diarySetting.font === "Gowun Dodum") {
-        setUserFont("font-gowun-dodum");
-      } else if(diarySetting.font === "Hi Melody") {
-        setUserFont("font-hi-melody");
-      } else if(diarySetting.font === "Jua") {
-        setUserFont("font-jua");
-      } else {
-        setUserFont("font-default");
-      }
-    }, [diarySetting.font]);
+  const [userFont, setUserFont] = useState("default");
+  useEffect(() => {
+    if (diarySetting.font === "Do Hyeon") {
+      setUserFont("font-do-hyeon");
+    } else if (diarySetting.font === "Gowun Dodum") {
+      setUserFont("font-gowun-dodum");
+    } else if (diarySetting.font === "Hi Melody") {
+      setUserFont("font-hi-melody");
+    } else if (diarySetting.font === "Jua") {
+      setUserFont("font-jua");
+    } else {
+      setUserFont("font-default");
+    }
+  }, [diarySetting.font]);
 
   return (
     <>
-      <div style={{ height: "100%", overflowY: "auto" }}>
+      <div
+        style={{
+          height: "100%",
+          overflowY: "auto",
+          background: diarySetting.theme === "dark" ? "black" : "",
+        }}
+      >
         <St.Container>
           <St.Div
             className={`${
               diarySetting.theme === "dark"
-              ? "phone-container-dark"
-              : "phone-container"} 
+                ? "phone-container-dark"
+                : "phone-container"
+            } 
               ${userFont} 
             `}
-           onSubmit={handleSubmit}
+            onSubmit={handleSubmit}
           >
             {/* Title and Date */}
             <p>제목</p>
@@ -270,8 +283,8 @@ const DiaryInsert = () => {
                 onChange={(e) => setTagInput(e.target.value)}
                 placeholder="태그를 입력하세요"
               />
-              <St.GeneralConfirmation 
-                type="button" 
+              <St.GeneralConfirmation
+                type="button"
                 onClick={addTag}
                 isDark={diarySetting.theme === "dark"}
               >
@@ -385,8 +398,8 @@ const DiaryInsert = () => {
                     </St.GeneralConfirmation>
                   </div>
                 ))}
-                <St.GeneralConfirmation 
-                  type="button" 
+                <St.GeneralConfirmation
+                  type="button"
                   onClick={addCodeSnippet}
                   isDark={diarySetting.theme === "dark"}
                 >

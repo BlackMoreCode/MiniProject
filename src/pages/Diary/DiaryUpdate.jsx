@@ -267,15 +267,15 @@ const DiaryUpdate = () => {
   };
 
   // 폰트 가져오기
-  const [ userFont, setUserFont ] = useState("default");
+  const [userFont, setUserFont] = useState("default");
   useEffect(() => {
-    if(diarySetting.font === "Do Hyeon") {
+    if (diarySetting.font === "Do Hyeon") {
       setUserFont("font-do-hyeon");
-    } else if(diarySetting.font === "Gowun Dodum") {
+    } else if (diarySetting.font === "Gowun Dodum") {
       setUserFont("font-gowun-dodum");
-    } else if(diarySetting.font === "Hi Melody") {
+    } else if (diarySetting.font === "Hi Melody") {
       setUserFont("font-hi-melody");
-    } else if(diarySetting.font === "Jua") {
+    } else if (diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
       setUserFont("font-default");
@@ -283,13 +283,20 @@ const DiaryUpdate = () => {
   }, [diarySetting.font]);
 
   return (
-    <div style={{ height: "100%", overflowY: "auto" }}>
+    <div
+      style={{
+        height: "100%",
+        overflowY: "auto",
+        background: diarySetting.theme === "dark" ? "black" : "",
+      }}
+    >
       <St.Container>
-        <St.Div 
+        <St.Div
           className={`${
             diarySetting.theme === "dark"
-            ? "phone-container-dark"
-            : "phone-container"} 
+              ? "phone-container-dark"
+              : "phone-container"
+          } 
             ${userFont} 
           `}
           onSubmit={handleSubmit}
@@ -324,8 +331,8 @@ const DiaryUpdate = () => {
               onChange={(e) => setTagInput(e.target.value)}
               placeholder="태그를 입력하세요"
             />
-            <St.GeneralConfirmation 
-              type="button" 
+            <St.GeneralConfirmation
+              type="button"
               onClick={addTag}
               isDark={diarySetting.theme === "dark"}
             >
@@ -333,10 +340,7 @@ const DiaryUpdate = () => {
             </St.GeneralConfirmation>
             <St.TagList>
               {tags.map((tag, index) => (
-                <St.TagItem
-                  key={index}
-                  isDark={diarySetting.theme === "dark"}
-                >
+                <St.TagItem key={index} isDark={diarySetting.theme === "dark"}>
                   {tag}
                   <button
                     onClick={() => setTags(tags.filter((t) => t !== tag))}
@@ -434,8 +438,8 @@ const DiaryUpdate = () => {
               ))}
 
               {/* Add Snippet Button */}
-              <St.GeneralConfirmation 
-                type="button" 
+              <St.GeneralConfirmation
+                type="button"
                 onClick={addCodeSnippet}
                 isDark={diarySetting.theme === "dark"}
               >
