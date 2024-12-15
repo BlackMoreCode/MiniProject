@@ -53,7 +53,7 @@ const ChangeImage = () => {
     } else if(diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
-      setUserFont("");
+      setUserFont("font-default");
     }
   }, [diarySetting.font]);
 
