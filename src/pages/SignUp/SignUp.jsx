@@ -80,7 +80,7 @@ export const SignUp = () => {
     event.preventDefault();
 
     if (!isFormValid()) {
-      openModal("회원 가입 실패", "입력 값이 유효하지 않습니다.🥲");
+      openModal("회원가입 실패", "입력 값이 유효하지 않습니다.🥲");
       return;
     }
 
@@ -94,13 +94,13 @@ export const SignUp = () => {
     if (isSignUpSuccess) {
       modalRef.current?.setOnClose(() => navigate("/intro"));
       openModal(
-        "회원 가입을 축하합니다!",
+        "회원가입을 축하합니다!",
         "코드로그의 다양한 기능을 이용해보세요!😉"
       );
     } else {
       openModal(
-        "회원 가입 실패",
-        "서버 통신 과정에서 문제가 발생했습니다. 다음에 다시 이용해주세요.🥲"
+        "회원가입 실패",
+        "서버 통신 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.🥲"
       );
     }
   };

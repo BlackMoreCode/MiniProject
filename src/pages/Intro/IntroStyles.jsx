@@ -34,6 +34,7 @@ export const IntroContents = styled.div`
 
     background-color: #e8e8e8;
 
+    color: #505050;
     font-size: 0.75rem;
     font-weight: bold;
 
