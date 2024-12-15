@@ -32,23 +32,13 @@ export const formatToSeoulLocal = (date) => {
   return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
 };
 
-export function extractTimeOnly(date) {
+export function extractTimeOnly(date, withSeconds = true) {
   const index = date.lastIndexOf("T");
 
   // 'T' 이후의 문자열을 반환
   if (index !== -1) {
-    return date.substring(index + 1);
-  } else {
-    return ""; // 'T'가 없으면 빈 문자열 반환
-  }
-}
-
-export function extractDateOnly(date) {
-  const index = date.lastIndexOf("T");
-
-  // 'T' 앞의 문자열을 반환
-  if (index !== -1) {
-    return date.substring(0, index);
+    const time = date.substring(index + 1);
+    return withSeconds ? time : time.substring(0, 5);
   } else {
     return ""; // 'T'가 없으면 빈 문자열 반환
   }

@@ -7,6 +7,7 @@ import Modal from "./CalendarModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { extractTimeOnly } from "../../util/dateUtils";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -161,9 +162,15 @@ const Calendar = () => {
               <span>
                 {event.isAllDay
                   ? "All Day"
-                  : `${event.time?.start || "00:00"} - ${
-                      event.time?.end || "00:00"
-                    }`}{" "}
+                  : `${
+                      event.startDate
+                        ? extractTimeOnly(event.startDate, false)
+                        : "시간 정보를 가져오는데 실패했습니다."
+                    } - ${
+                      event.endDate
+                        ? extractTimeOnly(event.endDate, false)
+                        : "시간 정보를 가져오는데 실패했습니다."
+                    } `}
                 | {event.title}
               </span>
               {event.isImportant && "⭐"}
