@@ -9,32 +9,29 @@ import {
 import signUpIcon from "../../assets/icons/signup-icon.png";
 import AxiosApi from "../../api/AxiosApi";
 import MessageModal from "../../components/MessageModal";
-import { login, logout } from "../../util/loginUtils";
+import { login } from "../../util/loginUtils";
 import { LoginContext } from "../../contexts/LoginContext";
 import { PrevPageButton } from "../../components/PrevPageButton";
 
 export const Login = () => {
-  const context = useContext(LoginContext);
-  const { userId, userPassword, setUserId, setUserPassword } = context;
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (userId && userPassword) navigate("/");
-  }, [userId, userPassword])
+  const { loggedInMember, setUserId, setUserPassword } =
+    useContext(LoginContext);
 
   const [formValues, setFormValues] = useState({
     id: "",
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const modalRef = useRef();
+
+  useEffect(() => {
+    if (loggedInMember) navigate("/");
+  }, [loggedInMember]);
 
   const openModal = (title, description) => {
     modalRef.current?.enable(title, description);
-  };
-
-  const closeModal = () => {
-    modalRef.current?.disable();
   };
 
   const handleSubmit = async (event) => {

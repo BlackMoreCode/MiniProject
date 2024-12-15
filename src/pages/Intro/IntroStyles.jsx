@@ -3,80 +3,50 @@ import styled from "styled-components";
 export const IntroContents = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   min-height: 100%;
-  padding: 30px 10px;
+  padding: 20px;
 
-  font-size: 20px;
+  font-size: 18px;
 
-  header {
-    height: 30px;
+  * {
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 400;
+    font-style: normal;
   }
 
-  header img {
+  img {
+    width: 55%;
+    margin-bottom: 120px;
+
+    transform: translateY(125%);
+  }
+
+  button {
+    width: 90%;
+
+    padding: 12px 0;
+
+    border: none;
+    border-radius: 10px;
+
+    background-color: #e8e8e8;
+
+    font-size: 0.75rem;
+    font-weight: bold;
+
     cursor: pointer;
   }
 
-  main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  button:focus,
+  button:hover,
+  button:active {
+    background-color: #d8d8d8;
+  }
 
+  button + button {
     margin-top: 20px;
-  }
-
-  main > section > div:first-child {
-    display: flex;
-    align-items: center;
-  }
-
-  main > section > div:first-child img {
-    height: 120px;
-  }
-
-  section + section {
-    margin-top: 20px;
-  }
-
-  section:nth-child(3) {
-    margin-top: 40px;
-  }
-
-  section:nth-child(2) > div:first-child {
-    justify-content: flex-end;
-  }
-
-  section:nth-child(3) > div:first-child {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  nav {
-    display: flex;
-    flex: 1;
-    align-items: end;
-  }
-
-  nav > div {
-    display: flex;
-    justify-content: center;
-
-    width: 100%;
-  }
-
-  nav a {
-    width: 40%;
-    padding: 2px 0;
-
-    background-color: #ddd;
-
-    border-radius: 8px;
-
-    font-size: 14px;
-    text-align: center;
-  }
-
-  nav a + a {
-    margin-left: 20px;
   }
 `;

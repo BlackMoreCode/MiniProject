@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { SignUpContents, SignUpHeader, SignUpMain } from "./SignUpStyles";
 import { PrevPageButton } from "../../components/PrevPageButton";
 import AxiosApi from "../../api/AxiosApi";
 import { validateSignUpForm } from "../../util/validateUtils";
+import { LoginContext } from "../../contexts/LoginContext";
+import MessageModal from "../../components/MessageModal";
 
 export const SignUp = () => {
+  const { loggedInMember } = useContext(LoginContext);
+
   // input value 상태 변수
   const [formValues, setFormValues] = useState({
     id: "",
@@ -14,7 +18,6 @@ export const SignUp = () => {
     email: "",
     nickname: "",
   });
-
   // 각 input 입력 값에 대한 피드백 메시지 상태 변수
   const [formMessages, setFormMessages] = useState({
     id: "",
@@ -24,11 +27,20 @@ export const SignUp = () => {
     nickname: "",
   });
 
+  const modalRef = useRef();
   const navigate = useNavigate();
 
   // 마지막 유저 입력으로부터 timeout을 설정,
   // timeout 이후 유효성 검증 요청하는 값
   const debounceTimeouts = useRef({});
+
+  useEffect(() => {
+    if (loggedInMember) navigate("/");
+  }, [loggedInMember]);
+
+  const openModal = (title, description) => {
+    modalRef.current?.enable(title, description);
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -68,7 +80,7 @@ export const SignUp = () => {
     event.preventDefault();
 
     if (!isFormValid()) {
-      alert("입력 양식이 유효하지 않습니다.");
+      openModal("회원 가입 실패", "입력 값이 유효하지 않습니다.🥲");
       return;
     }
 
@@ -80,10 +92,16 @@ export const SignUp = () => {
     );
 
     if (isSignUpSuccess) {
-      alert("회원 가입 성공");
-      navigate("/intro");
+      modalRef.current?.setOnClose(() => navigate("/intro"));
+      openModal(
+        "회원 가입을 축하합니다!",
+        "코드로그의 다양한 기능을 이용해보세요!😉"
+      );
     } else {
-      alert("회원 가입 실패, 로그를 확인하세요.");
+      openModal(
+        "회원 가입 실패",
+        "서버 통신 과정에서 문제가 발생했습니다. 다음에 다시 이용해주세요.🥲"
+      );
     }
   };
 
@@ -159,6 +177,7 @@ export const SignUp = () => {
           </button>
         </form>
       </SignUpMain>
+      <MessageModal ref={modalRef} />
     </SignUpContents>
   );
 };
