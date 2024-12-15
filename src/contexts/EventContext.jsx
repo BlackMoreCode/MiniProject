@@ -9,7 +9,7 @@ import React, {
 import { toast } from "react-toastify";
 import AxiosApi from "../api/AxiosApi";
 import { LoginContext } from "../contexts/LoginContext";
-import { formatToSeoulLocal } from "../util/dateUtils";
+import { formatToSeoulLocal, getDateRange } from "../util/dateUtils";
 
 export const EventContext = createContext();
 
@@ -28,28 +28,29 @@ const EventProvider = ({ children }) => {
         });
 
         if (response.success) {
-          console.log("Fetched schedules from backend:", response.schedules);
+          const fetchedSchedules = response.schedules.map((schedule) => ({
+            ...schedule,
+            isAllDay: schedule.isAllday,
+            id: schedule.scheduleNum.toString(),
+          }));
 
-          if (response.schedules) {
-            const fetchedSchedules = response.schedules.map((schedule) => ({
-              ...schedule,
-              isAllDay: schedule.isAllday,
-              id: schedule.scheduleNum.toString(), // Ensure 'id' is a string
-              description: schedule.description || "",
-            }));
-            console.log("Mapped schedules with 'id':", fetchedSchedules);
-            const newEvents = {};
-            fetchedSchedules.forEach((schedule) => {
-              const dateKey = new Date(schedule.startDate).toDateString();
+          // Map events to each day in their date range
+          const newEvents = {};
+          fetchedSchedules.forEach((schedule) => {
+            const startDate = new Date(schedule.startDate);
+            const endDate = new Date(schedule.endDate);
+            const dateRange = getDateRange(startDate, endDate); // Include all days in range
+
+            dateRange.forEach((date) => {
+              const dateKey = date.toDateString();
               if (!newEvents[dateKey]) {
                 newEvents[dateKey] = [];
               }
-              newEvents[dateKey].push(schedule);
+              newEvents[dateKey].push(schedule); // Add the event to all affected days
             });
+          });
 
-            setEvents(newEvents);
-            console.log("Updated events state:", newEvents);
-          } else setEvents({});
+          setEvents(newEvents);
         } else {
           toast.error("스케줄을 불러오는 데 실패했습니다.");
         }

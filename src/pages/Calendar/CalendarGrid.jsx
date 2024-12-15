@@ -1,4 +1,3 @@
-// CalendarGrid.jsx
 import React, { useContext, useState } from "react";
 import { LoginContext } from "../../contexts/LoginContext";
 import * as Styles from "./CalendarGridStyles";
