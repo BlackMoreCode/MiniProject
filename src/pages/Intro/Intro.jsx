@@ -9,7 +9,7 @@ const Intro = () => {
   const navigator = useNavigate();
 
   useEffect(() => {
-    if (loggedInMember) navigator("/home");
+    if (loggedInMember) navigator("/");
   }, [loggedInMember]);
 
   return (
