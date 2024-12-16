@@ -146,7 +146,7 @@ const DeleteMember = () => {
       setPasswordMessage2("비밀번호가 일치합니다.");
       setPasswordCheck2(true);
     } else {
-      setPasswordMessage("비밀번호가 일치하지 않습니다.");
+      setPasswordMessage2("비밀번호가 일치하지 않습니다.");
       setPasswordCheck2(false);
     }
   };
