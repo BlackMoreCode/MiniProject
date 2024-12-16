@@ -43,3 +43,25 @@ export function extractTimeOnly(date, withSeconds = true) {
     return ""; // 'T'가 없으면 빈 문자열 반환
   }
 }
+
+/**
+ * 시작과 끝 날짜들 사이의 날짜들을 생성하는 헬퍼 함수
+ * 이를 통해서 이벤트의 날짜 범위 내에서 매 요일의 Date 객체 배열을 생성.
+ * @param {Date} start
+ * @param {Date} end
+ * @returns {Date[]}
+ */
+export const getDateRange = (start, end) => {
+  const dates = [];
+  const current = new Date(start);
+  current.setHours(0, 0, 0, 0); // 자정으로 세팅
+  end = new Date(end);
+  end.setHours(0, 0, 0, 0); // 자정으로 세팅
+
+  while (current <= end) {
+    dates.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+};

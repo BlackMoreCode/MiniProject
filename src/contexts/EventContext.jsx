@@ -9,7 +9,7 @@ import React, {
 import { toast } from "react-toastify";
 import AxiosApi from "../api/AxiosApi";
 import { LoginContext } from "../contexts/LoginContext";
-import { formatToSeoulLocal } from "../util/dateUtils";
+import { formatToSeoulLocal, getDateRange } from "../util/dateUtils";
 
 export const EventContext = createContext();
 
@@ -28,33 +28,39 @@ const EventProvider = ({ children }) => {
         });
 
         if (response.success) {
-          console.log("Fetched schedules from backend:", response.schedules);
-
-          if (response.schedules) {
-            const fetchedSchedules = response.schedules.map((schedule) => ({
+          // 올시 토스트 메세지 뜨는 것 방지용. 일단 아무 이벤트 없는 달에 들어가면 에러 토스트메세지 떠서 추가했습니다.
+          const fetchedSchedules = (response.schedules || []).map(
+            (schedule) => ({
               ...schedule,
               isAllDay: schedule.isAllday,
-              id: schedule.scheduleNum.toString(), // Ensure 'id' is a string
-              description: schedule.description || "",
-            }));
-            console.log("Mapped schedules with 'id':", fetchedSchedules);
-            const newEvents = {};
-            fetchedSchedules.forEach((schedule) => {
-              const dateKey = new Date(schedule.startDate).toDateString();
+              id: schedule.scheduleNum.toString(),
+            })
+          );
+
+          // 날짜 범위안에 들어선 날짜들 각자에 이벤트를 맵핑.
+          const newEvents = {};
+          fetchedSchedules.forEach((schedule) => {
+            const startDate = new Date(schedule.startDate);
+            const endDate = new Date(schedule.endDate);
+            const dateRange = getDateRange(startDate, endDate); // 범위 안의 날짜 전부 포함
+
+            dateRange.forEach((date) => {
+              const dateKey = date.toDateString();
               if (!newEvents[dateKey]) {
                 newEvents[dateKey] = [];
               }
-              newEvents[dateKey].push(schedule);
+              newEvents[dateKey].push(schedule); // 영향 받은 요일에 전부 이벤트 추가
             });
+          });
 
-            setEvents(newEvents);
-            console.log("Updated events state:", newEvents);
-          } else setEvents({});
+          setEvents(newEvents);
         } else {
+          // 실제 에러가 있을때만 에러 보내기
           toast.error("스케줄을 불러오는 데 실패했습니다.");
         }
       } catch (error) {
         console.error("Error fetching monthly schedules:", error);
+        // 가능하면 그냥 스케쥴이 없는걸로는 에러가 안뜨게..
         toast.error("스케줄을 불러오는 중 오류가 발생했습니다.");
       }
     },

@@ -32,6 +32,10 @@ export const SignUpMain = styled.main`
 
   margin-top: 40px;
 
+  h1 {
+    font-weight: bold;
+  }
+
   form {
     flex: 1;
 
@@ -86,7 +90,7 @@ export const SignUpMain = styled.main`
     border: 0;
     border-radius: 10px;
 
-    color: black;
+    color: #505050;
     font-weight: bold;
   }
 

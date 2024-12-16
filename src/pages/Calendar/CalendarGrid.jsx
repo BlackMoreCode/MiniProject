@@ -1,10 +1,10 @@
-// CalendarGrid.jsx
 import React, { useContext, useState } from "react";
-import { LoginContext } from "../../contexts/LoginContext";
+import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 import * as Styles from "./CalendarGridStyles";
 
 const CalendarGrid = ({ date, onDateRangeSelect, selectedRange, events }) => {
-  const { isDarkMode } = useContext(LoginContext);
+  const { diarySetting } = useContext(DiarySettingContext);
+  const isDarkMode = diarySetting.theme === "dark";
 
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState(null);
@@ -105,17 +105,14 @@ const CalendarGrid = ({ date, onDateRangeSelect, selectedRange, events }) => {
           return (
             <DayCell
               key={index}
-              $isToday={isToday} // Transient prop
-              $isSelected={isInSelection} // Transient prop
+              $isToday={isToday}
+              $isSelected={isInSelection}
               onMouseDown={() => handleMouseDown(cellDate)}
               onMouseEnter={() => handleMouseEnter(cellDate)}
             >
               {day && (
                 <>
-                  <DayNumber
-                    $isSunday={isSunday} // Transient prop
-                    $isSaturday={isSaturday} // Transient prop
-                  >
+                  <DayNumber $isSunday={isSunday} $isSaturday={isSaturday}>
                     {day}
                   </DayNumber>
                   {eventCount > 0 && (

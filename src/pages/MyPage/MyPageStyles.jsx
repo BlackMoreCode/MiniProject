@@ -106,7 +106,7 @@ export const Div = styled.div`
       }
     }
   }
-  
+
   .mypage-header {
     display: flex;
     background-color: #eee;
@@ -185,8 +185,8 @@ export const Div = styled.div`
       right: 0;
       bottom: 0;
       background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
       border-radius: 30px;
     }
     .slider:before {
@@ -197,8 +197,8 @@ export const Div = styled.div`
       left: 4px;
       bottom: 4px;
       background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
       border-radius: 50%;
     }
     input:checked + .slider {
@@ -324,7 +324,7 @@ export const Div = styled.div`
     text-align: right;
     color: red;
   }
-  
+
   .submitBtn {
     width: 90%;
     padding: 15px 0;
@@ -372,6 +372,7 @@ export const Div = styled.div`
       }
     }
     .font-box {
+      position: relative;
       background-color: #444;
       color: #aaa;
       &:hover {
@@ -380,6 +381,22 @@ export const Div = styled.div`
         p {
           scale: 1.02;
         }
+      }
+      span {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 1;
+
+        padding: 5px 8px;
+
+        background-color: grey;
+        border: 1px solid white;
+        border-radius: 6px;
+
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
       }
     }
     // 스크롤바 보류
@@ -409,7 +426,8 @@ export const Div = styled.div`
   }
 
   .font-box {
-    background-color: rgb(244,244,246);
+    position: relative;
+    background-color: rgb(244, 244, 246);
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
@@ -435,11 +453,27 @@ export const Div = styled.div`
     &.font-jua {
       font-family: "Jua", sans-serif;
     }
+    span {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 1;
+
+      padding: 5px 8px;
+
+      background-color: grey;
+      border: 1px solid white;
+      border-radius: 6px;
+
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
   }
 
   // theme 관련
   .theme-box {
-    background-color: rgb(244,244,246);
+    background-color: rgb(244, 244, 246);
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
@@ -498,6 +532,7 @@ export const Div = styled.div`
       }
     }
     .banner-box {
+      position: relative;
       border: 5px solid #808080;
       img {
         border-radius: 0;
@@ -505,6 +540,22 @@ export const Div = styled.div`
       }
       &:hover {
         border: 7px solid #eee;
+      }
+      span {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 1;
+
+        padding: 5px 8px;
+
+        background-color: grey;
+        border: 1px solid white;
+        border-radius: 6px;
+
+        color: white;
+        font-size: 0.75rem;
+        font-weight: bold;
       }
     }
   }
@@ -518,7 +569,7 @@ export const Div = styled.div`
     top: 0;
     z-index: 1;
   }
-  
+
   .banner-body {
     width: 100%;
     height: calc(100% - 55px);
@@ -528,8 +579,9 @@ export const Div = styled.div`
     padding: 40px 20px 20px 20px;
     overflow: auto;
   }
-  
+
   .banner-box {
+    position: relative;
     width: 100%;
     height: 150px;
     margin: 10px 0;
@@ -546,6 +598,22 @@ export const Div = styled.div`
         border-radius: 0;
         /* scale: 1.2; */
       }
+    }
+    span {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 1;
+
+      padding: 5px 8px;
+
+      background-color: grey;
+      border: 1px solid white;
+      border-radius: 6px;
+
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
     }
   }
 `;

@@ -36,13 +36,15 @@ const MessageModal = forwardRef((props, ref) => {
           <h3>{title}</h3>
           <p>{description}</p>
         </div>
-        <button
-          onClick={() => {
-            ref?.current?.disable();
-          }}
-        >
-          확인
-        </button>
+        <div>
+          <button
+            onClick={() => {
+              ref?.current?.disable();
+            }}
+          >
+            확인
+          </button>
+        </div>
       </ModalContents>
     </ModalOverlay>
   );
@@ -88,11 +90,36 @@ const ModalContents = styled.div`
   }
 
   p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  div:last-child {
+    display: flex;
+    justify-content: center;
   }
 
   button {
-    width: 100%;
+    width: 40%;
+
+    padding: 10px 0;
+
+    background-color: #e8e8e8;
+
+    border: 0;
+    border-radius: 10px;
+
+    color: #505050;
+    font-weight: bold;
+  }
+
+  button:focus,
+  button:hover,
+  button:active {
+    background-color: #d8d8d8;
+  }
+
+  button:active {
+    transform: scale(0.99);
   }
 `;
 

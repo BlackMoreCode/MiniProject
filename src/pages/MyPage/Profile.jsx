@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import AxiosApi from "../../api/AxiosApi";
 import { useNavigate } from "react-router-dom";
 
@@ -9,7 +9,8 @@ import { DiarySettingContext } from "../../contexts/DiarySettingContext";
 import { Container, Div } from "./MyPageStyles";
 // icon
 import { IoIosArrowBack } from "react-icons/io";
-
+// Modal
+import MessageModal from "../../components/MessageModal";
 
 const Profile = () => {
   const { userId, userPassword, setUserPassword } = useContext(LoginContext);
@@ -37,24 +38,25 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
-  // setInputEmail(email);
-  // setInputNickname(nickname);
-
+  const modalRef = useRef();
+  const openModal = (title, description) => {
+    modalRef.current?.enable(title, description);
+  };
   // 이메일 체크
   const onChangeEmail = (e) => {
     const value = e.target.value;
     setInputEmail(value);
 
     const emailRgx = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if(!emailRgx.test(value)) {
+    if (!emailRgx.test(value)) {
       setEmailMessage("올바른 이메일 형식이 아닙니다.");
       setEmailCheck(false);
     } else {
       setEmailCheck(true);
-      if(email === value) {
+      if (email === value) {
         setEmailMessage("");
       } else {
-        setEmailMessage("올바른 형식입니다.")
+        setEmailMessage("올바른 형식입니다.");
         emailUniqueCheck(value);
       }
     }
@@ -86,7 +88,7 @@ const Profile = () => {
   const onChangeNickname = (e) => {
     const value = e.target.value;
     setInputNickname(value);
-    if(value.length <= 20) {
+    if (value.length <= 20) {
       setNicknameCheck(true);
       if (nickname === value) {
         setNicknameMessage("");
@@ -124,7 +126,7 @@ const Profile = () => {
   const onChangeCurrentPw = (e) => {
     const inputPw = e.target.value;
     setCurrentPassword(inputPw);
-    if(inputPw === password) {
+    if (inputPw === password) {
       setCurrentPwMessage("비밀번호가 일치합니다.");
       setCurrentPwCheck(true);
     } else {
@@ -189,8 +191,8 @@ const Profile = () => {
   // 수정 버튼 활성화
   useEffect(() => {
     if (emailCheck && nicknameCheck && currentPwCheck) {
-      if(newPassword.length > 0 || newPassword2.length > 0){
-        if(newPasswordCheck && newPasswordCheck2){
+      if (newPassword.length > 0 || newPassword2.length > 0) {
+        if (newPasswordCheck && newPasswordCheck2) {
           setIsDisabled(false);
         } else {
           setIsDisabled(true);
@@ -201,42 +203,58 @@ const Profile = () => {
     } else {
       setIsDisabled(true);
     }
-  }, [emailCheck, nicknameCheck, currentPwCheck, newPassword.length, newPassword2.length, newPasswordCheck, newPasswordCheck2]);
+  }, [
+    emailCheck,
+    nicknameCheck,
+    currentPwCheck,
+    newPassword.length,
+    newPassword2.length,
+    newPasswordCheck,
+    newPasswordCheck2,
+  ]);
 
   // 회원 정보 수정 기능
   const handleUpdateProfile = async (e) => {
     e.preventDefault(); // 기본 동작 방지
     try {
-      const dynamicPassword = 
-        newPassword.length > 0 || newPassword2.length > 0 
-        ? newPassword 
-        : currentPassword;
+      const dynamicPassword =
+        newPassword.length > 0 || newPassword2.length > 0
+          ? newPassword
+          : currentPassword;
 
-      await AxiosApi.updateProfile(userId, inputEmail, inputNickname, dynamicPassword);
+      await AxiosApi.updateProfile(
+        userId,
+        inputEmail,
+        inputNickname,
+        dynamicPassword
+      );
 
       // localStorage 업데이트
       localStorage.setItem("userPassword", dynamicPassword);
       // 비밀번호 업데이트
       setPassword(dynamicPassword);
 
-      alert("프로필이 성공적으로 업데이트되었습니다!");
-      navigate("/mypage");
+      modalRef.current?.setOnClose(() => navigate("/mypage"));
+      openModal("회원 정보 수정", "프로필이 성공적으로 업데이트되었습니다!");
     } catch (error) {
       console.error("Failed to update profile:", error);
-      alert("프로필 업데이트에 실패했습니다. 다시 시도해주세요.");
+      openModal(
+        "회원 정보 수정",
+        "서버 통신 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.🥲"
+      );
     }
   };
 
   // 폰트 설정
-  const [ userFont, setUserFont ] = useState("default");
+  const [userFont, setUserFont] = useState("default");
   useEffect(() => {
-    if(diarySetting.font === "Do Hyeon") {
+    if (diarySetting.font === "Do Hyeon") {
       setUserFont("font-do-hyeon");
-    } else if(diarySetting.font === "Gowun Dodum") {
+    } else if (diarySetting.font === "Gowun Dodum") {
       setUserFont("font-gowun-dodum");
-    } else if(diarySetting.font === "Hi Melody") {
+    } else if (diarySetting.font === "Hi Melody") {
       setUserFont("font-hi-melody");
-    } else if(diarySetting.font === "Jua") {
+    } else if (diarySetting.font === "Jua") {
       setUserFont("font-jua");
     } else {
       setUserFont("font-default");
@@ -245,19 +263,22 @@ const Profile = () => {
 
   return (
     <Container>
-      <Div 
+      <Div
         className={`${
           diarySetting.theme === "dark"
             ? "phone-container-dark"
-            : "phone-container"} 
+            : "phone-container"
+        } 
           ${userFont} 
         `}
       >
         <div className="profile-header">
-          <button onClick={()=>navigate("/mypage")} className="backBtn">
+          <button onClick={() => navigate("/mypage")} className="backBtn">
             <IoIosArrowBack />
           </button>
-          <p onClick={()=>navigate("/mypage")} className="mypage-title">회원 정보</p>
+          <p onClick={() => navigate("/mypage")} className="mypage-title">
+            회원 정보
+          </p>
         </div>
 
         <form className="profile-form">
@@ -272,11 +293,13 @@ const Profile = () => {
               type="email"
               placeholder="변경할 이메일"
               value={inputEmail}
-              onChange={onChangeEmail} 
+              onChange={onChangeEmail}
               className="profile-input"
             />
             {inputEmail.length > 0 && (
-              <p className={`message${emailCheck ? "On" : "Off"}`}>{emailMessage}</p>
+              <p className={`message${emailCheck ? "On" : "Off"}`}>
+                {emailMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
@@ -284,17 +307,19 @@ const Profile = () => {
               type="text"
               placeholder="변경할 닉네임"
               value={inputNickname}
-              onChange={onChangeNickname} 
+              onChange={onChangeNickname}
               className="profile-input"
             />
             {inputNickname.length > 0 && (
-              <p className={`message${nicknameCheck ? "On" : "Off"}`}>{nicknameMessage}</p>
+              <p className={`message${nicknameCheck ? "On" : "Off"}`}>
+                {nicknameMessage}
+              </p>
             )}
           </div>
           <div className="inputBox">
             <input
               type="password"
-              placeholder="현재 비밀번호를 입력하세요. (필수!)"
+              placeholder="현재 비밀번호를 입력하세요."
               value={currentPassword}
               onChange={onChangeCurrentPw}
               className="profile-input"
@@ -333,12 +358,17 @@ const Profile = () => {
               </p>
             )}
           </div>
-          
-          <button className="submitBtn" onClick={handleUpdateProfile} disabled={isDisabled}>
-            {isDisabled ? "비활성화" : "프로필 수정"}
+
+          <button
+            className="submitBtn"
+            onClick={handleUpdateProfile}
+            disabled={isDisabled}
+          >
+            프로필 수정
           </button>
         </form>
       </Div>
+      <MessageModal ref={modalRef} />
     </Container>
   );
 };
