@@ -44,6 +44,14 @@ export function extractTimeOnly(date, withSeconds = true) {
   }
 }
 
+// 캘린더 표기용 유틸 함수
+export const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 /**
  * 시작과 끝 날짜들 사이의 날짜들을 생성하는 헬퍼 함수
  * 이를 통해서 이벤트의 날짜 범위 내에서 매 요일의 Date 객체 배열을 생성.
