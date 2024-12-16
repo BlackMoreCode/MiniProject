@@ -7,7 +7,7 @@ import Modal from "./CalendarModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { extractTimeOnly, formatDate } from "../../util/dateUtils";
+import { extractTimeOnly } from "../../util/dateUtils";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -156,29 +156,21 @@ const Calendar = () => {
           {/* 방어적 코딩 임시 추가; undefined 객체의 속성에 접근 못하게 */}
           {selectedDateEvents.map((event, index) => (
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
-              <div style={{ flex: 1, textAlign: "left" }}>{event.title}</div>
-              <div style={{ textAlign: "right" }}>
-                <div>
-                  <strong>시작:</strong>{" "}
-                  {event.startDate
-                    ? `${formatDate(new Date(event.startDate))} ${
-                        event.isAllDay
-                          ? "하루 종일"
-                          : extractTimeOnly(event.startDate, false)
-                      }`
-                    : "시간 정보를 가져오는데 실패했습니다."}
-                </div>
-                <div>
-                  <strong>종료:</strong>{" "}
-                  {event.endDate
-                    ? `${formatDate(new Date(event.endDate))} ${
-                        event.isAllDay
-                          ? "하루 종일"
-                          : extractTimeOnly(event.endDate, false)
-                      }`
-                    : "시간 정보를 가져오는데 실패했습니다."}
-                </div>
-              </div>
+              <span>
+                {event.isAllDay
+                  ? "All Day "
+                  : `${
+                      event.startDate
+                        ? extractTimeOnly(event.startDate, false)
+                        : "시간 정보를 가져오는데 실패했습니다."
+                    } - ${
+                      event.endDate
+                        ? extractTimeOnly(event.endDate, false)
+                        : "시간 정보를 가져오는데 실패했습니다."
+                    } `}
+                | {event.title}
+              </span>
+              {event.isImportant && "⭐"}
             </EventItem>
           ))}
         </EventListWrapper>
