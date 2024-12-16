@@ -57,6 +57,8 @@ const Home = () => {
   useEffect(() => {
     if (loggedInMember) {
       fetchAllDiaries();
+    } else {
+      navigate("/intro");
     }
   }, [loggedInMember]);
 

@@ -158,7 +158,7 @@ const Calendar = () => {
             <EventItem key={index} onClick={() => handleEditEvent(event)}>
               <span>
                 {event.isAllDay
-                  ? "All Day"
+                  ? "All Day "
                   : `${
                       event.startDate
                         ? extractTimeOnly(event.startDate, false)
